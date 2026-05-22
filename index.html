@@ -3,1056 +3,579 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRM Restanțieri</title>
+<title>CRM Restantieri v1.1</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#f5f4f0;--surface:#fff;--border:rgba(0,0,0,.08);--bmed:rgba(0,0,0,.14);--text:#1a1918;--t2:#6b6963;--t3:#9e9b94;--purple:#534AB7;--pbg:#EEEDFE;--ptext:#3C3489;--red:#A32D2D;--rbg:#FCEBEB;--amber:#854F0B;--abg:#FAEEDA;--green:#3B6D11;--gbg:#EAF3DE;--blue:#185FA5;--bbg:#E6F1FB;--teal:#0F6E56;--tbg:#E1F5EE;--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.slogo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.lmark{display:flex;align-items:center;gap:8px}
+.lic{width:32px;height:32px;border-radius:8px;background:var(--purple);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.ltxt{font-size:15px;font-weight:600}.lsub{font-size:11px;color:var(--t3);margin-top:1px}
+.nav{padding:12px 8px;flex:1}
+.nlbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:0 8px;margin:14px 0 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;margin-bottom:1px}
+.ni:hover{background:var(--bg);color:var(--text)}
+.ni.active{background:var(--pbg);color:var(--ptext);font-weight:500}
+.ni svg{width:16px;height:16px;flex-shrink:0}
+.sfooter{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)}
+.main{flex:1;overflow-x:hidden}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.ptitle{font-size:17px;font-weight:600}
+.tactions{display:flex;gap:8px;align-items:center}
+.content{padding:24px 28px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--bmed);background:var(--surface);color:var(--text);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btnp{background:var(--purple);color:#fff;border-color:var(--purple)}
+.btnp:hover{background:var(--ptext)}
+.btnsm{padding:5px 10px;font-size:12px}
+.btn svg{width:14px;height:14px}
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.mc{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
+.mlbl{font-size:11px;color:var(--t3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.mval{font-size:26px;font-weight:600;margin:4px 0 2px}
+.msub{font-size:11px;color:var(--t3)}
+.mc.red .mval{color:var(--red)}.mc.amber .mval{color:var(--amber)}.mc.purple .mval{color:var(--purple)}.mc.green .mval{color:var(--green)}
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.ch{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:14px;font-weight:600}.cs{font-size:12px;color:var(--t3);margin-top:1px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:10px 14px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+.pn{font-weight:500}.pcui{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.br{background:var(--rbg);color:var(--red)}.ba{background:var(--abg);color:var(--amber)}.bg{background:var(--gbg);color:var(--green)}.bb{background:var(--bbg);color:var(--blue)}.bp{background:var(--pbg);color:var(--ptext)}.bt{background:var(--tbg);color:var(--teal)}
+.amt{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.amtr{color:var(--red)}.amta{color:var(--amber)}
+.iz{border:2px dashed var(--bmed);border-radius:var(--r);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);margin-bottom:20px}
+.iz:hover,.iz.drag{border-color:var(--purple);background:var(--pbg)}
+.ifmts{margin-top:12px;display:flex;justify-content:center;gap:6px}
+#fi{display:none}
+.mapg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mapr{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg);border-radius:var(--rs)}
+.mapk{font-size:12px;font-weight:500;min-width:120px}.mapk span{font-size:10px;color:var(--red)}
+.maps{flex:1;font-family:inherit;font-size:13px;border:1px solid var(--bmed);border-radius:var(--rs);padding:5px 8px;background:var(--surface);color:var(--text)}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.fi{padding:7px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)}
+.fi.wide{min-width:200px}
+.flbl{font-size:12px;color:var(--t3);font-weight:500}
+.agrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.ac{border-radius:var(--rs);padding:14px;text-align:center;border:1px solid transparent}
+.ac.a0{background:var(--gbg);border-color:rgba(59,109,17,.15)}.ac.a30{background:var(--abg);border-color:rgba(133,79,11,.15)}.ac.a60{background:#fdf0e8;border-color:rgba(216,90,48,.2)}.ac.a90{background:var(--rbg);border-color:rgba(163,45,45,.15)}
+.av{font-size:20px;font-weight:600;margin-bottom:2px}
+.ac.a0 .av{color:var(--green)}.ac.a30 .av{color:var(--amber)}.ac.a60 .av{color:#993C1D}.ac.a90 .av{color:var(--red)}
+.al{font-size:11px;color:var(--t3);font-weight:500}.acnt{font-size:11px;margin-top:4px}
+.ac.a0 .acnt{color:var(--green)}.ac.a30 .acnt{color:var(--amber)}.ac.a60 .acnt{color:#993C1D}.ac.a90 .acnt{color:var(--red)}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);width:620px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.mlg{width:860px}
+.mh{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mtl{font-size:15px;font-weight:600}
+.mb{padding:20px}
+.mf{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.bcl{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;padding:0;line-height:1}
+.bcl:hover{color:var(--text)}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:200;transform:translateY(100px);opacity:0;transition:all .3s;max-width:320px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{background:var(--green)}.toast.error{background:var(--red)}
+.page{display:none}.page.active{display:block}
+.cw{padding:16px 18px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.empty{text-align:center;padding:50px 20px;color:var(--t3)}
+.etl{font-size:15px;color:var(--t2);font-weight:500;margin-bottom:4px}
+.abtn{background:none;border:none;cursor:pointer;color:var(--t3);padding:3px;border-radius:4px}
+.abtn:hover{color:var(--purple);background:var(--pbg)}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:10px}
 
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: rgba(0,0,0,0.08);
-    --border-med: rgba(0,0,0,0.14);
-    --text: #1a1918;
-    --text-2: #6b6963;
-    --text-3: #9e9b94;
-    --purple: #534AB7;
-    --purple-bg: #EEEDFE;
-    --purple-text: #3C3489;
-    --red: #A32D2D;
-    --red-bg: #FCEBEB;
-    --amber: #854F0B;
-    --amber-bg: #FAEEDA;
-    --green: #3B6D11;
-    --green-bg: #EAF3DE;
-    --blue: #185FA5;
-    --blue-bg: #E6F1FB;
-    --radius: 10px;
-    --radius-sm: 6px;
-  }
+/* JURNAL */
+.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;min-height:600px}
+.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
+.plh{padding:12px 14px;border-bottom:1px solid var(--border)}
+.plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
+.pli{overflow-y:auto;flex:1}
+.plitem{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.plitem:hover{background:var(--bg)}
+.plitem.active{background:var(--pbg);border-left:3px solid var(--purple)}
+.plname{font-size:13px;font-weight:500;margin-bottom:2px}
+.plmeta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
+.jmain{display:flex;flex-direction:column;gap:14px}
+.pch{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
+.pcht{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.pchav{width:44px;height:44px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:var(--ptext);flex-shrink:0}
+.pchn{font-size:16px;font-weight:600;margin-bottom:2px}
+.pchcui{font-size:12px;color:var(--t3);font-family:'DM Mono',monospace}
+.pchcs{display:flex;gap:16px;flex-wrap:wrap}
+.pchc{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2)}
+.pchc svg{width:13px;height:13px;color:var(--t3)}
+.pchst{display:flex;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.pchsv{font-size:16px;font-weight:600}.pchsl{font-size:11px;color:var(--t3)}
+.nform{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
+.nftl{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--t2)}
+.ntbtns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tb{padding:5px 12px;border-radius:20px;border:1px solid var(--bmed);background:var(--surface);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .12s;display:flex;align-items:center;gap:5px}
+.tb:hover{background:var(--bg)}
+.tb.s-apel{background:var(--bbg);color:var(--blue);border-color:rgba(24,95,165,.25)}
+.tb.s-email{background:var(--pbg);color:var(--ptext);border-color:rgba(83,74,183,.25)}
+.tb.s-wa{background:var(--gbg);color:var(--green);border-color:rgba(59,109,17,.25)}
+.tb.s-int{background:var(--abg);color:var(--amber);border-color:rgba(133,79,11,.25)}
+.tb.s-prom{background:var(--rbg);color:var(--red);border-color:rgba(163,45,45,.25)}
+.nta{width:100%;min-height:80px;font-family:inherit;font-size:13px;border:1px solid var(--bmed);border-radius:var(--rs);padding:9px 12px;resize:vertical;background:var(--surface);color:var(--text);transition:border .15s}
+.nta:focus{outline:none;border-color:var(--purple)}
+.nextra{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.nin{padding:6px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:12px;background:var(--surface);color:var(--text)}
+.nlbl2{font-size:12px;color:var(--t3);font-weight:500}
+.tl{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.tlh{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tli{display:flex;gap:0;padding:14px 18px;border-bottom:1px solid var(--border);position:relative;transition:background .12s}
+.tli:last-child{border-bottom:none}
+.tli:hover{background:var(--bg)}
+.tll{display:flex;flex-direction:column;align-items:center;margin-right:14px;flex-shrink:0}
+.tld{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tld svg{width:14px;height:14px}
+.tld.apel{background:var(--bbg);color:var(--blue)}.tld.email{background:var(--pbg);color:var(--purple)}.tld.whatsapp{background:var(--gbg);color:var(--green)}.tld.intalnire{background:var(--abg);color:var(--amber)}.tld.promisiune{background:var(--rbg);color:var(--red)}.tld.notificare{background:var(--tbg);color:var(--teal)}
+.tlb{flex:1;min-width:0}
+.tltp{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.tltype{font-size:12px;font-weight:600}.tltime{font-size:11px;color:var(--t3)}.tlagent{font-size:11px;color:var(--t3)}
+.tltxt{font-size:13px;color:var(--text);line-height:1.55}
+.tlprom{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;background:var(--rbg);color:var(--red);border-radius:20px;font-size:11px;font-weight:500}
+.tldel{background:none;border:none;cursor:pointer;color:var(--t3);padding:3px;border-radius:4px;margin-left:auto;opacity:0;transition:opacity .15s;flex-shrink:0}
+.tli:hover .tldel{opacity:1}
+.tldel:hover{color:var(--red);background:var(--rbg)}
+.nosel{display:flex;align-items:center;justify-content:center;min-height:400px;color:var(--t3);flex-direction:column;gap:10px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.5;
-    min-height: 100vh;
-  }
-
-  /* LAYOUT */
-  .app { display: flex; min-height: 100vh; }
-
-  .sidebar {
-    width: 220px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
-
-  .sidebar-logo {
-    padding: 20px 16px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-  .logo-mark {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .logo-icon {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: var(--purple); display: flex; align-items: center;
-    justify-content: center; color: white; font-size: 16px; flex-shrink: 0;
-  }
-  .logo-text { font-size: 15px; font-weight: 600; color: var(--text); }
-  .logo-sub { font-size: 11px; color: var(--text-3); margin-top: 1px; }
-
-  .nav { padding: 12px 8px; flex: 1; }
-  .nav-label {
-    font-size: 10px; font-weight: 600; color: var(--text-3);
-    letter-spacing: .08em; text-transform: uppercase;
-    padding: 0 8px; margin: 16px 0 4px;
-  }
-  .nav-item {
-    display: flex; align-items: center; gap: 9px;
-    padding: 8px 10px; border-radius: var(--radius-sm);
-    cursor: pointer; color: var(--text-2); font-size: 13px;
-    transition: all .15s; margin-bottom: 1px;
-  }
-  .nav-item:hover { background: var(--bg); color: var(--text); }
-  .nav-item.active { background: var(--purple-bg); color: var(--purple-text); font-weight: 500; }
-  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
-
-  .sidebar-footer {
-    padding: 12px 16px;
-    border-top: 1px solid var(--border);
-    font-size: 11px; color: var(--text-3);
-  }
-
-  .main { flex: 1; overflow-x: hidden; }
-
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 28px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 10;
-  }
-  .page-title { font-size: 17px; font-weight: 600; }
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
-
-  .content { padding: 24px 28px; }
-
-  /* BUTTONS */
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px; border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 13px; font-weight: 500;
-    cursor: pointer; border: 1px solid var(--border-med);
-    background: var(--surface); color: var(--text);
-    transition: all .15s; white-space: nowrap;
-  }
-  .btn:hover { background: var(--bg); }
-  .btn-primary { background: var(--purple); color: white; border-color: var(--purple); }
-  .btn-primary:hover { background: var(--purple-text); border-color: var(--purple-text); }
-  .btn svg { width: 14px; height: 14px; }
-
-  /* METRICS */
-  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-  .metric-card {
-    background: var(--surface); border-radius: var(--radius);
-    border: 1px solid var(--border); padding: 16px 18px;
-  }
-  .metric-label { font-size: 11px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-  .metric-value { font-size: 26px; font-weight: 600; margin: 4px 0 2px; }
-  .metric-sub { font-size: 11px; color: var(--text-3); }
-  .metric-card.red .metric-value { color: var(--red); }
-  .metric-card.amber .metric-value { color: var(--amber); }
-  .metric-card.purple .metric-value { color: var(--purple); }
-  .metric-card.green .metric-value { color: var(--green); }
-
-  /* TABLES */
-  .card {
-    background: var(--surface); border-radius: var(--radius);
-    border: 1px solid var(--border); overflow: hidden;
-  }
-  .card-header {
-    padding: 14px 18px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-size: 14px; font-weight: 600; }
-  .card-sub { font-size: 12px; color: var(--text-3); margin-top: 1px; }
-
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th {
-    text-align: left; padding: 10px 14px;
-    font-size: 11px; font-weight: 600; color: var(--text-3);
-    text-transform: uppercase; letter-spacing: .05em;
-    background: var(--bg); border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--bg); }
-  .partner-name { font-weight: 500; }
-  .partner-cui { font-size: 11px; color: var(--text-3); font-family: 'DM Mono', monospace; }
-
-  /* BADGES */
-  .badge {
-    display: inline-block; padding: 2px 8px; border-radius: 20px;
-    font-size: 11px; font-weight: 500;
-  }
-  .badge-red { background: var(--red-bg); color: var(--red); }
-  .badge-amber { background: var(--amber-bg); color: var(--amber); }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-blue { background: var(--blue-bg); color: var(--blue); }
-  .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
-
-  /* AMOUNT */
-  .amount { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; }
-  .amount-red { color: var(--red); }
-  .amount-amber { color: var(--amber); }
-
-  /* IMPORT ZONE */
-  .import-zone {
-    border: 2px dashed var(--border-med); border-radius: var(--radius);
-    padding: 40px; text-align: center; cursor: pointer;
-    transition: all .2s; background: var(--surface);
-    margin-bottom: 20px;
-  }
-  .import-zone:hover, .import-zone.drag { border-color: var(--purple); background: var(--purple-bg); }
-  .import-zone.drag * { pointer-events: none; }
-  .import-icon { width: 48px; height: 48px; margin: 0 auto 12px; color: var(--text-3); }
-  .import-title { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
-  .import-sub { font-size: 13px; color: var(--text-3); }
-  .import-formats { margin-top: 12px; display: flex; justify-content: center; gap: 6px; }
-  #fileInput { display: none; }
-
-  /* MAPPING */
-  .mapping-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .map-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--bg); border-radius: var(--radius-sm); }
-  .map-key { font-size: 12px; font-weight: 500; min-width: 120px; }
-  .map-key span { font-size: 10px; font-weight: 400; color: var(--red); }
-  .map-select { flex: 1; font-family: inherit; font-size: 13px; border: 1px solid var(--border-med); border-radius: var(--radius-sm); padding: 5px 8px; background: var(--surface); color: var(--text); }
-
-  /* FILTERS */
-  .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
-  .filter-input {
-    padding: 7px 12px; border: 1px solid var(--border-med); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 13px; background: var(--surface); color: var(--text);
-    min-width: 200px;
-  }
-  .filter-select {
-    padding: 7px 12px; border: 1px solid var(--border-med); border-radius: var(--radius-sm);
-    font-family: inherit; font-size: 13px; background: var(--surface); color: var(--text);
-  }
-  .filter-label { font-size: 12px; color: var(--text-3); font-weight: 500; }
-
-  /* AGING BARS */
-  .aging-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .aging-card {
-    border-radius: var(--radius-sm); padding: 14px;
-    text-align: center; border: 1px solid transparent;
-  }
-  .aging-card.a0 { background: var(--green-bg); border-color: rgba(59,109,17,.15); }
-  .aging-card.a30 { background: var(--amber-bg); border-color: rgba(133,79,11,.15); }
-  .aging-card.a60 { background: #fdf0e8; border-color: rgba(216,90,48,.2); }
-  .aging-card.a90 { background: var(--red-bg); border-color: rgba(163,45,45,.15); }
-  .aging-val { font-size: 20px; font-weight: 600; margin-bottom: 2px; }
-  .aging-card.a0 .aging-val { color: var(--green); }
-  .aging-card.a30 .aging-val { color: var(--amber); }
-  .aging-card.a60 .aging-val { color: #993C1D; }
-  .aging-card.a90 .aging-val { color: var(--red); }
-  .aging-lbl { font-size: 11px; color: var(--text-3); font-weight: 500; }
-  .aging-cnt { font-size: 11px; margin-top: 4px; }
-  .aging-card.a0 .aging-cnt { color: var(--green); }
-  .aging-card.a30 .aging-cnt { color: var(--amber); }
-  .aging-card.a60 .aging-cnt { color: #993C1D; }
-  .aging-card.a90 .aging-cnt { color: var(--red); }
-
-  /* MODAL */
-  .modal-bg {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 100;
-    align-items: center; justify-content: center;
-  }
-  .modal-bg.open { display: flex; }
-  .modal {
-    background: var(--surface); border-radius: var(--radius);
-    border: 1px solid var(--border); width: 600px; max-width: 95vw;
-    max-height: 90vh; overflow-y: auto;
-  }
-  .modal-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-  .modal-title { font-size: 15px; font-weight: 600; }
-  .modal-body { padding: 20px; }
-  .modal-footer { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
-  .btn-close { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 20px; padding: 0; line-height: 1; }
-  .btn-close:hover { color: var(--text); }
-
-  /* TOAST */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--text); color: white;
-    padding: 12px 18px; border-radius: var(--radius-sm);
-    font-size: 13px; font-weight: 500; z-index: 200;
-    transform: translateY(100px); opacity: 0;
-    transition: all .3s; max-width: 320px;
-  }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { background: var(--green); }
-  .toast.error { background: var(--red); }
-
-  /* PAGES */
-  .page { display: none; }
-  .page.active { display: block; }
-
-  /* CHART */
-  .chart-wrap { padding: 16px 18px; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
-
-  /* EMPTY */
-  .empty { text-align: center; padding: 60px 20px; color: var(--text-3); }
-  .empty-icon { width: 48px; height: 48px; margin: 0 auto 12px; opacity: .4; }
-  .empty-title { font-size: 15px; color: var(--text-2); font-weight: 500; margin-bottom: 4px; }
-
-  /* NOTIF ACTION */
-  .action-btn { background: none; border: none; cursor: pointer; color: var(--text-3); padding: 3px; border-radius: 4px; }
-  .action-btn:hover { color: var(--purple); background: var(--purple-bg); }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 10px; }
-
-  @media (max-width: 900px) {
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    .two-col, .three-col { grid-template-columns: 1fr; }
-    .aging-grid { grid-template-columns: repeat(2, 1fr); }
-    .mapping-grid { grid-template-columns: 1fr; }
-  }
+@media(max-width:900px){.mgrid{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}.agrid{grid-template-columns:repeat(2,1fr)}.mapg{grid-template-columns:1fr}.jlay{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-mark">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px">
-            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-          </svg>
-        </div>
-        <div>
-          <div class="logo-text">CRM Restanțe</div>
-          <div class="logo-sub">v1.0 · echipă mică</div>
-        </div>
-      </div>
+<aside class="sidebar">
+  <div class="slogo"><div class="lmark"><div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div><div class="ltxt">CRM Restante</div><div class="lsub">v1.1 cu Jurnal</div></div></div></div>
+  <nav class="nav">
+    <div class="nlbl">Principal</div>
+    <div class="ni active" onclick="showPage('dashboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+    <div class="ni" onclick="showPage('facturi',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Facturi restante</div>
+    <div class="ni" onclick="showPage('parteneri',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Parteneri</div>
+    <div class="nlbl">Comunicare</div>
+    <div class="ni" onclick="showPage('jurnal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Jurnal interactiuni</div>
+    <div class="nlbl">Date</div>
+    <div class="ni" onclick="showPage('import',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</div>
+    <div class="nlbl">Rapoarte</div>
+    <div class="ni" onclick="showPage('aging',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Aging report</div>
+  </nav>
+  <div class="sfooter"><div id="dst">Nicio data importata</div></div>
+</aside>
+<main class="main">
+  <div class="topbar">
+    <div class="ptitle" id="ptitle">Dashboard</div>
+    <div class="tactions">
+      <button class="btn" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
+      <button class="btn btnp" onclick="showPage('import',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</button>
     </div>
-    <nav class="nav">
-      <div class="nav-label">Principal</div>
-      <div class="nav-item active" onclick="showPage('dashboard')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Dashboard
-      </div>
-      <div class="nav-item" onclick="showPage('facturi')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Facturi restante
-      </div>
-      <div class="nav-item" onclick="showPage('parteneri')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-        Parteneri
-      </div>
-      <div class="nav-label">Date</div>
-      <div class="nav-item" onclick="showPage('import')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import Excel
-      </div>
-      <div class="nav-label">Rapoarte</div>
-      <div class="nav-item" onclick="showPage('aging')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Aging report
-      </div>
-    </nav>
-    <div class="sidebar-footer">
-      <div id="dataStatus">Nicio dată importată</div>
-    </div>
-  </aside>
+  </div>
+  <div class="content">
 
-  <!-- MAIN -->
-  <main class="main">
-
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div>
-        <div class="page-title" id="pageTitle">Dashboard</div>
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="mgrid">
+        <div class="mc red"><div class="mlbl">Total restantieri</div><div class="mval" id="m1">-</div><div class="msub">parteneri cu sold restant</div></div>
+        <div class="mc amber"><div class="mlbl">Valoare restanta</div><div class="mval" id="m2">-</div><div class="msub">total neincasat</div></div>
+        <div class="mc purple"><div class="mlbl">Scadente / depasite</div><div class="mval" id="m3">-</div><div class="msub">facturi urgente</div></div>
+        <div class="mc green"><div class="mlbl">Risc maxim 90+ zile</div><div class="mval" id="m4">-</div><div class="msub">valoare critica</div></div>
       </div>
-      <div class="topbar-actions">
-        <button class="btn" onclick="exportData()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
-        </button>
-        <button class="btn btn-primary" onclick="showPage('import')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Import Excel
-        </button>
+      <div class="g3">
+        <div class="card"><div class="ch"><div><div class="ct">Top restantieri</div><div class="cs">dupa valoare totala datorata</div></div></div><div class="tw"><table><thead><tr><th>#</th><th>Partener</th><th>Facturi</th><th>Valoare</th><th>Max zile</th></tr></thead><tbody id="tTop"><tr><td colspan="5"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr></tbody></table></div></div>
+        <div class="card"><div class="ch"><div class="ct">Distributie aging</div></div><div class="cw" style="height:220px"><canvas id="agingChart"></canvas></div></div>
       </div>
+      <div class="card"><div class="ch"><div><div class="ct">Facturi prioritare</div><div class="cs">scadente sau depasite, sortate dupa risc</div></div></div><div class="tw"><table><thead><tr><th>Nr. factura</th><th>Partener</th><th>Scadenta</th><th>Zile</th><th>Valoare</th><th>Mon.</th><th>Status</th><th>Actiuni</th></tr></thead><tbody id="tPri"><tr><td colspan="8"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr></tbody></table></div></div>
     </div>
 
-    <!-- CONTENT -->
-    <div class="content">
-
-      <!-- DASHBOARD PAGE -->
-      <div class="page active" id="page-dashboard">
-        <div class="metrics-grid" id="metricsGrid">
-          <div class="metric-card red">
-            <div class="metric-label">Total restanțieri</div>
-            <div class="metric-value" id="m-total">—</div>
-            <div class="metric-sub">parteneri cu sold restant</div>
-          </div>
-          <div class="metric-card amber">
-            <div class="metric-label">Valoare restantă</div>
-            <div class="metric-value" id="m-valoare">—</div>
-            <div class="metric-sub">total neîncasat</div>
-          </div>
-          <div class="metric-card purple">
-            <div class="metric-label">Scadente azi / depășite</div>
-            <div class="metric-value" id="m-scadente">—</div>
-            <div class="metric-sub">facturi urgente</div>
-          </div>
-          <div class="metric-card green">
-            <div class="metric-label">Risc maxim (90+ zile)</div>
-            <div class="metric-value" id="m-risc">—</div>
-            <div class="metric-sub">valoare critică</div>
-          </div>
-        </div>
-
-        <div class="three-col">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Top restanțieri</div>
-                <div class="card-sub">după valoare totală datorată</div>
-              </div>
-            </div>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Partener</th>
-                    <th>Facturi</th>
-                    <th>Valoare</th>
-                    <th>Max zile</th>
-                  </tr>
-                </thead>
-                <tbody id="topTable">
-                  <tr><td colspan="5"><div class="empty"><div class="empty-title">Nicio dată importată</div><div>Importați un fișier Excel pentru a vedea datele</div></div></td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Distribuție aging</div>
-            </div>
-            <div class="chart-wrap" style="height:220px">
-              <canvas id="agingChart"></canvas>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Facturi prioritare — acțiune imediată</div>
-              <div class="card-sub">scadente sau depășite, sortate după risc</div>
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nr. factură</th>
-                  <th>Partener</th>
-                  <th>Data scadenței</th>
-                  <th>Zile restanță</th>
-                  <th>Valoare</th>
-                  <th>Monedă</th>
-                  <th>Status</th>
-                  <th>Acțiuni</th>
-                </tr>
-              </thead>
-              <tbody id="priorityTable">
-                <tr><td colspan="8"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <!-- FACTURI -->
+    <div class="page" id="page-facturi">
+      <div class="filters">
+        <input class="fi wide" type="text" id="srch" placeholder="Cauta partener, nr. factura..." oninput="renderF()">
+        <select class="fi" id="sfil" onchange="renderF()"><option value="">Toate statusurile</option><option value="critic">Critic (90+)</option><option value="ridicat">Ridicat (60-90)</option><option value="moderat">Moderat (30-60)</option><option value="recent">Recent (0-30)</option></select>
+        <select class="fi" id="srt" onchange="renderF()"><option value="zd">Zile desc</option><option value="vd">Valoare desc</option><option value="sa">Scadenta asc</option><option value="pa">Partener A-Z</option></select>
+        <span class="flbl" id="fcnt"></span>
       </div>
+      <div class="card"><div class="tw"><table><thead><tr><th>Nr.</th><th>Partener</th><th>CUI</th><th>Email</th><th>Tel</th><th>Emitere</th><th>Scadenta</th><th>Zile</th><th>Valoare</th><th>Mon.</th><th>Status</th></tr></thead><tbody id="tFact"><tr><td colspan="11"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr></tbody></table></div></div>
+    </div>
 
-      <!-- FACTURI PAGE -->
-      <div class="page" id="page-facturi">
-        <div class="filters">
-          <input class="filter-input" type="text" id="searchInput" placeholder="Caută partener, nr. factură..." oninput="renderFacturi()">
-          <select class="filter-select" id="statusFilter" onchange="renderFacturi()">
-            <option value="">Toate statusurile</option>
-            <option value="critic">Critic (90+ zile)</option>
-            <option value="ridicat">Ridicat (60-90 zile)</option>
-            <option value="moderat">Moderat (30-60 zile)</option>
-            <option value="recent">Recent (0-30 zile)</option>
-          </select>
-          <select class="filter-select" id="sortFilter" onchange="renderFacturi()">
-            <option value="zile-desc">Zile restanță ↓</option>
-            <option value="valoare-desc">Valoare ↓</option>
-            <option value="scadenta-asc">Scadență ↑</option>
-            <option value="partener-asc">Partener A-Z</option>
-          </select>
-          <span class="filter-label" id="filterCount"></span>
+    <!-- PARTENERI -->
+    <div class="page" id="page-parteneri">
+      <div class="card"><div class="tw"><table><thead><tr><th>Partener</th><th>CUI</th><th>Email</th><th>Tel</th><th>Facturi</th><th>Total datorat</th><th>Max zile</th><th>Risc</th><th>Note</th><th>Jurnal</th></tr></thead><tbody id="tPart"><tr><td colspan="10"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr></tbody></table></div></div>
+    </div>
+
+    <!-- JURNAL -->
+    <div class="page" id="page-jurnal">
+      <div class="jlay">
+        <div class="plist">
+          <div class="plh"><input class="plsearch" type="text" id="plsrch" placeholder="Cauta partener..." oninput="renderPL(this.value)"></div>
+          <div class="pli" id="plItems"><div class="empty" style="padding:30px 10px"><div class="etl">Nicio data</div><div>Importati un fisier Excel</div></div></div>
         </div>
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nr. factură</th>
-                  <th>Partener</th>
-                  <th>CUI</th>
-                  <th>Email</th>
-                  <th>Telefon</th>
-                  <th>Data emiterii</th>
-                  <th>Data scadenței</th>
-                  <th>Zile</th>
-                  <th>Valoare</th>
-                  <th>Monedă</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="facturiTable">
-                <tr><td colspan="11"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div id="jRight"><div class="nosel"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="font-size:14px;font-weight:500;color:var(--t2)">Selecteaza un partener</div><div style="font-size:12px">pentru a vedea istoricul si a adauga note</div></div></div>
       </div>
+    </div>
 
-      <!-- PARTENERI PAGE -->
-      <div class="page" id="page-parteneri">
-        <div class="card">
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Partener</th>
-                  <th>CUI</th>
-                  <th>Email</th>
-                  <th>Telefon</th>
-                  <th>Nr. facturi</th>
-                  <th>Total datorat</th>
-                  <th>Max zile</th>
-                  <th>Risc</th>
-                </tr>
-              </thead>
-              <tbody id="parteneriTable">
-                <tr><td colspan="8"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <!-- IMPORT -->
+    <div class="page" id="page-import">
+      <div class="iz" id="izone" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="doDrop(event)">
+        <svg style="width:48px;height:48px;margin:0 auto 12px;color:var(--t3);display:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="font-size:15px;font-weight:500;margin-bottom:4px">Trage fisierul Excel aici sau click pentru a selecta</div>
+        <div style="font-size:13px;color:var(--t3)">Fisierul va fi procesat local, nicio data nu se transmite extern</div>
+        <div class="ifmts"><span class="badge bg">.xlsx</span><span class="badge bg">.xls</span><span class="badge bb">.csv</span></div>
       </div>
-
-      <!-- IMPORT PAGE -->
-      <div class="page" id="page-import">
-        <div class="import-zone" id="importZone" onclick="document.getElementById('fileInput').click()"
-          ondragover="event.preventDefault();this.classList.add('drag')"
-          ondragleave="this.classList.remove('drag')"
-          ondrop="handleDrop(event)">
-          <svg class="import-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
-          <div class="import-title">Trage fișierul Excel aici sau click pentru a selecta</div>
-          <div class="import-sub">Fișierul va fi procesat local, nicio dată nu se transmite extern</div>
-          <div class="import-formats">
-            <span class="badge badge-green">.xlsx</span>
-            <span class="badge badge-green">.xls</span>
-            <span class="badge badge-blue">.csv</span>
-          </div>
-        </div>
-        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" onchange="handleFile(this.files[0])">
-
-        <div id="mappingSection" style="display:none">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Mapare coloane</div>
-                <div class="card-sub">Asociază coloanele din fișier cu câmpurile CRM</div>
-              </div>
-            </div>
-            <div class="modal-body">
-              <div class="mapping-grid" id="mappingGrid"></div>
-              <div style="background:var(--bg);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text-3)">
-                <strong style="color:var(--text-2)">Previzualizare:</strong> <span id="previewInfo"></span>
-              </div>
-              <div style="display:flex;gap:8px">
-                <button class="btn btn-primary" onclick="confirmImport()">Importă datele</button>
-                <button class="btn" onclick="cancelImport()">Anulează</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:16px">
-          <div class="card-header"><div class="card-title">Istoric importuri</div></div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Data</th><th>Fișier</th><th>Rânduri importate</th><th>Status</th></tr>
-              </thead>
-              <tbody id="importHistory">
-                <tr><td colspan="4" style="padding:20px;text-align:center;color:var(--text-3)">Niciun import anterior</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <input type="file" id="fi" accept=".xlsx,.xls,.csv" onchange="handleFile(this.files[0])">
+      <div id="mapSec" style="display:none">
+        <div class="card"><div class="ch"><div><div class="ct">Mapare coloane</div><div class="cs">Asociaza coloanele din fisier cu campurile CRM</div></div></div>
+        <div class="mb"><div class="mapg" id="mapG"></div><div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div><div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data</th><th>Fisier</th><th>Randuri</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="4" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
+    </div>
 
-      <!-- AGING PAGE -->
-      <div class="page" id="page-aging">
-        <div class="aging-grid" style="margin-bottom:20px" id="agingGrid">
-          <div class="aging-card a0"><div class="aging-val" id="ag-v0">—</div><div class="aging-lbl">0 – 30 zile</div><div class="aging-cnt" id="ag-c0">— facturi</div></div>
-          <div class="aging-card a30"><div class="aging-val" id="ag-v30">—</div><div class="aging-lbl">31 – 60 zile</div><div class="aging-cnt" id="ag-c30">— facturi</div></div>
-          <div class="aging-card a60"><div class="aging-val" id="ag-v60">—</div><div class="aging-lbl">61 – 90 zile</div><div class="aging-cnt" id="ag-c60">— facturi</div></div>
-          <div class="aging-card a90"><div class="aging-val" id="ag-v90">—</div><div class="aging-lbl">90+ zile (critic)</div><div class="aging-cnt" id="ag-c90">— facturi</div></div>
-        </div>
-        <div class="two-col">
-          <div class="card">
-            <div class="card-header"><div class="card-title">Valoare pe bucket aging</div></div>
-            <div class="chart-wrap" style="height:260px"><canvas id="agingBarChart"></canvas></div>
-          </div>
-          <div class="card">
-            <div class="card-header"><div class="card-title">Distribuție nr. facturi</div></div>
-            <div class="chart-wrap" style="height:260px"><canvas id="agingPieChart"></canvas></div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">Raport aging complet</div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Partener</th><th>0-30 zile</th><th>31-60 zile</th><th>61-90 zile</th><th>90+ zile</th><th>Total</th></tr>
-              </thead>
-              <tbody id="agingTable">
-                <tr><td colspan="6"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <!-- AGING -->
+    <div class="page" id="page-aging">
+      <div class="agrid" style="margin-bottom:20px">
+        <div class="ac a0"><div class="av" id="av0">-</div><div class="al">0-30 zile</div><div class="acnt" id="ac0">- facturi</div></div>
+        <div class="ac a30"><div class="av" id="av30">-</div><div class="al">31-60 zile</div><div class="acnt" id="ac30">- facturi</div></div>
+        <div class="ac a60"><div class="av" id="av60">-</div><div class="al">61-90 zile</div><div class="acnt" id="ac60">- facturi</div></div>
+        <div class="ac a90"><div class="av" id="av90">-</div><div class="al">90+ zile (critic)</div><div class="acnt" id="ac90">- facturi</div></div>
       </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ct">Valoare pe bucket aging</div></div><div class="cw" style="height:260px"><canvas id="barChart"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Distributie nr. facturi</div></div><div class="cw" style="height:260px"><canvas id="pieChart"></canvas></div></div>
+      </div>
+      <div class="card"><div class="ch"><div class="ct">Raport aging complet</div></div><div class="tw"><table><thead><tr><th>Partener</th><th>0-30 zile</th><th>31-60 zile</th><th>61-90 zile</th><th>90+ zile</th><th>Total</th></tr></thead><tbody id="tAging"><tr><td colspan="6"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr></tbody></table></div></div>
+    </div>
 
-    </div><!-- /content -->
-  </main>
+  </div>
+</main>
 </div>
 
 <!-- NOTIF MODAL -->
-<div class="modal-bg" id="notifModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Generează notificare de plată</div>
-      <button class="btn-close" onclick="closeModal('notifModal')">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="margin-bottom:12px">
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:4px;font-weight:500">Partener</div>
-        <div id="notifPartener" style="font-weight:500;font-size:14px"></div>
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:4px;font-weight:500">Factură / Sumă</div>
-        <div id="notifFactura" style="font-size:13px"></div>
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:6px;font-weight:500">Canal notificare</div>
-        <div style="display:flex;gap:8px">
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked> Email</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms"> SMS</label>
-          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp"> WhatsApp</label>
-        </div>
-      </div>
-      <div style="margin-bottom:12px">
-        <div style="font-size:12px;color:var(--text-3);margin-bottom:4px;font-weight:500">Mesaj</div>
-        <textarea id="notifMsg" style="width:100%;min-height:100px;font-family:inherit;font-size:13px;border:1px solid var(--border-med);border-radius:var(--radius-sm);padding:8px 10px;resize:vertical;background:var(--surface);color:var(--text)"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn" onclick="closeModal('notifModal')">Anulează</button>
-      <button class="btn btn-primary" onclick="sendNotif()">Generează &amp; trimite</button>
-    </div>
-  </div>
+<div class="mbg" id="nModal"><div class="modal"><div class="mh"><div class="mtl">Genereaza notificare de plata</div><button class="bcl" onclick="cm('nModal')">x</button></div>
+<div class="mb">
+  <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Partener</div><div id="nPart" style="font-weight:500;font-size:14px"></div></div>
+  <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Factura / Suma</div><div id="nFact" style="font-size:13px"></div></div>
+  <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:6px;font-weight:500">Canal notificare</div><div style="display:flex;gap:8px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked> Email</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp"> WhatsApp</label></div></div>
+  <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Mesaj</div><textarea id="nMsg" class="nta" style="min-height:110px;width:100%"></textarea></div>
 </div>
+<div class="mf"><button class="btn" onclick="cm('nModal')">Anuleaza</button><button class="btn btnp" onclick="sendN()">Genereaza &amp; trimite</button></div></div></div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-let allData = [];
-let rawHeaders = [];
-let rawRows = [];
-let currentFile = '';
-let agingChartInstance = null;
-let agingBarInstance = null;
-let agingPieInstance = null;
-let currentNotifRow = null;
+let D=[],rH=[],rR=[],cF='',selP=null;
+let aCI=null,aBI=null,aPI=null,cNR=null;
+let J={};
+let _ct='apel';
 
-const FIELDS = [
-  { key: 'nr_factura', label: 'Nr. factură', required: true },
-  { key: 'partener', label: 'Denumire partener', required: true },
-  { key: 'cui', label: 'CUI partener', required: false },
-  { key: 'email', label: 'Email contact', required: false },
-  { key: 'telefon', label: 'Telefon', required: false },
-  { key: 'data_emitere', label: 'Data emiterii', required: false },
-  { key: 'data_scadenta', label: 'Data scadenței', required: true },
-  { key: 'valoare', label: 'Valoare', required: true },
-  { key: 'moneda', label: 'Monedă', required: false },
-  { key: 'status', label: 'Status plată', required: false },
-  { key: 'agent', label: 'Agent responsabil', required: false },
+const PAGES={dashboard:'Dashboard',facturi:'Facturi restante',parteneri:'Parteneri',jurnal:'Jurnal interactiuni',import:'Import Excel',aging:'Aging report'};
+const FLDS=[
+  {k:'nr_factura',l:'Nr. factura',r:true},{k:'partener',l:'Denumire partener',r:true},{k:'cui',l:'CUI partener',r:false},
+  {k:'email',l:'Email contact',r:false},{k:'telefon',l:'Telefon',r:false},{k:'data_emitere',l:'Data emiterii',r:false},
+  {k:'data_scadenta',l:'Data scadentei',r:true},{k:'valoare',l:'Valoare',r:true},{k:'moneda',l:'Moneda',r:false},
+  {k:'status',l:'Status plata',r:false},{k:'agent',l:'Agent responsabil',r:false}
 ];
+const TICO={
+  apel:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>',
+  email:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  whatsapp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>',
+  intalnire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  promisiune:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
+  notificare:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'
+};
+const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa'};
 
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  event.currentTarget.classList.add('active');
-  const titles = { dashboard: 'Dashboard', facturi: 'Facturi restante', parteneri: 'Parteneri', import: 'Import Excel', aging: 'Aging report' };
-  document.getElementById('pageTitle').textContent = titles[id] || id;
-  if (id === 'facturi') renderFacturi();
-  if (id === 'parteneri') renderParteneri();
-  if (id === 'aging') renderAging();
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent=PAGES[id]||id;
+  if(id==='facturi')renderF();
+  if(id==='parteneri')renderP();
+  if(id==='aging')renderA();
+  if(id==='jurnal')renderPL();
+}
+function uid(){return Math.random().toString(36).slice(2);}
+function pd(s){if(!s)return null;const p=s.split(/[\/\-\.]/);if(p.length===3){let d,m,y;if(p[2].length===4){d=+p[0];m=+p[1]-1;y=+p[2];}else{y=+p[0];m=+p[1]-1;d=+p[2];}const dt=new Date(y,m,d);if(!isNaN(dt))return dt;}const dt=new Date(s);return isNaN(dt)?null:dt;}
+function fv(v,c){return new Intl.NumberFormat('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v)+(c?' '+c:'');}
+function rb(z){if(z>=90)return'<span class="badge br">Critic</span>';if(z>=60)return'<span class="badge" style="background:#fdf0e8;color:#993C1D">Ridicat</span>';if(z>=30)return'<span class="badge ba">Moderat</span>';if(z>0)return'<span class="badge bb">Recent</span>';return'<span class="badge bg">La termen</span>';}
+function ini(n){return n.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function fd(d){return new Date(d).toLocaleString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function dst(){document.getElementById('dst').textContent=D.length+' facturi \xb7 '+[...new Set(D.map(r=>r.p))].length+' parteneri';}
+function toast(msg,t=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast'+(t?' '+t:'');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+function cm(id){document.getElementById(id).classList.remove('open');}
+
+// IMPORT
+function doDrop(e){e.preventDefault();document.getElementById('izone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)handleFile(f);}
+function handleFile(file){
+  if(!file)return;cF=file.name;
+  const r=new FileReader();
+  r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});const ws=wb.Sheets[wb.SheetNames[0]];const j=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'dd/mm/yyyy'});if(j.length<2){toast('Fisierul este gol','error');return;}rH=j[0].map(h=>String(h||'').trim());rR=j.slice(1).filter(r=>r.some(c=>c));showMap();}catch(err){toast('Eroare: '+err.message,'error');}};
+  r.readAsBinaryString(file);
+}
+function showMap(){
+  document.getElementById('mapSec').style.display='block';
+  const opts=['',...rH].map(h=>`<option value="${h}">${h||'- ignora -'}</option>`).join('');
+  document.getElementById('mapG').innerHTML=FLDS.map(f=>`<div class="mapr"><div class="mapk">${f.l} ${f.r?'<span>*</span>':''}</div><select class="maps" id="m-${f.k}">${opts}</select></div>`).join('');
+  const kw={nr_factura:['factura','nr','numar','invoice'],partener:['partener','client','firma','denumire'],cui:['cui','fiscal','vat'],email:['email','mail'],telefon:['tel','phone','mobil'],data_emitere:['emitere','emis'],data_scadenta:['scadenta','scad','due'],valoare:['valoare','suma','total','amount'],moneda:['moneda','currency'],status:['status','plata'],agent:['agent','responsabil']};
+  FLDS.forEach(f=>{const s=document.getElementById('m-'+f.k);const m=rH.find(h=>(kw[f.k]||[]).some(k=>h.toLowerCase().includes(k)));if(m)s.value=m;});
+  document.getElementById('prevInfo').textContent=rR.length+' randuri detectate in "'+cF+'"';
+}
+function doImport(){
+  const mp={};FLDS.forEach(f=>{mp[f.k]=document.getElementById('m-'+f.k).value;});
+  const miss=FLDS.filter(f=>f.r&&!mp[f.k]);if(miss.length){toast('Campuri obligatorii nemapate: '+miss.map(f=>f.l).join(', '),'error');return;}
+  const today=new Date();today.setHours(0,0,0,0);
+  D=rR.map(row=>{
+    const g=k=>{const c=mp[k];if(!c)return'';const i=rH.indexOf(c);return i>=0?String(row[i]||'').trim():'';};
+    const ss=g('data_scadenta');const sd=pd(ss);const z=sd?Math.floor((today-sd)/86400000):0;
+    return{nr:g('nr_factura'),p:g('partener'),cui:g('cui'),email:g('email'),tel:g('telefon'),de:g('data_emitere'),ds:ss,dsd:sd,z,v:parseFloat(g('valoare').replace(/[^\d.,-]/g,'').replace(',','.'))||0,m:g('moneda')||'RON',st:g('status')||'Neplatit',ag:g('agent')};
+  }).filter(r=>r.p||r.nr);
+  const h=document.getElementById('impHist');if(h.querySelector('td[colspan]'))h.innerHTML='';
+  h.insertAdjacentHTML('afterbegin',`<tr><td>${new Date().toLocaleString('ro-RO')}</td><td>${cF}</td><td>${D.length}</td><td><span class="badge bg">Succes</span></td></tr>`);
+  document.getElementById('mapSec').style.display='none';dst();toast(D.length+' facturi importate cu succes!','success');renderDB();renderPL();
+}
+function cancelImp(){document.getElementById('mapSec').style.display='none';document.getElementById('fi').value='';}
+
+// DASHBOARD
+function renderDB(){
+  if(!D.length)return;
+  const ps=[...new Set(D.map(r=>r.p))];const tot=D.reduce((s,r)=>s+r.v,0);const sc=D.filter(r=>r.z>0).length;const cr=D.filter(r=>r.z>=90).reduce((s,r)=>s+r.v,0);const cur=D[0]?.m||'RON';
+  document.getElementById('m1').textContent=ps.length;document.getElementById('m2').textContent=fv(tot,cur);document.getElementById('m3').textContent=sc;document.getElementById('m4').textContent=fv(cr,cur);
+  const byP={};D.forEach(r=>{if(!byP[r.p])byP[r.p]={n:0,v:0,mz:0,c:r.m};byP[r.p].n++;byP[r.p].v+=r.v;byP[r.p].mz=Math.max(byP[r.p].mz,r.z);});
+  document.getElementById('tTop').innerHTML=Object.entries(byP).sort((a,b)=>b[1].v-a[1].v).slice(0,8).map(([nm,d],i)=>`<tr><td style="color:var(--t3);font-size:12px">${i+1}</td><td><div class="pn">${nm}</div></td><td style="text-align:center">${d.n}</td><td><span class="amt ${d.v>5000?'amtr':'amta'}">${fv(d.v,d.c)}</span></td><td>${rb(d.mz)}</td></tr>`).join('');
+  const urg=D.filter(r=>r.z>=0).sort((a,b)=>b.z-a.z).slice(0,10);
+  document.getElementById('tPri').innerHTML=urg.map(r=>`<tr><td style="font-family:'DM Mono',monospace;font-size:12px">${r.nr}</td><td><div class="pn">${r.p}</div></td><td style="font-size:12px">${r.ds}</td><td style="text-align:center;font-weight:500;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':'var(--t2)'}">${r.z}</td><td><span class="amt">${fv(r.v,r.m)}</span></td><td style="font-size:12px">${r.m}</td><td>${rb(r.z)}</td><td style="display:flex;gap:4px"><button class="abtn" title="Notificare" onclick='openN(${JSON.stringify(r)})'>${TICO.notificare}</button><button class="abtn" title="Jurnal" onclick="goJ('${r.p.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button></td></tr>`).join('');
+  const a0=D.filter(r=>r.z>=0&&r.z<30).length,a30=D.filter(r=>r.z>=30&&r.z<60).length,a60=D.filter(r=>r.z>=60&&r.z<90).length,a90=D.filter(r=>r.z>=90).length;
+  if(aCI)aCI.destroy();
+  aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:[a0,a30,a60,a90],backgroundColor:['#EAF3DE','#FAEEDA','#fdf0e8','#FCEBEB'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12}}},cutout:'60%'}});
 }
 
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('importZone').classList.remove('drag');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
+// FACTURI
+function renderF(){
+  const q=document.getElementById('srch').value.toLowerCase();const sf=document.getElementById('sfil').value;const so=document.getElementById('srt').value;
+  let d=D.filter(r=>{if(q&&!r.p.toLowerCase().includes(q)&&!r.nr.toLowerCase().includes(q))return false;if(sf==='critic'&&r.z<90)return false;if(sf==='ridicat'&&(r.z<60||r.z>=90))return false;if(sf==='moderat'&&(r.z<30||r.z>=60))return false;if(sf==='recent'&&(r.z<0||r.z>=30))return false;return true;});
+  if(so==='zd')d.sort((a,b)=>b.z-a.z);else if(so==='vd')d.sort((a,b)=>b.v-a.v);else if(so==='sa')d.sort((a,b)=>(a.dsd||0)-(b.dsd||0));else d.sort((a,b)=>a.p.localeCompare(b.p));
+  document.getElementById('fcnt').textContent=d.length+' facturi';
+  const tb=document.getElementById('tFact');
+  if(!d.length){tb.innerHTML='<tr><td colspan="11"><div class="empty"><div class="etl">Nicio factura corespunde</div></div></td></tr>';return;}
+  tb.innerHTML=d.map(r=>`<tr><td style="font-family:'DM Mono',monospace;font-size:12px">${r.nr}</td><td><div class="pn">${r.p}</div></td><td><span class="pcui">${r.cui}</span></td><td style="font-size:12px;color:var(--blue)">${r.email}</td><td style="font-size:12px">${r.tel}</td><td style="font-size:12px">${r.de}</td><td style="font-size:12px">${r.ds}</td><td style="text-align:center;font-weight:500;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':'var(--t2)'}">${r.z}</td><td><span class="amt">${fv(r.v,'')}</span></td><td style="font-size:12px">${r.m}</td><td>${rb(r.z)}</td></tr>`).join('');
 }
 
-function handleFile(file) {
-  if (!file) return;
-  currentFile = file.name;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'dd/mm/yyyy' });
-      if (json.length < 2) { showToast('Fișierul este gol sau nu are date', 'error'); return; }
-      rawHeaders = json[0].map(h => String(h || '').trim());
-      rawRows = json.slice(1).filter(r => r.some(c => c));
-      showMapping();
-    } catch(err) { showToast('Eroare la citirea fișierului: ' + err.message, 'error'); }
-  };
-  reader.readAsBinaryString(file);
+// PARTENERI
+function renderP(){
+  const byP={};D.forEach(r=>{if(!byP[r.p])byP[r.p]={cui:r.cui,email:r.email,tel:r.tel,n:0,v:0,mz:0,c:r.m};byP[r.p].n++;byP[r.p].v+=r.v;byP[r.p].mz=Math.max(byP[r.p].mz,r.z);});
+  const rows=Object.entries(byP).sort((a,b)=>b[1].v-a[1].v);const tb=document.getElementById('tPart');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="10"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr>';return;}
+  tb.innerHTML=rows.map(([nm,d])=>{const nc=(J[nm]||[]).length;return`<tr><td><div class="pn">${nm}</div></td><td><span class="pcui">${d.cui}</span></td><td style="font-size:12px;color:var(--blue)">${d.email}</td><td style="font-size:12px">${d.tel}</td><td style="text-align:center">${d.n}</td><td><span class="amt">${fv(d.v,d.c)}</span></td><td style="text-align:center;font-weight:500">${d.mz}</td><td>${rb(d.mz)}</td><td>${nc?`<span class="badge bp">${nc} note</span>`:'<span style="color:var(--t3)">-</span>'}</td><td><button class="btn btnsm" onclick="goJ('${nm.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg> Jurnal</button></td></tr>`;}).join('');
 }
 
-function showMapping() {
-  document.getElementById('mappingSection').style.display = 'block';
-  const grid = document.getElementById('mappingGrid');
-  const opts = ['', ...rawHeaders].map(h => `<option value="${h}">${h || '— ignoră —'}</option>`).join('');
-  grid.innerHTML = FIELDS.map(f => `
-    <div class="map-row">
-      <div class="map-key">${f.label} ${f.required ? '<span>*</span>' : ''}</div>
-      <select class="map-select" id="map-${f.key}">${opts}</select>
-    </div>
-  `).join('');
-  // Auto-detect columns
-  FIELDS.forEach(f => {
-    const sel = document.getElementById('map-' + f.key);
-    const keywords = { nr_factura: ['factura','nr','numar','invoice'], partener: ['partener','client','firma','denumire','company'],
-      cui: ['cui','cod fiscal','vat','fiscal'], email: ['email','mail','e-mail'], telefon: ['tel','phone','mobil'],
-      data_emitere: ['emitere','emis','issue'], data_scadenta: ['scadenta','scad','due','maturitate'],
-      valoare: ['valoare','suma','total','amount','value'], moneda: ['moneda','currency','ccy'],
-      status: ['status','plata','paid'], agent: ['agent','responsabil','user'] };
-    const kw = keywords[f.key] || [];
-    const match = rawHeaders.find(h => kw.some(k => h.toLowerCase().includes(k)));
-    if (match) sel.value = match;
-  });
-  document.getElementById('previewInfo').textContent = `${rawRows.length} rânduri detectate în "${currentFile}"`;
-}
-
-function confirmImport() {
-  const mapping = {};
-  FIELDS.forEach(f => { mapping[f.key] = document.getElementById('map-' + f.key).value; });
-  const required = FIELDS.filter(f => f.required);
-  const missing = required.filter(f => !mapping[f.key]);
-  if (missing.length) { showToast('Câmpuri obligatorii nemapate: ' + missing.map(f=>f.label).join(', '), 'error'); return; }
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const newData = rawRows.map(row => {
-    const get = (key) => { const col = mapping[key]; if (!col) return ''; const idx = rawHeaders.indexOf(col); return idx >= 0 ? String(row[idx] || '').trim() : ''; };
-    const scadStr = get('data_scadenta');
-    const scad = parseDate(scadStr);
-    const zile = scad ? Math.floor((today - scad) / 86400000) : 0;
-    return {
-      nr_factura: get('nr_factura'), partener: get('partener'), cui: get('cui'),
-      email: get('email'), telefon: get('telefon'), data_emitere: get('data_emitere'),
-      data_scadenta: scadStr, data_scadenta_d: scad, zile_restanta: zile,
-      valoare: parseFloat(get('valoare').replace(/[^\d.,-]/g,'').replace(',','.')) || 0,
-      moneda: get('moneda') || 'RON', status: get('status') || 'Neplatit', agent: get('agent'),
-    };
-  }).filter(r => r.partener || r.nr_factura);
-
-  allData = newData;
-  const hist = document.getElementById('importHistory');
-  const now = new Date().toLocaleString('ro-RO');
-  const oldEmpty = hist.querySelector('td[colspan]');
-  if (oldEmpty) hist.innerHTML = '';
-  hist.insertAdjacentHTML('afterbegin', `<tr><td>${now}</td><td>${currentFile}</td><td>${newData.length}</td><td><span class="badge badge-green">Succes</span></td></tr>`);
-  document.getElementById('mappingSection').style.display = 'none';
-  document.getElementById('dataStatus').textContent = `${newData.length} facturi · ${[...new Set(newData.map(r=>r.partener))].length} parteneri`;
-  showToast(`${newData.length} facturi importate cu succes!`, 'success');
-  renderDashboard();
-}
-
-function cancelImport() {
-  document.getElementById('mappingSection').style.display = 'none';
-  document.getElementById('fileInput').value = '';
-}
-
-function parseDate(s) {
-  if (!s) return null;
-  const p = s.split(/[\/\-\.]/);
-  if (p.length === 3) {
-    let d, m, y;
-    if (p[2].length === 4) { d = +p[0]; m = +p[1]-1; y = +p[2]; }
-    else { y = +p[0]; m = +p[1]-1; d = +p[2]; }
-    const dt = new Date(y, m, d); if (!isNaN(dt)) return dt;
-  }
-  const dt = new Date(s); return isNaN(dt) ? null : dt;
-}
-
-function fmtVal(v, cur) {
-  return new Intl.NumberFormat('ro-RO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v) + ' ' + (cur || '');
-}
-
-function riskBadge(zile) {
-  if (zile >= 90) return '<span class="badge badge-red">Critic</span>';
-  if (zile >= 60) return '<span class="badge" style="background:#fdf0e8;color:#993C1D">Ridicat</span>';
-  if (zile >= 30) return '<span class="badge badge-amber">Moderat</span>';
-  if (zile > 0) return '<span class="badge badge-blue">Recent</span>';
-  return '<span class="badge badge-green">La termen</span>';
-}
-
-function renderDashboard() {
-  if (!allData.length) return;
-  const partners = [...new Set(allData.map(r => r.partener))];
-  const total = allData.reduce((s, r) => s + r.valoare, 0);
-  const scadute = allData.filter(r => r.zile_restanta > 0).length;
-  const critic = allData.filter(r => r.zile_restanta >= 90).reduce((s,r) => s+r.valoare, 0);
-  const cur = allData[0]?.moneda || 'RON';
-
-  document.getElementById('m-total').textContent = partners.length;
-  document.getElementById('m-valoare').textContent = fmtVal(total, cur);
-  document.getElementById('m-scadente').textContent = scadute;
-  document.getElementById('m-risc').textContent = fmtVal(critic, cur);
-
-  // Top table
-  const byPartner = {};
-  allData.forEach(r => {
-    if (!byPartner[r.partener]) byPartner[r.partener] = { cnt: 0, val: 0, maxZile: 0, cur: r.moneda };
-    byPartner[r.partener].cnt++;
-    byPartner[r.partener].val += r.valoare;
-    byPartner[r.partener].maxZile = Math.max(byPartner[r.partener].maxZile, r.zile_restanta);
-  });
-  const sorted = Object.entries(byPartner).sort((a,b) => b[1].val - a[1].val).slice(0, 8);
-  document.getElementById('topTable').innerHTML = sorted.map(([name, d], i) => `
-    <tr>
-      <td style="color:var(--text-3);font-size:12px">${i+1}</td>
-      <td><div class="partner-name">${name}</div></td>
-      <td style="text-align:center">${d.cnt}</td>
-      <td><span class="amount ${d.val > 5000 ? 'amount-red' : 'amount-amber'}">${fmtVal(d.val, d.cur)}</span></td>
-      <td>${riskBadge(d.maxZile)}</td>
-    </tr>`).join('');
-
-  // Priority table
-  const urgent = allData.filter(r => r.zile_restanta >= 0).sort((a,b) => b.zile_restanta - a.zile_restanta).slice(0, 10);
-  document.getElementById('priorityTable').innerHTML = urgent.map((r,i) => `
-    <tr>
-      <td style="font-family:'DM Mono',monospace;font-size:12px">${r.nr_factura}</td>
-      <td><div class="partner-name">${r.partener}</div></td>
-      <td style="font-size:12px">${r.data_scadenta}</td>
-      <td style="text-align:center;font-weight:500;color:${r.zile_restanta>=90?'var(--red)':r.zile_restanta>=30?'var(--amber)':'var(--text-2)'}">${r.zile_restanta}</td>
-      <td><span class="amount">${fmtVal(r.valoare, r.moneda)}</span></td>
-      <td style="font-size:12px">${r.moneda}</td>
-      <td>${riskBadge(r.zile_restanta)}</td>
-      <td>
-        <button class="action-btn" title="Notificare" onclick="openNotif(${JSON.stringify(r).replace(/"/g,'&quot;')})">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-        </button>
-      </td>
-    </tr>`).join('');
-
-  // Aging donut
-  const a0 = allData.filter(r=>r.zile_restanta<30&&r.zile_restanta>=0).length;
-  const a30 = allData.filter(r=>r.zile_restanta>=30&&r.zile_restanta<60).length;
-  const a60 = allData.filter(r=>r.zile_restanta>=60&&r.zile_restanta<90).length;
-  const a90 = allData.filter(r=>r.zile_restanta>=90).length;
-
-  if (agingChartInstance) agingChartInstance.destroy();
-  const ctx = document.getElementById('agingChart').getContext('2d');
-  agingChartInstance = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels: ['0-30 zile','31-60 zile','61-90 zile','90+ zile'], datasets: [{ data: [a0,a30,a60,a90], backgroundColor: ['#EAF3DE','#FAEEDA','#fdf0e8','#FCEBEB'], borderColor: ['#3B6D11','#854F0B','#993C1D','#A32D2D'], borderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, padding: 12 } } }, cutout: '60%' }
-  });
-}
-
-function renderFacturi() {
-  const search = document.getElementById('searchInput').value.toLowerCase();
-  const status = document.getElementById('statusFilter').value;
-  const sort = document.getElementById('sortFilter').value;
-
-  let data = allData.filter(r => {
-    if (search && !r.partener.toLowerCase().includes(search) && !r.nr_factura.toLowerCase().includes(search)) return false;
-    if (status === 'critic' && r.zile_restanta < 90) return false;
-    if (status === 'ridicat' && (r.zile_restanta < 60 || r.zile_restanta >= 90)) return false;
-    if (status === 'moderat' && (r.zile_restanta < 30 || r.zile_restanta >= 60)) return false;
-    if (status === 'recent' && (r.zile_restanta < 0 || r.zile_restanta >= 30)) return false;
-    return true;
-  });
-
-  if (sort === 'zile-desc') data.sort((a,b) => b.zile_restanta - a.zile_restanta);
-  else if (sort === 'valoare-desc') data.sort((a,b) => b.valoare - a.valoare);
-  else if (sort === 'scadenta-asc') data.sort((a,b) => (a.data_scadenta_d||0) - (b.data_scadenta_d||0));
-  else data.sort((a,b) => a.partener.localeCompare(b.partener));
-
-  document.getElementById('filterCount').textContent = data.length + ' facturi';
-  const tb = document.getElementById('facturiTable');
-  if (!data.length) { tb.innerHTML = '<tr><td colspan="11"><div class="empty"><div class="empty-title">Nicio factură corespunde filtrelor</div></div></td></tr>'; return; }
-  tb.innerHTML = data.map(r => `
-    <tr>
-      <td style="font-family:'DM Mono',monospace;font-size:12px">${r.nr_factura}</td>
-      <td><div class="partner-name">${r.partener}</div></td>
-      <td><span class="partner-cui">${r.cui}</span></td>
-      <td style="font-size:12px;color:var(--blue)">${r.email}</td>
-      <td style="font-size:12px">${r.telefon}</td>
-      <td style="font-size:12px">${r.data_emitere}</td>
-      <td style="font-size:12px">${r.data_scadenta}</td>
-      <td style="text-align:center;font-weight:500;color:${r.zile_restanta>=90?'var(--red)':r.zile_restanta>=30?'var(--amber)':'var(--text-2)'}">${r.zile_restanta}</td>
-      <td><span class="amount">${fmtVal(r.valoare, '')}</span></td>
-      <td style="font-size:12px">${r.moneda}</td>
-      <td>${riskBadge(r.zile_restanta)}</td>
-    </tr>`).join('');
-}
-
-function renderParteneri() {
-  const byP = {};
-  allData.forEach(r => {
-    if (!byP[r.partener]) byP[r.partener] = { cui: r.cui, email: r.email, tel: r.telefon, cnt: 0, val: 0, maxZile: 0, cur: r.moneda };
-    byP[r.partener].cnt++;
-    byP[r.partener].val += r.valoare;
-    byP[r.partener].maxZile = Math.max(byP[r.partener].maxZile, r.zile_restanta);
-  });
-  const rows = Object.entries(byP).sort((a,b) => b[1].val - a[1].val);
-  const tb = document.getElementById('parteneriTable');
-  if (!rows.length) { tb.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>'; return; }
-  tb.innerHTML = rows.map(([name, d]) => `
-    <tr>
-      <td><div class="partner-name">${name}</div></td>
-      <td><span class="partner-cui">${d.cui}</span></td>
-      <td style="font-size:12px;color:var(--blue)">${d.email}</td>
-      <td style="font-size:12px">${d.tel}</td>
-      <td style="text-align:center">${d.cnt}</td>
-      <td><span class="amount">${fmtVal(d.val, d.cur)}</span></td>
-      <td style="text-align:center;font-weight:500">${d.maxZile}</td>
-      <td>${riskBadge(d.maxZile)}</td>
-    </tr>`).join('');
-}
-
-function renderAging() {
-  const cur = allData[0]?.moneda || 'RON';
-  const buckets = [
-    { label: '0-30', filter: r => r.zile_restanta >= 0 && r.zile_restanta < 30 },
-    { label: '31-60', filter: r => r.zile_restanta >= 30 && r.zile_restanta < 60 },
-    { label: '61-90', filter: r => r.zile_restanta >= 60 && r.zile_restanta < 90 },
-    { label: '90+', filter: r => r.zile_restanta >= 90 },
-  ];
-  const vals = buckets.map(b => allData.filter(b.filter).reduce((s,r) => s+r.valoare, 0));
-  const cnts = buckets.map(b => allData.filter(b.filter).length);
-  const ids = ['ag-v0','ag-v30','ag-v60','ag-v90'];
-  const idc = ['ag-c0','ag-c30','ag-c60','ag-c90'];
-  ids.forEach((id, i) => document.getElementById(id).textContent = fmtVal(vals[i], cur));
-  idc.forEach((id, i) => document.getElementById(id).textContent = cnts[i] + ' facturi');
-
-  // Bar chart
-  if (agingBarInstance) agingBarInstance.destroy();
-  const ctx1 = document.getElementById('agingBarChart').getContext('2d');
-  agingBarInstance = new Chart(ctx1, {
-    type: 'bar',
-    data: { labels: ['0-30 zile','31-60 zile','61-90 zile','90+ zile'], datasets: [{ label: 'Valoare ('+cur+')', data: vals, backgroundColor: ['#C0DD97','#FAC775','#F0997B','#F7C1C1'], borderColor: ['#3B6D11','#854F0B','#993C1D','#A32D2D'], borderWidth: 1.5, borderRadius: 4 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { font: { family: 'DM Sans', size: 11 } }, grid: { color: 'rgba(0,0,0,0.05)' } }, x: { ticks: { font: { family: 'DM Sans', size: 11 } }, grid: { display: false } } } }
-  });
-
-  // Pie chart
-  if (agingPieInstance) agingPieInstance.destroy();
-  const ctx2 = document.getElementById('agingPieChart').getContext('2d');
-  agingPieInstance = new Chart(ctx2, {
-    type: 'pie',
-    data: { labels: ['0-30 zile','31-60 zile','61-90 zile','90+ zile'], datasets: [{ data: cnts, backgroundColor: ['#C0DD97','#FAC775','#F0997B','#F7C1C1'], borderColor: ['#3B6D11','#854F0B','#993C1D','#A32D2D'], borderWidth: 1.5 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { family: 'DM Sans', size: 11 }, padding: 10 } } } }
-  });
-
-  // Aging table by partner
-  const byP = {};
-  allData.forEach(r => {
-    if (!byP[r.partener]) byP[r.partener] = [0,0,0,0];
-    const i = r.zile_restanta >= 90 ? 3 : r.zile_restanta >= 60 ? 2 : r.zile_restanta >= 30 ? 1 : 0;
-    byP[r.partener][i] += r.valoare;
-  });
-  const tb = document.getElementById('agingTable');
-  const rows = Object.entries(byP).sort((a,b) => (b[1][3]+b[1][2]) - (a[1][3]+a[1][2]));
-  if (!rows.length) { tb.innerHTML = '<tr><td colspan="6"><div class="empty"><div class="empty-title">Nicio dată importată</div></div></td></tr>'; return; }
-  tb.innerHTML = rows.map(([name, v]) => {
-    const total = v.reduce((s,x) => s+x, 0);
-    return `<tr>
-      <td><div class="partner-name">${name}</div></td>
-      <td style="color:var(--green)">${v[0]>0?fmtVal(v[0],''):'-'}</td>
-      <td style="color:var(--amber)">${v[1]>0?fmtVal(v[1],''):'-'}</td>
-      <td style="color:#993C1D">${v[2]>0?fmtVal(v[2],''):'-'}</td>
-      <td style="color:var(--red);font-weight:500">${v[3]>0?fmtVal(v[3],''):'-'}</td>
-      <td><span class="amount" style="font-weight:600">${fmtVal(total,'')}</span></td>
-    </tr>`;
+// JURNAL
+function renderPL(f){
+  f=f||document.getElementById('plsrch').value||'';
+  const ps=[...new Set(D.map(r=>r.p))].filter(p=>p.toLowerCase().includes(f.toLowerCase()));
+  const cont=document.getElementById('plItems');
+  if(!ps.length){cont.innerHTML='<div class="empty" style="padding:30px 10px"><div class="etl">Niciun partener</div></div>';return;}
+  const byP={};D.forEach(r=>{if(!byP[r.p])byP[r.p]={mz:0,v:0,c:r.m};byP[r.p].mz=Math.max(byP[r.p].mz,r.z);byP[r.p].v+=r.v;});
+  ps.sort((a,b)=>(byP[b]?.mz||0)-(byP[a]?.mz||0));
+  cont.innerHTML=ps.map(nm=>{
+    const d=byP[nm]||{};const nc=(J[nm]||[]).length;
+    const rc=d.mz>=90?'br':d.mz>=60?'ba':d.mz>=30?'bb':'bg';
+    return`<div class="plitem${selP===nm?' active':''}" onclick="selPart('${nm.replace(/'/g,"\\'")}')"><div class="plname">${nm}</div><div class="plmeta"><span class="badge ${rc}" style="font-size:10px;padding:1px 6px">${d.mz} zile</span>${nc?`<span style="font-size:10px;color:var(--purple)">\xb7 ${nc} note</span>`:''}</div></div>`;
   }).join('');
 }
 
-function openNotif(row) {
-  if (typeof row === 'string') row = JSON.parse(row.replace(/&quot;/g,'"'));
-  currentNotifRow = row;
-  document.getElementById('notifPartener').textContent = row.partener + (row.email ? ' · ' + row.email : '');
-  document.getElementById('notifFactura').textContent = 'Factura ' + row.nr_factura + ' · ' + fmtVal(row.valoare, row.moneda) + ' · scadentă: ' + row.data_scadenta + ' (' + row.zile_restanta + ' zile restanță)';
-  document.getElementById('notifMsg').value =
-    `Stimate partener ${row.partener},\n\nVă aducem la cunoștință că factura nr. ${row.nr_factura} în valoare de ${fmtVal(row.valoare, row.moneda)}, cu data scadenței ${row.data_scadenta}, înregistrează o restanță de ${row.zile_restanta} zile.\n\nVă rugăm să efectuați plata în cel mai scurt timp posibil.\n\nCu stimă,\nDepartamentul Financiar`;
-  document.getElementById('notifModal').classList.add('open');
+function selPart(nm){selP=nm;renderPL();renderJR(nm);}
+
+function renderJR(nm){
+  const byP={};D.forEach(r=>{if(!byP[r.p])byP[r.p]={cui:r.cui,email:r.email,tel:r.tel,n:0,v:0,mz:0,c:r.m};byP[r.p].n++;byP[r.p].v+=r.v;byP[r.p].mz=Math.max(byP[r.p].mz,r.z);});
+  const d=byP[nm]||{};const notes=J[nm]||[];const av=ini(nm);
+  const nid=nm.replace(/\s/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  document.getElementById('jRight').innerHTML=`
+    <div class="pch">
+      <div class="pcht">
+        <div class="pchav">${av}</div>
+        <div style="flex:1"><div class="pchn">${nm}</div><div class="pchcui">${d.cui||'-'}</div></div>
+        <button class="btn btnsm" onclick='openN(${JSON.stringify({nr:"-",p:nm,email:d.email||"",v:d.v||0,m:d.c||"RON",ds:"-",z:d.mz||0})})'>${TICO.notificare} Notificare</button>
+      </div>
+      <div class="pchcs">
+        ${d.email?`<div class="pchc">${TICO.email} ${d.email}</div>`:''}
+        ${d.tel?`<div class="pchc">${TICO.apel} ${d.tel}</div>`:''}
+      </div>
+      <div class="pchst">
+        <div style="flex:1;text-align:center"><div class="pchsv" style="color:var(--red)">${fv(d.v||0,d.c||'RON')}</div><div class="pchsl">Total datorat</div></div>
+        <div style="flex:1;text-align:center"><div class="pchsv" style="color:var(--amber)">${d.n||0}</div><div class="pchsl">Facturi</div></div>
+        <div style="flex:1;text-align:center"><div class="pchsv" style="color:${(d.mz||0)>=90?'var(--red)':'var(--amber)'}">${d.mz||0}</div><div class="pchsl">Max zile</div></div>
+        <div style="flex:1;text-align:center"><div class="pchsv" style="color:var(--purple)" id="ncnt-${nid}">${notes.length}</div><div class="pchsl">Interactiuni</div></div>
+      </div>
+    </div>
+    <div class="nform">
+      <div class="nftl">Adauga interactiune</div>
+      <div class="ntbtns">
+        <button class="tb s-apel" onclick="setT(this,'apel')">${TICO.apel} Apel</button>
+        <button class="tb" onclick="setT(this,'email')">${TICO.email} Email</button>
+        <button class="tb" onclick="setT(this,'whatsapp')">${TICO.whatsapp} WhatsApp</button>
+        <button class="tb" onclick="setT(this,'intalnire')">${TICO.intalnire} Intalnire</button>
+        <button class="tb" onclick="setT(this,'promisiune')">${TICO.promisiune} Promisiune plata</button>
+      </div>
+      <textarea class="nta" id="nta" placeholder="Descrie ce s-a discutat, acorduri, rezultate..."></textarea>
+      <div class="nextra">
+        <span class="nlbl2">Agent:</span>
+        <input class="nin" id="nag" type="text" placeholder="Numele tau" style="width:140px">
+        <span class="nlbl2" id="pl1" style="display:none">Suma promisa:</span>
+        <input class="nin" id="psuma" type="number" placeholder="0.00" style="width:100px;display:none">
+        <span class="nlbl2" id="pl2" style="display:none">Data promisa:</span>
+        <input class="nin" id="pdata" type="date" style="display:none">
+        <button class="btn btnp btnsm" style="margin-left:auto" onclick="addN('${nm.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adauga nota</button>
+      </div>
+    </div>
+    <div class="tl" id="tl-${nid}">
+      <div class="tlh"><div class="ct">Istoric interactiuni</div><span style="font-size:12px;color:var(--t3)" id="tlcnt-${nid}">${notes.length} inregistrari</span></div>
+      <div id="tli-${nid}">${renderTLI(nm)}</div>
+    </div>`;
+  _ct='apel';
 }
 
-function sendNotif() {
-  const canal = document.querySelector('input[name="canal"]:checked').value;
-  const msg = document.getElementById('notifMsg').value;
-  closeModal('notifModal');
-  const labels = { email: 'Email', sms: 'SMS', whatsapp: 'WhatsApp' };
-  showToast(`Notificare ${labels[canal]} generată pentru ${currentNotifRow?.partener}`, 'success');
+function setT(btn,t){
+  _ct=t;
+  document.querySelectorAll('.tb').forEach(b=>{b.className='tb';});
+  const cls={apel:'s-apel',email:'s-email',whatsapp:'s-wa',intalnire:'s-int',promisiune:'s-prom'};
+  btn.className='tb '+(cls[t]||'');
+  const ip=t==='promisiune';
+  ['pl1','psuma','pl2','pdata'].forEach((id,i)=>document.getElementById(id).style.display=(ip&&i<4)?'':i>1?'none':'none');
+  if(ip){document.getElementById('pl1').style.display='';document.getElementById('psuma').style.display='';document.getElementById('pl2').style.display='';document.getElementById('pdata').style.display='';}
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-function exportData() {
-  if (!allData.length) { showToast('Nicio dată de exportat', 'error'); return; }
-  const headers = ['Nr. factură','Partener','CUI','Email','Telefon','Data emitere','Data scadentă','Zile restanță','Valoare','Monedă','Status'];
-  const rows = allData.map(r => [r.nr_factura,r.partener,r.cui,r.email,r.telefon,r.data_emitere,r.data_scadenta,r.zile_restanta,r.valoare,r.moneda,r.status]);
-  const csv = [headers, ...rows].map(r => r.map(c => '"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv);
-  a.download = 'crm-restantieri-' + new Date().toISOString().slice(0,10) + '.csv';
-  a.click();
-  showToast('Export CSV generat cu succes', 'success');
+function addN(nm){
+  const txt=document.getElementById('nta').value.trim();if(!txt){toast('Adauga un text pentru nota','error');return;}
+  if(!J[nm])J[nm]=[];
+  const n={id:uid(),type:_ct,text:txt,date:new Date().toISOString(),agent:document.getElementById('nag').value.trim()||'Necunoscut'};
+  if(_ct==='promisiune'){n.ps=document.getElementById('psuma').value;n.pd=document.getElementById('pdata').value;}
+  J[nm].unshift(n);
+  document.getElementById('nta').value='';
+  const nid=nm.replace(/\s/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  document.getElementById('tli-'+nid).innerHTML=renderTLI(nm);
+  document.getElementById('tlcnt-'+nid).textContent=J[nm].length+' inregistrari';
+  document.getElementById('ncnt-'+nid).textContent=J[nm].length;
+  renderPL();toast('Nota adaugata','success');
 }
 
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'toast' + (type ? ' ' + type : '');
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3500);
+function renderTLI(nm){
+  const ns=J[nm]||[];
+  if(!ns.length)return`<div class="empty" style="padding:30px"><div class="etl">Nicio interactiune inregistrata</div><div>Adauga prima nota de mai sus</div></div>`;
+  const nid=nm.replace(/\s/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  return ns.map(n=>`<div class="tli" id="tln-${n.id}">
+    <div class="tll"><div class="tld ${n.type}">${TICO[n.type]||''}</div></div>
+    <div class="tlb">
+      <div class="tltp"><span class="tltype">${TLBL[n.type]||n.type}</span><span class="tltime">${fd(n.date)}</span>${n.agent?`<span class="tlagent">\xb7 ${n.agent}</span>`:''}</div>
+      <div class="tltxt">${n.text}</div>
+      ${n.type==='promisiune'&&n.ps?`<div class="tlprom">${TICO.promisiune} Promis ${fv(parseFloat(n.ps)||0,'')} ${n.pd?' pana pe '+n.pd:''}</div>`:''}
+    </div>
+    <button class="tldel" title="Sterge" onclick="delN('${nm.replace(/'/g,"\\'")}','${n.id}','${nid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+  </div>`).join('');
 }
 
-// Load demo data
-(function loadDemo() {
-  const today = new Date(); today.setHours(0,0,0,0);
-  const ago = (d) => { const dt = new Date(today); dt.setDate(dt.getDate()-d); return dt.toLocaleDateString('ro-RO'); };
-  allData = [
-    { nr_factura:'INV-1042', partener:'SC Construct SRL', cui:'RO12345678', email:'office@scconstruct.ro', telefon:'0721 100 200', data_emitere: ago(60), data_scadenta: ago(32), data_scadenta_d: new Date(today.getTime()-32*86400000), zile_restanta:32, valoare:4200, moneda:'RON', status:'Neplatit', agent:'Ion P.' },
-    { nr_factura:'INV-1043', partener:'SC Construct SRL', cui:'RO12345678', email:'office@scconstruct.ro', telefon:'0721 100 200', data_emitere: ago(45), data_scadenta: ago(15), data_scadenta_d: new Date(today.getTime()-15*86400000), zile_restanta:15, valoare:1800, moneda:'RON', status:'Neplatit', agent:'Ion P.' },
-    { nr_factura:'INV-0987', partener:'Metal Trade SA', cui:'RO98765432', email:'contabilitate@metaltrade.ro', telefon:'0733 200 300', data_emitere: ago(70), data_scadenta: ago(42), data_scadenta_d: new Date(today.getTime()-42*86400000), zile_restanta:42, valoare:2850, moneda:'EUR', status:'Neplatit', agent:'Maria C.' },
-    { nr_factura:'INV-0988', partener:'Metal Trade SA', cui:'RO98765432', email:'contabilitate@metaltrade.ro', telefon:'0733 200 300', data_emitere: ago(110), data_scadenta: ago(92), data_scadenta_d: new Date(today.getTime()-92*86400000), zile_restanta:92, valoare:5100, moneda:'EUR', status:'Neplatit', agent:'Maria C.' },
-    { nr_factura:'INV-1105', partener:'Agro Prod SRL', cui:'RO11223344', email:'agroprod@gmail.com', telefon:'0744 300 400', data_emitere: ago(20), data_scadenta: ago(5), data_scadenta_d: new Date(today.getTime()-5*86400000), zile_restanta:5, valoare:1100, moneda:'RON', status:'Neplatit', agent:'Ion P.' },
-    { nr_factura:'INV-1201', partener:'Tehno Log SRL', cui:'RO55667788', email:'office@tehnolog.ro', telefon:'0722 400 500', data_emitere: ago(35), data_scadenta: ago(0), data_scadenta_d: today, zile_restanta:0, valoare:780, moneda:'RON', status:'Neplatit', agent:'Ana M.' },
-    { nr_factura:'INV-0901', partener:'Alfa Prest SRL', cui:'RO33445566', email:'alfa@prest.ro', telefon:'0755 500 600', data_emitere: ago(130), data_scadenta: ago(98), data_scadenta_d: new Date(today.getTime()-98*86400000), zile_restanta:98, valoare:3200, moneda:'RON', status:'Neplatit', agent:'Ana M.' },
-    { nr_factura:'INV-1150', partener:'Trans Cargo SRL', cui:'RO77889900', email:'office@transcargo.ro', telefon:'0766 600 700', data_emitere: ago(55), data_scadenta: ago(28), data_scadenta_d: new Date(today.getTime()-28*86400000), zile_restanta:28, valoare:920, moneda:'RON', status:'Neplatit', agent:'Ion P.' },
-    { nr_factura:'INV-1155', partener:'Trans Cargo SRL', cui:'RO77889900', email:'office@transcargo.ro', telefon:'0766 600 700', data_emitere: ago(80), data_scadenta: ago(63), data_scadenta_d: new Date(today.getTime()-63*86400000), zile_restanta:63, valoare:1450, moneda:'RON', status:'Neplatit', agent:'Ion P.' },
-    { nr_factura:'INV-1300', partener:'Build Fast SRL', cui:'RO44556677', email:'contact@buildfast.ro', telefon:'0788 700 800', data_emitere: ago(15), data_scadenta: ago(2), data_scadenta_d: new Date(today.getTime()-2*86400000), zile_restanta:2, valoare:660, moneda:'RON', status:'Neplatit', agent:'Maria C.' },
+function delN(nm,id,nid){
+  if(!J[nm])return;J[nm]=J[nm].filter(n=>n.id!==id);
+  document.getElementById('tli-'+nid).innerHTML=renderTLI(nm);
+  document.getElementById('tlcnt-'+nid).textContent=J[nm].length+' inregistrari';
+  document.getElementById('ncnt-'+nid).textContent=J[nm].length;
+  renderPL();toast('Nota stearsa');
+}
+
+function goJ(nm){
+  showPage('jurnal',document.querySelectorAll('.ni')[3]);
+  setTimeout(()=>selPart(nm),60);
+}
+
+// NOTIF
+function openN(r){
+  if(typeof r==='string')r=JSON.parse(r);cNR=r;
+  document.getElementById('nPart').textContent=r.p+(r.email?' \xb7 '+r.email:'');
+  document.getElementById('nFact').textContent='Factura '+r.nr+' \xb7 '+fv(r.v,r.m)+' \xb7 scadenta: '+r.ds+' ('+r.z+' zile restanta)';
+  document.getElementById('nMsg').value=`Stimate partener ${r.p},\n\nVa aducem la cunostinta ca factura nr. ${r.nr} in valoare de ${fv(r.v,r.m)}, cu data scadentei ${r.ds}, inregistreaza o restanta de ${r.z} zile.\n\nVa rugam sa efectuati plata in cel mai scurt timp posibil.\n\nCu stima,\nDepartamentul Financiar`;
+  document.getElementById('nModal').classList.add('open');
+}
+function sendN(){
+  const canal=document.querySelector('input[name="canal"]:checked').value;
+  cm('nModal');const lbl={email:'Email',sms:'SMS',whatsapp:'WhatsApp'};
+  const nm=cNR?.p;
+  if(nm){if(!J[nm])J[nm]=[];J[nm].unshift({id:uid(),type:'notificare',text:`Notificare ${lbl[canal]} trimisa. Factura: ${cNR.nr} \xb7 ${fv(cNR.v,cNR.m)}`,date:new Date().toISOString(),agent:'Sistem'});
+    if(selP===nm){const nid=nm.replace(/\s/g,'_').replace(/[^a-zA-Z0-9_]/g,'');const ti=document.getElementById('tli-'+nid);const tc=document.getElementById('tlcnt-'+nid);const nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
+    renderPL();}
+  toast(`Notificare ${lbl[canal]} generata pentru ${nm}`,'success');
+}
+
+// AGING
+function renderA(){
+  const cur=D[0]?.m||'RON';
+  const bk=[r=>r.z>=0&&r.z<30,r=>r.z>=30&&r.z<60,r=>r.z>=60&&r.z<90,r=>r.z>=90];
+  const vs=bk.map(f=>D.filter(f).reduce((s,r)=>s+r.v,0));const cs=bk.map(f=>D.filter(f).length);
+  ['av0','av30','av60','av90'].forEach((id,i)=>document.getElementById(id).textContent=fv(vs[i],cur));
+  ['ac0','ac30','ac60','ac90'].forEach((id,i)=>document.getElementById(id).textContent=cs[i]+' facturi');
+  if(aBI)aBI.destroy();
+  aBI=new Chart(document.getElementById('barChart').getContext('2d'),{type:'bar',data:{labels:['0-30 zile','31-60 zile','61-90 zile','90+ zile'],datasets:[{label:'Valoare',data:vs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'DM Sans',size:11}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}}}}});
+  if(aPI)aPI.destroy();
+  aPI=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'pie',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:cs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}}}});
+  const byP={};D.forEach(r=>{if(!byP[r.p])byP[r.p]=[0,0,0,0];byP[r.p][r.z>=90?3:r.z>=60?2:r.z>=30?1:0]+=r.v;});
+  const tb=document.getElementById('tAging');const rows=Object.entries(byP).sort((a,b)=>(b[1][3]+b[1][2])-(a[1][3]+a[1][2]));
+  if(!rows.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="etl">Nicio data importata</div></div></td></tr>';return;}
+  tb.innerHTML=rows.map(([nm,v])=>{const t=v.reduce((s,x)=>s+x,0);return`<tr><td><div class="pn">${nm}</div></td><td style="color:var(--green)">${v[0]>0?fv(v[0],''):'-'}</td><td style="color:var(--amber)">${v[1]>0?fv(v[1],''):'-'}</td><td style="color:#993C1D">${v[2]>0?fv(v[2],''):'-'}</td><td style="color:var(--red);font-weight:500">${v[3]>0?fv(v[3],''):'-'}</td><td><span class="amt" style="font-weight:600">${fv(t,'')}</span></td></tr>`;}).join('');
+}
+
+// EXPORT
+function exportData(){
+  if(!D.length){toast('Nicio data de exportat','error');return;}
+  const h=['Nr. factura','Partener','CUI','Email','Telefon','Data emitere','Data scadenta','Zile restanta','Valoare','Moneda','Status'];
+  const rows=D.map(r=>[r.nr,r.p,r.cui,r.email,r.tel,r.de,r.ds,r.z,r.v,r.m,r.st]);
+  const csv=[h,...rows].map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='crm-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('Export CSV generat','success');
+}
+
+// DEMO
+(function(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const ago=d=>{const dt=new Date(today);dt.setDate(dt.getDate()-d);return dt.toLocaleDateString('ro-RO');};
+  const agoDt=d=>new Date(today.getTime()-d*86400000);
+  D=[
+    {nr:'INV-1042',p:'SC Construct SRL',cui:'RO12345678',email:'office@scconstruct.ro',tel:'0721 100 200',de:ago(60),ds:ago(32),dsd:agoDt(32),z:32,v:4200,m:'RON',st:'Neplatit',ag:'Ion P.'},
+    {nr:'INV-1043',p:'SC Construct SRL',cui:'RO12345678',email:'office@scconstruct.ro',tel:'0721 100 200',de:ago(45),ds:ago(15),dsd:agoDt(15),z:15,v:1800,m:'RON',st:'Neplatit',ag:'Ion P.'},
+    {nr:'INV-0987',p:'Metal Trade SA',cui:'RO98765432',email:'contabilitate@metaltrade.ro',tel:'0733 200 300',de:ago(70),ds:ago(42),dsd:agoDt(42),z:42,v:2850,m:'EUR',st:'Neplatit',ag:'Maria C.'},
+    {nr:'INV-0988',p:'Metal Trade SA',cui:'RO98765432',email:'contabilitate@metaltrade.ro',tel:'0733 200 300',de:ago(110),ds:ago(92),dsd:agoDt(92),z:92,v:5100,m:'EUR',st:'Neplatit',ag:'Maria C.'},
+    {nr:'INV-1105',p:'Agro Prod SRL',cui:'RO11223344',email:'agroprod@gmail.com',tel:'0744 300 400',de:ago(20),ds:ago(5),dsd:agoDt(5),z:5,v:1100,m:'RON',st:'Neplatit',ag:'Ion P.'},
+    {nr:'INV-1201',p:'Tehno Log SRL',cui:'RO55667788',email:'office@tehnolog.ro',tel:'0722 400 500',de:ago(35),ds:ago(0),dsd:today,z:0,v:780,m:'RON',st:'Neplatit',ag:'Ana M.'},
+    {nr:'INV-0901',p:'Alfa Prest SRL',cui:'RO33445566',email:'alfa@prest.ro',tel:'0755 500 600',de:ago(130),ds:ago(98),dsd:agoDt(98),z:98,v:3200,m:'RON',st:'Neplatit',ag:'Ana M.'},
+    {nr:'INV-1150',p:'Trans Cargo SRL',cui:'RO77889900',email:'office@transcargo.ro',tel:'0766 600 700',de:ago(55),ds:ago(28),dsd:agoDt(28),z:28,v:920,m:'RON',st:'Neplatit',ag:'Ion P.'},
+    {nr:'INV-1155',p:'Trans Cargo SRL',cui:'RO77889900',email:'office@transcargo.ro',tel:'0766 600 700',de:ago(80),ds:ago(63),dsd:agoDt(63),z:63,v:1450,m:'RON',st:'Neplatit',ag:'Ion P.'},
+    {nr:'INV-1300',p:'Build Fast SRL',cui:'RO44556677',email:'contact@buildfast.ro',tel:'0788 700 800',de:ago(15),ds:ago(2),dsd:agoDt(2),z:2,v:660,m:'RON',st:'Neplatit',ag:'Maria C.'},
   ];
-  document.getElementById('dataStatus').textContent = allData.length + ' facturi · ' + [...new Set(allData.map(r=>r.partener))].length + ' parteneri';
-  renderDashboard();
+  J['Metal Trade SA']=[
+    {id:uid(),type:'apel',text:'Discutie cu dl. Ionescu - confirma probleme de lichiditate temporare. Promite ca achita minim 50% pana la finalul lunii.',date:new Date(Date.now()-2*86400000).toISOString(),agent:'Maria C.'},
+    {id:uid(),type:'promisiune',text:'Promisiune ferma de plata partiala confirmata telefonic.',date:new Date(Date.now()-2*86400000).toISOString(),agent:'Maria C.',ps:'3900',pd:ago(-5)},
+    {id:uid(),type:'email',text:'Trimis email de somatie cu detaliile facturilor INV-0987 si INV-0988. Fara raspuns pana acum.',date:new Date(Date.now()-5*86400000).toISOString(),agent:'Sistem'},
+    {id:uid(),type:'notificare',text:'Notificare Email trimisa. Factura: INV-0988 \xb7 5.100,00 EUR',date:new Date(Date.now()-6*86400000).toISOString(),agent:'Sistem'},
+  ];
+  J['SC Construct SRL']=[
+    {id:uid(),type:'whatsapp',text:'Contactat pe WhatsApp. Raspuns: "Suntem in asteptarea unei plati de la un client, in 2-3 zile rezolvam."',date:new Date(Date.now()-1*86400000).toISOString(),agent:'Ion P.'},
+    {id:uid(),type:'apel',text:'Al doilea apel - nu raspunde. Lasat mesaj vocal.',date:new Date(Date.now()-3*86400000).toISOString(),agent:'Ion P.'},
+  ];
+  J['Alfa Prest SRL']=[
+    {id:uid(),type:'intalnire',text:'Intalnire la sediul lor. Directorul financiar confirma ca sunt in reorganizare interna. Solicita un plan de esalonare pe 3 rate lunare.',date:new Date(Date.now()-4*86400000).toISOString(),agent:'Ana M.'},
+    {id:uid(),type:'promisiune',text:'Plan de esalonare agreat verbal: 3 rate de cate 1.066 RON, prima pe 1 iulie.',date:new Date(Date.now()-4*86400000).toISOString(),agent:'Ana M.',ps:'1066',pd:ago(-9)},
+  ];
+  dst();renderDB();renderPL();
 })();
 </script>
 </body>
