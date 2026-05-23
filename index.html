@@ -492,7 +492,14 @@ tbody tr:hover{background:var(--bg)}
 
     <!-- IMPORT -->
     <div class="page" id="page-import">
-      <div style="background:var(--gbg);border:1px solid rgba(59,109,17,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:13px">
+      <div style="background:var(--bbg);border:1px solid rgba(24,95,165,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:12px;font-size:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+      <div id="cloudImportStatus" style="color:var(--blue);font-weight:500">&#9729; Date partajate in cloud — toti agentii vad aceleasi date</div>
+      <button class="btn btnsm" onclick="loadImportFromFirestore()" style="background:var(--blue);color:#fff;border-color:var(--blue)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Incarca din cloud
+      </button>
+    </div>
+    <div style="background:var(--gbg);border:1px solid rgba(59,109,17,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:13px">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px">
         <div><strong style="color:var(--green)">&#10003; Format fisier configurat.</strong> Aplicatia recunoaste automat fisierul exportat din sistemul vostru.</div>
         <div style="display:flex;gap:8px">
@@ -522,7 +529,7 @@ tbody tr:hover{background:var(--bg)}
         <div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div>
         <div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
-      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data</th><th>Fisier</th><th>Facturi importate</th><th>Parteneri</th><th>Sold net total</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
     </div>
 
     <!-- AGING -->
@@ -638,6 +645,8 @@ function showApp(user){
     av.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ptext)">' + name[0].toUpperCase() + '</div>';
   }
   jLoad(); rLoad();
+  // Incarca datele de import din cloud
+  setTimeout(loadImportFromFirestore, 800);
 }
 
 function startAuthListener(){
@@ -925,6 +934,111 @@ function showMap(){
   }
   document.getElementById('prevInfo').textContent=rR.length+' randuri detectate in "'+cF+'" &middot; '+(isKnown?'mapare automata':'format necunoscut');
 }
+// ── IMPORT FIRESTORE ──────────────────────────────────────────────────────
+function saveImportToFirestore(soldTotal){
+  if(!window._fbLoaded || !window.db){
+    toast('Date salvate local. Firebase indisponibil momentan.','success');
+    return;
+  }
+  toast('Se salveaza in cloud...','');
+  const user = window.currentUser;
+  const meta = {
+    importat_de: user ? (user.displayName||user.email) : 'Necunoscut',
+    importat_la: new Date().toISOString(),
+    fisier: cF,
+    nr_facturi: D.length,
+    nr_parteneri: PD.length,
+    sold_total: soldTotal
+  };
+  // Salvam in chunks - Firestore limita 1MB per document
+  // Impartim D in chunks de 50
+  const CHUNK = 50;
+  const chunks = [];
+  for(let i=0;i<D.length;i+=CHUNK) chunks.push(D.slice(i,i+CHUNK));
+
+  const batch = window.db.batch();
+
+  // Meta + PD + DESF in /imports/latest
+  const latestRef = window.db.collection('imports').doc('latest');
+  batch.set(latestRef, {
+    meta, PD, DESF,
+    nr_chunks: chunks.length,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  // Fiecare chunk D in /imports/chunks/chunk_N
+  chunks.forEach((chunk, i) => {
+    const chunkRef = window.db.collection('imports').doc('chunk_'+i);
+    batch.set(chunkRef, { data: chunk });
+  });
+
+  // Istoric import
+  const histRef = window.db.collection('imports').doc('history_'+Date.now());
+  batch.set(histRef, meta);
+
+  batch.commit().then(() => {
+    toast(D.length+' facturi salvate in cloud. Toti agentii vor vedea datele noi.','success');
+    // Update import history UI
+    const h=document.getElementById('impHist');
+    if(h&&h.querySelector('td[colspan]'))h.innerHTML='';
+    if(h) h.insertAdjacentHTML('afterbegin',`<tr><td>${new Date().toLocaleString('ro-RO')}</td><td>${cF}</td><td>${D.length}</td><td>${PD.length}</td><td>${fv(soldTotal,'LEI')}</td><td><span class="badge bg">&#9729; Salvat in cloud</span></td></tr>`);
+  }).catch(e => {
+    console.error('Firestore save error:', e);
+    toast('Eroare la salvare in cloud: '+e.message,'error');
+  });
+}
+
+function loadImportFromFirestore(){
+  if(!window._fbLoaded || !window.db) return;
+  const statusEl = document.getElementById('cloudImportStatus');
+  if(statusEl) statusEl.textContent = 'Se incarca datele din cloud...';
+
+  window.db.collection('imports').doc('latest').get().then(doc => {
+    if(!doc.exists){
+      if(statusEl) statusEl.textContent = 'Niciun import in cloud. Importati un fisier Excel.';
+      return;
+    }
+    const data = doc.data();
+    PD = data.PD || [];
+    DESF = data.DESF || {};
+    const nrChunks = data.nr_chunks || 1;
+    const meta = data.meta || {};
+
+    // Incarca chunks
+    const promises = [];
+    for(let i=0;i<nrChunks;i++){
+      promises.push(window.db.collection('imports').doc('chunk_'+i).get());
+    }
+    Promise.all(promises).then(chunkDocs => {
+      D = [];
+      chunkDocs.forEach(cd => { if(cd.exists) D = D.concat(cd.data().data||[]); });
+
+      // Recalculeaza zile restanta
+      const today = new Date(); today.setHours(0,0,0,0);
+      D.forEach(r => {
+        if(r.dsd){ const sd=new Date(r.dsd); r.z=Math.floor((today-sd)/86400000); }
+      });
+      PD.forEach(p => {
+        const facturiP = D.filter(r=>r.p===p.p);
+        p.max_zile = facturiP.reduce((m,r)=>Math.max(m,r.z),0);
+      });
+
+      dst(); renderDB(); renderPL(); renderF();
+      if(statusEl) statusEl.innerHTML = '&#9729; Date din cloud: '+D.length+' facturi &middot; importate de '+meta.importat_de+' la '+new Date(meta.importat_la).toLocaleDateString('ro-RO');
+
+      // Update import history
+      const h=document.getElementById('impHist');
+      if(h&&h.querySelector('td[colspan]'))h.innerHTML='';
+      if(h&&meta.importat_la) h.insertAdjacentHTML('afterbegin',`<tr><td>${new Date(meta.importat_la).toLocaleString('ro-RO')}</td><td>${meta.fisier||'-'}</td><td>${meta.nr_facturi||D.length}</td><td>${meta.nr_parteneri||PD.length}</td><td>${fv(meta.sold_total||0,'LEI')}</td><td><span class="badge bg">&#9729; Din cloud</span></td></tr>`);
+
+      toast('Date incarcate din cloud: '+D.length+' facturi','success');
+    });
+  }).catch(e => {
+    console.warn('loadImportFromFirestore error:', e);
+    if(statusEl) statusEl.textContent = 'Eroare la incarcare din cloud.';
+  });
+}
+
 function doImport(){
   const today=new Date();today.setHours(0,0,0,0);
   const isKnown=rH.some(h=>h&&(String(h).includes('Document | Serie')||String(h).includes('IDPartener')||String(h).includes('Rest de plata')));
@@ -987,8 +1101,11 @@ function doImport(){
       DESF[r.p].incasari.push({tip:tipInc,data:r.ed?r.ed.toLocaleDateString('ro-RO'):'',val:r.aa,m:r.m});
     }
   });
-  dst();toast(D.length+' facturi · '+PD.length+' parteneri · sold net '+fv(soldTotal,'LEI'),'success');
+  dst();
   renderDB();renderPL();renderF();
+
+  // Salveaza datele in Firestore - toati agentii vor vedea instant
+  saveImportToFirestore(soldTotal);
 }
 function cancelImp(){document.getElementById('mapSec').style.display='none';document.getElementById('fi').value='';}
 
@@ -1810,6 +1927,27 @@ var DESF = {"PETRE ELENA": {"facturi": [], "incasari": []}, "NETOIU GHEORGHE": {
   // Render se face in startAuthListener dupa autentificare
   // Firebase sync - pornit dupa autentificare (in startAuthListener)
   // jLoad si rLoad sunt apelate in startAuthListener dupa login
+
+  // Real-time listener pentru date import (alt agent a importat date noi)
+  function startImportListener(){
+    if(!window.db) return;
+    window.db.collection('imports').doc('latest').onSnapshot(snap => {
+      if(snap.exists && snap.metadata.hasPendingWrites === false){
+        const d = snap.data();
+        if(d && d.meta && d.meta.importat_la){
+          const imported = new Date(d.meta.importat_la);
+          const diff = (new Date() - imported) / 1000;
+          // Daca importul e mai recent de 30 secunde si nu e al nostru
+          if(diff < 30 && window.currentUser && d.meta.importat_de !== (window.currentUser.displayName||window.currentUser.email)){
+            toast('&#9729; '+d.meta.importat_de+' a importat date noi. Se actualizeaza...','success');
+            setTimeout(loadImportFromFirestore, 1000);
+          }
+        }
+      }
+    }, e => console.warn('Import listener error:', e));
+  }
+  if(window._fbLoaded) startImportListener();
+  else window._fbQueue.push(startImportListener);
 
   // Real-time listener - pornit dupa ce Firebase e gata
   function startListener(){
