@@ -2,7 +2,10 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>CRM Restantieri v1.2</title>
 <!-- Firebase SDK - async to not block page render -->
 <script>
@@ -49,7 +52,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .ltxt{font-size:15px;font-weight:600}.lsub{font-size:11px;color:var(--t3);margin-top:1px}
 .nav{padding:12px 8px;flex:1}
 .nlbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:0 8px;margin:14px 0 3px}
-.ni{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;margin-bottom:1px}
+.ni{display:flex;align-items:center;gap:9px;padding:10px 10px;border-radius:var(--rs);cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;margin-bottom:1px;-webkit-tap-highlight-color:transparent}
 .ni:hover{background:var(--bg);color:var(--text)}.ni.active{background:var(--pbg);color:var(--ptext);font-weight:500}
 .ni svg{width:16px;height:16px;flex-shrink:0}
 .sfooter{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)}
@@ -101,6 +104,10 @@ tbody tr:hover{background:var(--bg)}
 .mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
 .mbg.open{display:flex}
 .modal{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);width:620px;max-width:95vw;max-height:90vh;overflow-y:auto}
+@media(max-width:680px){
+  .mbg{align-items:flex-end}
+  .modal{border-radius:var(--r) var(--r) 0 0;max-height:85vh;max-width:100vw;width:100vw}
+}
 .mh{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .mtl{font-size:15px;font-weight:600}.mb{padding:20px}
 .mf{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
@@ -113,7 +120,7 @@ tbody tr:hover{background:var(--bg)}
 .g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
 .empty{text-align:center;padding:50px 20px;color:var(--t3)}
 .etl{font-size:15px;color:var(--t2);font-weight:500;margin-bottom:4px}
-.abtn{background:none;border:none;cursor:pointer;color:var(--t3);padding:3px;border-radius:4px}
+.abtn{background:none;border:none;cursor:pointer;color:var(--t3);padding:6px;border-radius:4px;-webkit-tap-highlight-color:transparent}
 .abtn:hover{color:var(--purple);background:var(--pbg)}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:10px}
 .fisa-tab{display:flex;align-items:center;gap:6px;padding:10px 16px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
@@ -132,7 +139,7 @@ tbody tr:hover{background:var(--bg)}
 .plh{padding:12px 14px;border-bottom:1px solid var(--border)}
 .plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
 .pli{overflow-y:auto;flex:1}
-.plitem{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.plitem{padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent}
 .plitem:hover{background:var(--bg)}.plitem.active{background:var(--pbg);border-left:3px solid var(--purple)}
 .plname{font-size:13px;font-weight:500;margin-bottom:2px}
 .plmeta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
@@ -175,34 +182,102 @@ tbody tr:hover{background:var(--bg)}
 .tldel{background:none;border:none;cursor:pointer;color:var(--t3);padding:3px;border-radius:4px;margin-left:auto;opacity:0;transition:opacity .15s;flex-shrink:0}
 .tli:hover .tldel{opacity:1}.tldel:hover{color:var(--red);background:var(--rbg)}
 .nosel{display:flex;align-items:center;justify-content:center;min-height:400px;color:var(--t3);flex-direction:column;gap:10px}
-@media(max-width:900px){.mgrid{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}.agrid{grid-template-columns:repeat(2,1fr)}.mapg{grid-template-columns:1fr}.jlay{grid-template-columns:1fr}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .mgrid{grid-template-columns:repeat(2,1fr)}
+  .g2,.g3{grid-template-columns:1fr}
+  .agrid{grid-template-columns:repeat(2,1fr)}
+  .mapg{grid-template-columns:1fr}
+  .jlay{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .sidebar{
+    position:fixed;top:0;left:0;height:100vh;z-index:200;
+    transform:translateX(-100%);transition:transform .25s ease;
+    box-shadow:4px 0 20px rgba(0,0,0,.12);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);
+    z-index:199;opacity:0;transition:opacity .25s;
+  }
+  .sidebar-overlay.open{display:block;opacity:1}
+  .main{width:100%}
+  .topbar{padding:10px 14px;gap:8px}
+  .ptitle{font-size:15px}
+  .tactions .btn{padding:7px 10px;font-size:12px}
+  .tactions .btn span{display:none}
+  .content{padding:14px 12px}
+  .mgrid{grid-template-columns:1fr 1fr;gap:8px}
+  .mc{padding:12px 14px}
+  .mval{font-size:20px}
+  .g2,.g3{grid-template-columns:1fr;gap:12px}
+  .agrid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .card-header{padding:12px 14px;flex-wrap:wrap;gap:6px}
+  .tw{-webkit-overflow-scrolling:touch}
+  table{font-size:12px}
+  thead th{padding:8px 10px;font-size:10px}
+  tbody td{padding:9px 10px}
+  .jlay{grid-template-columns:1fr}
+  .modal{width:97vw!important;max-height:88vh}
+  .mbg{align-items:flex-end;padding-bottom:0}
+  .modal{border-radius:var(--r) var(--r) 0 0}
+  .fisa-tab{padding:8px 12px;font-size:12px}
+  .iz{padding:24px 16px}
+  .filters{gap:6px}
+  .fi.wide{min-width:0;width:100%}
+  .hamb{display:flex!important}
+  .hamb-close{display:flex!important}
+  .mapg{grid-template-columns:1fr}
+  .btn-top-hide{display:none!important}
+}
+@media(max-width:400px){
+  .mgrid{grid-template-columns:1fr}
+  .agrid{grid-template-columns:1fr}
+  .mval{font-size:18px}
+}
+.hamb{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text);border-radius:var(--rs);flex-shrink:0}
+.hamb:hover{background:var(--bg)}
+.hamb svg{width:20px;height:20px}
+.hamb-close{display:none;position:absolute;top:14px;right:14px;width:32px;height:32px;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;color:var(--t2);border-radius:var(--rs)}
+.hamb-close:hover{background:var(--bg)}
+.hamb-close svg{width:18px;height:18px}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
-  <div class="slogo"><div class="lmark"><div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div><div class="ltxt">CRM Restante</div><div class="lsub">v2.0 · Firebase</div></div></div></div>
+  <div class="slogo" style="position:relative"><div class="lmark"><div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div><div class="ltxt">CRM Restante</div><div class="lsub">v2.0 · Firebase</div></div></div>
+    <button class="hamb-close" onclick="closeSidebar()" aria-label="Inchide meniu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
   <nav class="nav">
     <div class="nlbl">Principal</div>
-    <div class="ni active" onclick="showPage('dashboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
-    <div class="ni" onclick="showPage('facturi',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Facturi restante</div>
-    <div class="ni" onclick="showPage('parteneri',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Parteneri</div>
+    <div class="ni active" onclick="showPage('dashboard',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</div>
+    <div class="ni" onclick="showPage('facturi',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Facturi restante</div>
+    <div class="ni" onclick="showPage('parteneri',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Parteneri</div>
     <div class="nlbl">Comunicare</div>
-    <div class="ni" onclick="showPage('jurnal',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Jurnal interactiuni</div>
+    <div class="ni" onclick="showPage('jurnal',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Jurnal interactiuni</div>
     <div class="nlbl">Date</div>
-    <div class="ni" onclick="showPage('remindere',this)" id="navRemindere"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="2" fill="currentColor" stroke="none"/></svg>Remindere <span id="reminderBadge" style="background:var(--red);color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:auto;display:none">0</span></div>
-    <div class="ni" onclick="showPage('import',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</div>
+    <div class="ni" onclick="showPage('remindere',this);closeSidebar()" id="navRemindere"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="2" fill="currentColor" stroke="none"/></svg>Remindere <span id="reminderBadge" style="background:var(--red);color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:auto;display:none">0</span></div>
+    <div class="ni" onclick="showPage('import',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import Excel</div>
     <div class="nlbl">Rapoarte</div>
-    <div class="ni" onclick="showPage('aging',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Aging report</div>
+    <div class="ni" onclick="showPage('aging',this);closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Aging report</div>
   </nav>
   <div class="sfooter"><div id="dst">Se incarca...</div>
       <div id="jurnalStatus" style="margin-top:6px;font-size:10px;color:var(--t3)">⟳ Se conecteaza la Firebase...</div></div>
 </aside>
 <main class="main">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
   <div class="topbar">
+    <button class="hamb" id="hambBtn" onclick="toggleSidebar()" aria-label="Meniu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
     <div class="ptitle" id="ptitle">Dashboard</div>
     <div class="tactions">
-      <button class="btn" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
+      <button class="btn btn-top-hide" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
       <button class="btn btnp" onclick="showPage('import',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import nou</button>
     </div>
   </div>
@@ -588,6 +663,14 @@ const TICO={
 };
 const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa'};
 
+function toggleSidebar(){
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
