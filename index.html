@@ -27,6 +27,8 @@ function loadFirebase(){
           window.db = firebase.firestore();
           window.auth = firebase.auth();
           window._fbLoaded = true;
+          window._fbReady = true;
+          _updateJurnalStatus();
           // Start auth listener
           startAuthListener();
           // Run queued Firebase operations
@@ -334,7 +336,7 @@ tbody tr:hover{background:var(--bg)}
         </button>
       </div>
       <div id="dst">Se incarca...</div>
-      <div id="jurnalStatus" style="margin-top:4px;font-size:10px;color:var(--t3)">Se conecteaza la Firebase...</div>
+      <div id="jurnalStatus" style="margin-top:4px;font-size:10px;color:var(--t3)"><span style="color:var(--amber)">&#9679;</span> Se conecteaza...</div>
       <div id="jurnalStatus" style="margin-top:6px;font-size:10px;color:var(--t3)">⟳ Se conecteaza la Firebase...</div></div>
 </aside>
 <main class="main">
@@ -710,7 +712,7 @@ function jLoad(){
       });
       try { localStorage.setItem('crm_jurnal_backup', JSON.stringify(J)); } catch(e){}
       _fbReady = true; _updateJurnalStatus();
-      if(selP) renderJR(selP); renderPL();
+      if(selP) renderJR(selP); renderPL(); renderDB();
     }).catch(e => { console.warn('Firestore read:', e); _fbReady = true; });
   }
   if(window._fbLoaded) doFbLoad();
@@ -721,7 +723,12 @@ function _updateJurnalStatus(){
   const total = Object.values(J).reduce((s,n)=>s+(n?n.length:0),0);
   const parts = Object.keys(J).filter(p=>J[p]&&J[p].length>0).length;
   const el = document.getElementById('jurnalStatus');
-  if(el) el.textContent = (_fbReady?'☁ ':'⟳ ') + parts + ' parteneri · ' + total + ' note';
+  if(!el) return;
+  if(_fbReady){
+    el.innerHTML = '<span style="color:var(--green)">&#9679;</span> Firebase conectat &middot; ' + parts + ' parteneri &middot; ' + total + ' note';
+  } else {
+    el.innerHTML = '<span style="color:var(--amber)">&#9679;</span> Se conecteaza...';
+  }
 }
 
 // ── Remindere - Firestore ─────────────────────────────────────────────────
