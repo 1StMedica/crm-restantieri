@@ -185,6 +185,9 @@ tbody tr:hover{background:var(--bg)}
 .tld{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .tld svg{width:14px;height:14px}
 .tld.apel{background:var(--bbg);color:var(--blue)}.tld.email{background:var(--pbg);color:var(--purple)}.tld.whatsapp{background:var(--gbg);color:var(--green)}.tld.intalnire{background:var(--abg);color:var(--amber)}.tld.promisiune{background:var(--rbg);color:var(--red)}.tld.notificare{background:var(--tbg);color:var(--teal)}
+.tld.prom_neonorata{background:var(--rbg);color:var(--red)}
+.tld.notif_interna{background:var(--bbg);color:var(--blue)}
+.tld.notif_externa{background:#fff0f0;color:#7B1010}
 .tlb{flex:1;min-width:0}
 .tltp{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .tltype{font-size:12px;font-weight:600}.tltime{font-size:11px;color:var(--t3)}.tlagent{font-size:11px;color:var(--t3)}
@@ -836,9 +839,12 @@ const TICO={
   whatsapp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>',
   intalnire:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
   promisiune:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>',
-  notificare:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'
+  notificare:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+  prom_neonorata:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+  notif_interna:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  notif_externa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
 };
-const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa'};
+const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa',prom_neonorata:'Promisiune neonorata',notif_interna:'Notificare interna (PDF)',notif_externa:'Notificare externa - Avocatura'};
 
 function showTT(e, text){
   var tt = document.getElementById('pnTooltip');
@@ -1389,6 +1395,9 @@ function renderJR(nm){
         <button class="tb" onclick="setT(this,'whatsapp')">${TICO.whatsapp} WhatsApp</button>
         <button class="tb" onclick="setT(this,'intalnire')">${TICO.intalnire} Intalnire</button>
         <button class="tb" onclick="setT(this,'promisiune')">${TICO.promisiune} Promisiune plata</button>
+        <button class="tb" onclick="setT(this,'prom_neonorata')" style="border-color:rgba(163,45,45,.3)">${TICO.prom_neonorata} Promisiune neonorata</button>
+        <button class="tb" onclick="setT(this,'notif_interna')" style="border-color:rgba(24,95,165,.3)">${TICO.notif_interna} Notificare interna</button>
+        <button class="tb" onclick="setT(this,'notif_externa')" style="border-color:rgba(123,16,16,.3);color:#7B1010">${TICO.notif_externa} Notificare externa</button>
       </div>
       <textarea class="nta" id="nta" placeholder="Descrie ce s-a discutat, acorduri, rezultate..."></textarea>
       <div class="nextra" style="flex-wrap:wrap;row-gap:6px">
@@ -1422,34 +1431,81 @@ function renderJR(nm){
 }
 function setT(btn,t){
   _ct=t;
-  document.querySelectorAll('.tb').forEach(b=>{b.className='tb';});
-  const cls={apel:'s-apel',email:'s-email',whatsapp:'s-wa',intalnire:'s-int',promisiune:'s-prom'};
+  document.querySelectorAll('.tb').forEach(b=>{
+    b.className='tb';
+    // restore original style
+    if(b.getAttribute('data-orig-style')) b.style.cssText=b.getAttribute('data-orig-style');
+  });
+  const cls={apel:'s-apel',email:'s-email',whatsapp:'s-wa',intalnire:'s-int',promisiune:'s-prom',
+    prom_neonorata:'s-prom',notif_interna:'s-email',notif_externa:'s-prom'};
   btn.className='tb '+(cls[t]||'');
-  const ip=t==='promisiune';
+  // Show/hide extra fields
+  const ip = t==='promisiune' || t==='prom_neonorata';
   document.getElementById('pl1').style.display=ip?'':'none';
   document.getElementById('psuma').style.display=ip?'':'none';
   document.getElementById('pl2').style.display=ip?'':'none';
   document.getElementById('pdata').style.display=ip?'':'none';
+  // If notif_externa - will show confirm dialog on save
 }
 function addN(nm){
   const txt=document.getElementById('nta').value.trim();
   if(!txt){toast('Adauga un text pentru nota','error');return;}
+
+  // Confirmare speciala pentru notificare externa
+  if(_ct==='notif_externa'){
+    if(!confirm('Prin finalizarea acestei actiuni, clientul restantier va fi externalizat catre casa de avocatura.\n\nConfirmi acest lucru?')){
+      return;
+    }
+  }
+
   if(!J[nm])J[nm]=[];
   const ag=document.getElementById('nag').value.trim()||(window.currentUser&&window.currentUser.displayName)||'Necunoscut';
   const n={id:uid(),type:_ct,text:txt,date:new Date().toISOString(),agent:ag};
-  if(_ct==='promisiune'){n.ps=document.getElementById('psuma').value;n.pd=document.getElementById('pdata').value;}
-  // Follow-up reminder
+
+  // Suma + data pentru promisiune sau promisiune neonorata
+  if(_ct==='promisiune'||_ct==='prom_neonorata'){
+    n.ps=document.getElementById('psuma').value;
+    n.pd=document.getElementById('pdata').value;
+  }
+
+  // La promisiune - creeaza automat un reminder de followup
+  if(_ct==='promisiune' && document.getElementById('pdata').value){
+    const pd=document.getElementById('pdata').value;
+    const ps=document.getElementById('psuma').value;
+    if(!window.REMINDERE) window.REMINDERE=[];
+    window.REMINDERE.push({
+      id:uid(),noteId:n.id,partener:nm,agent:ag,
+      data:pd,
+      actiune:'Verificare promisiune plata'+( ps?' - suma: '+fv(parseFloat(ps)||0,'')+ ' LEI':''),
+      context:txt,creat:new Date().toISOString(),status:'pending'
+    });
+    rSave(); updateReminderBadge();
+    toast('Nota + reminder followup pe '+pd+' creat automat!','success');
+  }
+
+  // Follow-up manual din campul de followup
   const fuData=document.getElementById('followupData').value;
   const fuAct=document.getElementById('followupActiune').value.trim();
-  if(fuData){
+  if(fuData && _ct!=='promisiune'){
     n.followup={data:fuData,actiune:fuAct||'Verificare status plata',agent:ag,status:'pending'};
-    // Save to global reminders list
     if(!window.REMINDERE) window.REMINDERE=[];
     window.REMINDERE.push({id:uid(),noteId:n.id,partener:nm,agent:ag,data:fuData,actiune:fuAct||'Verificare status plata',context:txt,creat:new Date().toISOString(),status:'pending'});
-    rSave();
-    updateReminderBadge();
+    rSave(); updateReminderBadge();
     toast('Nota + reminder pe '+fuData+' adaugat!','success');
   }
+
+  // Notificare interna - genereaza PDF
+  if(_ct==='notif_interna'){
+    n.pdf_generat=true;
+    setTimeout(()=>generateNotifPDF(nm, n), 300);
+  }
+
+  // Notificare externa - marcheaza ca externalizat
+  if(_ct==='notif_externa'){
+    n.externalizat=true;
+    n.externalizat_la=new Date().toISOString();
+  }
+
   J[nm].unshift(n);
   jSave();
   document.getElementById('nta').value='';
@@ -1469,8 +1525,10 @@ function renderTLI(nm){
     <div class="tll"><div class="tld ${n.type}">${TICO[n.type]||''}</div></div>
     <div class="tlb">
       <div class="tltp"><span class="tltype">${TLBL[n.type]||n.type}</span><span class="tltime">${fd(n.date)}</span>${n.agent?`<span class="tlagent">&middot; ${n.agent}</span>`:''}</div>
-      <div class="tltxt">${n.text}</div>
-      ${n.type==='promisiune'&&n.ps?`<div class="tlprom">${TICO.promisiune} Promis ${fv(parseFloat(n.ps)||0,'')} LEI ${n.pd?' pana pe '+n.pd:''}</div>`:''}
+      <div class="tltxt" style="${n.type==='notif_externa'?'color:var(--red)':''}">${n.text}</div>
+      ${n.type==='notif_externa'?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 12px;background:#fff0f0;color:#7B1010;border-radius:20px;font-size:11px;font-weight:600;border:1px solid rgba(123,16,16,.2)">&#9888; EXTERNALIZAT CATRE AVOCATURA</div>`:''}
+      ${n.type==='notif_interna'?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;background:var(--bbg);color:var(--blue);border-radius:20px;font-size:11px;font-weight:500">&#128196; PDF notificare generat</div>`:''}
+      ${(n.type==='promisiune'||n.type==='prom_neonorata')&&n.ps?`<div class="tlprom">${TICO.promisiune} Promis ${fv(parseFloat(n.ps)||0,'')} LEI ${n.pd?' pana pe '+n.pd:''}</div>`:''}
       ${n.followup?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;background:var(--pbg);color:var(--ptext);border-radius:20px;font-size:11px;font-weight:500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Follow-up: ${new Date(n.followup.data+'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'})} &mdash; ${n.followup.actiune}</div>`:''}
     </div>
     <button class="tldel" onclick="delN(this.closest('[data-tl]').dataset.nm,this.dataset.nid,this.dataset.pid)" data-nid="${n.id}" data-pid="${nid}"\\'").replace(/\\/g,'\\\\')}','${n.id}','${nid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
@@ -1904,6 +1962,58 @@ function markReminderDB(id){
     updateReminderBadge();
     toast('Followup marcat rezolvat','success');
   }
+}
+
+// NOTIFICARE INTERNA - PDF
+function generateNotifPDF(nm, nota){
+  const pd = PD.find(p=>p.p===nm)||{};
+  const facturiP = D.filter(r=>r.p===nm);
+  const today = new Date().toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const totalRest = facturiP.reduce((s,r)=>s+r.rest,0);
+
+  const continut = `
+    <html><head><meta charset="UTF-8">
+    <style>
+      body{font-family:Arial,sans-serif;margin:40px;color:#1a1918;font-size:13px}
+      h1{font-size:18px;margin-bottom:4px}
+      .header{border-bottom:2px solid #534AB7;padding-bottom:12px;margin-bottom:20px}
+      .badge{background:#FCEBEB;color:#A32D2D;padding:4px 10px;border-radius:4px;font-weight:600;display:inline-block}
+      table{width:100%;border-collapse:collapse;margin:16px 0}
+      th{background:#f5f4f0;padding:8px 10px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+      td{padding:8px 10px;border-bottom:1px solid #eee}
+      .total{font-weight:700;font-size:15px;color:#A32D2D}
+      .footer{margin-top:30px;padding-top:12px;border-top:1px solid #eee;font-size:11px;color:#6b6963}
+      @media print{body{margin:20px}}
+    </style></head><body>
+    <div class="header">
+      <h1>Notificare de plata</h1>
+      <div>Data: <strong>${today}</strong> &nbsp;&nbsp; <span class="badge">CONFIDENTIAL</span></div>
+    </div>
+    <p><strong>Catre:</strong> ${nm}</p>
+    <p><strong>CUI:</strong> ${pd.cui||'-'} &nbsp;&nbsp; <strong>Judet:</strong> ${pd.judet||'-'}</p>
+    <p style="margin-top:16px">Prin prezenta va notificam ca inregistrati urmatoarele obligatii de plata restante:</p>
+    <table>
+      <thead><tr><th>Nr. Factura</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest de plata</th><th>Valuta</th></tr></thead>
+      <tbody>
+        ${facturiP.map(f=>`<tr><td>${f.nr}</td><td>${f.de}</td><td>${f.ds}</td><td style="color:#A32D2D;font-weight:600">${f.z}</td><td>${fv(f.v,'')}</td><td style="color:#A32D2D;font-weight:600">${fv(f.rest,'')}</td><td>${f.m}</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <p class="total">Total rest de plata: ${fv(totalRest,'LEI')}</p>
+    <p style="margin-top:16px">${nota.text}</p>
+    <p style="margin-top:20px">Va rugam sa efectuati plata in termen de <strong>5 zile lucratoare</strong> de la primirea prezentei notificari.</p>
+    <p>In caz de neconformare, vom fi nevoiti sa luam masuri suplimentare de recuperare a creantei.</p>
+    <div class="footer">
+      Agent: ${nota.agent} &nbsp;&middot;&nbsp; Data: ${today} &nbsp;&middot;&nbsp; CRM Restante v2.0
+    </div>
+    </body></html>`;
+
+  const win = window.open('','_blank','width=800,height=600');
+  if(win){
+    win.document.write(continut);
+    win.document.close();
+    setTimeout(()=>win.print(), 500);
+  }
+  toast('PDF notificare generat','success');
 }
 
 // EXPORT
