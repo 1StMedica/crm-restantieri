@@ -729,7 +729,7 @@ function renderDB(){
   // Top partners
   document.getElementById('tTop').innerHTML=PD.slice(0,8).map((d,i)=>`<tr>
     <td style="color:var(--t3);font-size:12px">${i+1}</td>
-    <td><div class="pn" style="white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa('${d.p.replace(/'/g,"\\'")}")">${d.p}</div></td>
+    <td><div class="pn" style="white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${d.p}">${d.p}</div></td>
     <td style="text-align:center">${d.nr_facturi}</td>
     <td style="color:var(--green);font-size:12px">${fv(d.total_incasat,'')}</td>
     <td><span class="amt amtr">${fv(d.sold_net,d.m)}</span></td>
@@ -739,7 +739,7 @@ function renderDB(){
   const urg=[...D].filter(r=>r.z>=0).sort((a,b)=>b.z-a.z).slice(0,12);
   document.getElementById('tPri').innerHTML=urg.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
-    <td><div class="pn" style="white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa('${r.p.replace(/'/g,"\\'")}")">${r.p}</div></td>
+    <td><div class="pn" style="white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.p}">${r.p}</div></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:12px;white-space:nowrap">${r.ds}</td>
     <td style="text-align:center;font-weight:600;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':'var(--t2)'}">${r.z}</td>
@@ -750,7 +750,7 @@ function renderDB(){
     <td>${rb(r.z)}</td>
     <td style="display:flex;gap:3px">
       <button class="abtn" title="Notificare" onclick='openN(${JSON.stringify(r)})'>${TICO.notificare}</button>
-      <button class="abtn" title="Jurnal" onclick="goJ('${r.p.replace(/'/g,"\\'")}')">${TICO.email.replace('path d=','path d=')}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+      <button class="abtn" title="Jurnal" onclick="goJ(this.dataset.nm)" data-nm="${r.p}"\\'")}')">${TICO.email.replace('path d=','path d=')}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
     </td>
   </tr>`).join('');
   // Chart
@@ -786,7 +786,7 @@ function renderF(){
   if(!d.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
   tb.innerHTML=d.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
-    <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa('${r.p.replace(/'/g,'\\'')}')">${r.p}</div></td>
+    <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.p}">${r.p}</div></td>
     <td><span class="pcui">${r.cui||'-'}</span></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.adresa||''}">${r.adresa||'-'}</td>
@@ -815,7 +815,7 @@ function renderP(){
   tb.innerHTML=src.map(d=>{
     const nm=d.p;const nc=(J[nm]||[]).length;
     return`<tr>
-      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa('${nm.replace(/'/g,'\\'')}')">${nm}</div></td>
+      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${nm}">${nm}</div></td>
       <td><span class="pcui">${d.cui||'-'}</span></td>
       <td style="font-size:12px">${d.judet||'-'}</td>
       <td style="font-size:12px">${d.tel||'-'}</td>
@@ -827,7 +827,7 @@ function renderP(){
       <td><span class="amt amtr" style="font-weight:700">${fv(d.sold_net,d.m)}</span></td>
       <td>${rb(d.max_zile||0)}</td>
       <td>${nc?`<span class="badge bp">${nc} note</span>`:'<span style="color:var(--t3)">-</span>'}</td>
-      <td><button class="btn btnsm" onclick="goJ('${nm.replace(/'/g,"\\'")}')">${TICO.email.slice(0,5)}&#x1F4AC; Jurnal</button></td>
+      <td><button class="btn btnsm" onclick="goJ(this.dataset.nm)" data-nm="${nm}"\\'")}')">${TICO.email.slice(0,5)}&#x1F4AC; Jurnal</button></td>
     </tr>`;
   }).join('');
 }
@@ -841,7 +841,7 @@ function renderPL(f){
   cont.innerHTML=ps.map(d=>{
     const nm=d.p;const nc=(J[nm]||[]).length;
     const rc=d.max_zile>=90?'br':d.max_zile>=60?'ba':d.max_zile>=30?'bb':'bg';
-    return`<div class="plitem${selP===nm?' active':''}" onclick="selPart('${nm.replace(/'/g,"\\'").replace(/\\/g,'\\\\')}')" >
+    return`<div class="plitem${selP===nm?' active':''}" onclick="selPart(this.dataset.nm)" data-nm="${nm}"\\'").replace(/\\/g,'\\\\')}')" >
       <div class="plname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
       <div class="plmeta">
         <span class="badge ${rc}" style="font-size:10px;padding:1px 6px">${d.max_zile} zile</span>
@@ -861,6 +861,7 @@ function renderJR(nm){
   const fNei=desf.facturi.filter(f=>f.status==='neincasat');
   const fPar=desf.facturi.filter(f=>f.status==='partial');
 
+  document.getElementById('jRight').dataset.partner = nm;
   document.getElementById('jRight').innerHTML=`
     <div class="pch">
       <div class="pcht">
@@ -992,7 +993,7 @@ function renderJR(nm){
         <span class="nlbl2" style="color:var(--purple);font-weight:600">Follow-up:</span>
         <input class="nin" id="followupData" type="date" style="width:145px" title="Data la care agentul trebuie sa verifice">
         <input class="nin" id="followupActiune" type="text" placeholder="Ce trebuie verificat / urmarit..." style="flex:1;min-width:200px">
-        <button class="btn btnp btnsm" style="margin-left:auto" onclick="addN('${nm.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adauga nota</button>
+        <button class="btn btnp btnsm" style="margin-left:auto" onclick="addN(this.closest('[data-partner]').dataset.partner)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adauga nota</button>
       </div>
     </div>
 
@@ -1048,7 +1049,7 @@ function renderTLI(nm){
   const ns=J[nm]||[];
   if(!ns.length)return`<div class="empty" style="padding:30px"><div class="etl">Nicio interactiune inregistrata</div><div>Adauga prima nota de mai sus</div></div>`;
   const nid=nm.replace(/[^a-zA-Z0-9]/g,'_');
-  return ns.map(n=>`<div class="tli">
+  return ns.map(n=>`<div class="tli" data-tl="1" data-nm="${nm}">
     <div class="tll"><div class="tld ${n.type}">${TICO[n.type]||''}</div></div>
     <div class="tlb">
       <div class="tltp"><span class="tltype">${TLBL[n.type]||n.type}</span><span class="tltime">${fd(n.date)}</span>${n.agent?`<span class="tlagent">&middot; ${n.agent}</span>`:''}</div>
@@ -1056,7 +1057,7 @@ function renderTLI(nm){
       ${n.type==='promisiune'&&n.ps?`<div class="tlprom">${TICO.promisiune} Promis ${fv(parseFloat(n.ps)||0,'')} LEI ${n.pd?' pana pe '+n.pd:''}</div>`:''}
       ${n.followup?`<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:4px 10px;background:var(--pbg);color:var(--ptext);border-radius:20px;font-size:11px;font-weight:500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Follow-up: ${new Date(n.followup.data+'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'})} &mdash; ${n.followup.actiune}</div>`:''}
     </div>
-    <button class="tldel" onclick="delN('${nm.replace(/'/g,"\\'").replace(/\\/g,'\\\\')}','${n.id}','${nid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+    <button class="tldel" onclick="delN(this.closest('[data-tl]').dataset.nm,this.dataset.nid,this.dataset.pid)" data-nid="${n.id}" data-pid="${nid}"\\'").replace(/\\/g,'\\\\')}','${n.id}','${nid}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
   </div>`).join('');
 }
 function delN(nm,id,nid){
@@ -1117,7 +1118,7 @@ function renderA(){
   });
   const rows=PD.map(p=>({nm:p.p,ag:p.ag,sn:p.sold_net,v:(byP[p.p]||{v:[0,0,0,0]}).v})).sort((a,b)=>b.sn-a.sn);
   tb.innerHTML=rows.map(r=>`<tr>
-    <td><div class="pn" style="cursor:pointer;color:var(--purple)" onclick="openFisa('${r.nm.replace(/'/g,'\\'')}')">${r.nm}</div></td>
+    <td><div class="pn" style="cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.nm}">${r.nm}</div></td>
     <td style="font-size:12px;color:var(--t2)">${r.ag||'-'}</td>
     <td style="color:var(--green)">${r.v[0]>0?fv(r.v[0],''):'-'}</td>
     <td style="color:var(--amber)">${r.v[1]>0?fv(r.v[1],''):'-'}</td>
@@ -1197,7 +1198,7 @@ function renderRemindere(){
         ${isOverdue?'<div style="font-size:10px;color:var(--red);font-weight:500">DEPASIT</div>':''}
       </td>
       <td>
-        <div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goJ('${r.partener.replace(/'/g,"\\'")}')">${r.partener}</div>
+        <div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goJ(this.dataset.nm)" data-nm="${r.partener}"\\'")}')">${r.partener}</div>
       </td>
       <td style="font-size:12px;color:var(--t2)">${r.agent||'-'}</td>
       <td>
@@ -1211,7 +1212,7 @@ function renderRemindere(){
       <td>
         <div style="display:flex;gap:4px">
           ${r.status!=='done' ? `<button class="btn btnsm" style="background:var(--gbg);color:var(--green);border-color:rgba(59,109,17,.2)" onclick="markReminder('${r.id}','done')" title="Marcheaza rezolvat">&#10003; Rezolvat</button>` : ''}
-          <button class="abtn" onclick="goJ('${r.partener.replace(/'/g,"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
+          <button class="abtn" onclick="goJ(this.dataset.nm)" data-nm="${r.partener}"\\'")}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
           <button class="abtn" onclick="deleteReminder('${r.id}')" title="Sterge reminder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
         </div>
       </td>
@@ -1331,6 +1332,7 @@ function _renderFisaFacturi(nm, desf){
 function _renderFisaJurnal(nm){
   const notes = J[nm]||[];
   const cont = document.getElementById('fisaContent');
+  cont.dataset.partner = nm;
   // Quick add note form
   const nid = nm.replace(/[^a-zA-Z0-9]/g,'_');
   cont.innerHTML=`
@@ -1346,7 +1348,7 @@ function _renderFisaJurnal(nm){
         </select>
         <input class="nin" id="fisa-nag" type="text" placeholder="Agent" style="width:120px">
         <textarea id="fisa-ntxt" class="nta" placeholder="Nota..." style="flex:1;min-height:60px;font-size:13px"></textarea>
-        <button class="btn btnp btnsm" style="flex-shrink:0" onclick="addFisaNota('${nm.replace(/'/g,"\\'")}')">+ Adauga</button>
+        <button class="btn btnp btnsm" style="flex-shrink:0" onclick="addFisaNota(this.closest(\'[data-partner]\').dataset.partner)">+ Adauga</button>
       </div>
     </div>
     <div id="fisa-tl">
