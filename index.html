@@ -57,6 +57,104 @@ function loadFirebase(){
 }
 // Load Firebase after page renders
 window.addEventListener('load', function(){ setTimeout(loadFirebase, 100); });
+
+// Auth functions defined here so they're available before main script
+
+function signInGoogle(){
+  // Email/parola login - compatibil cu toate browserele si GitHub Pages
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  if(!email || !pass){ toast('Completeaza email si parola','error'); return; }
+  if(!window.auth){ toast('Se incarca... incearca din nou in cateva secunde','error'); return; }
+  document.getElementById('loginBtn').textContent = 'Se conecteaza...';
+  document.getElementById('loginBtn').disabled = true;
+  window.auth.signInWithEmailAndPassword(email, pass)
+    .then(function(result){
+      showApp(result.user);
+    })
+    .catch(function(e){
+      var msg = 'Email sau parola incorecta';
+      if(e.code === 'auth/too-many-requests') msg = 'Prea multe incercari. Incearca mai tarziu.';
+      if(e.code === 'auth/user-not-found') msg = 'Cont inexistent. Contacteaza administratorul.';
+      toast(msg, 'error');
+      document.getElementById('loginBtn').textContent = 'Conecteaza-te';
+      document.getElementById('loginBtn').disabled = false;
+    });
+}
+function signOut(){
+  if(!window.auth) return;
+  window.auth.signOut().then(function(){
+    toast('Deconectat cu succes');
+  });
+}
+function showApp(user){
+  window.currentUser = user;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appContainer').style.display = 'flex';
+  dst(); renderDB(); renderPL(); renderF(); updateReminderBadge();
+  setTimeout(renderRemindere, 200);
+  var name = user.displayName || user.email || 'Agent';
+  var el = document.getElementById('userInfo');
+  if(el){
+    el.innerHTML = '<div style="font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + name + '</div>' +
+      '<div style="font-size:10px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + user.email + '</div>';
+  }
+  var av = document.getElementById('userAvatar');
+  if(av){
+    av.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ptext)">' + name[0].toUpperCase() + '</div>';
+  }
+  jLoad(); rLoad();
+  // Incarca datele de import din cloud
+  setTimeout(loadImportFromFirestore, 800);
+  // Porneste real-time listeners
+  function startJurnalListener(){
+    if(!window.db) return;
+    window.db.collection('jurnal').onSnapshot(function(snapshot){
+      snapshot.docChanges().forEach(function(change){
+        if(change.type==='modified'||change.type==='added'){
+          var data=change.doc.data();
+          if(data.partener&&Array.isArray(data.note)) J[data.partener]=data.note;
+        }
+      });
+      _updateJurnalStatus();
+      if(typeof selP!=='undefined'&&selP) renderJR(selP);
+      renderPL();
+    }, function(e){ console.warn('Jurnal listener error:',e); });
+  }
+  function startImportListener(){
+    if(!window.db) return;
+    window.db.collection('imports').doc('latest').onSnapshot(function(snap){
+      if(snap.exists&&snap.metadata.hasPendingWrites===false){
+        var d=snap.data();
+        if(d&&d.meta&&d.meta.importat_la){
+          var imported=new Date(d.meta.importat_la);
+          var diff=(new Date()-imported)/1000;
+          if(diff<30&&window.currentUser&&d.meta.importat_de!==(window.currentUser.displayName||window.currentUser.email)){
+            toast('&#9729; '+d.meta.importat_de+' a importat date noi. Se actualizeaza...','success');
+            setTimeout(loadImportFromFirestore,1000);
+          }
+        }
+      }
+    }, function(e){ console.warn('Import listener error:',e); });
+  }
+  if(window._fbLoaded){ startJurnalListener(); startImportListener(); }
+  else{ window._fbQueue.push(startJurnalListener); window._fbQueue.push(startImportListener); }
+}
+
+function startAuthListener(){
+  if(!window.auth) return;
+  window.auth.onAuthStateChanged(function(user){
+    if(user){
+      showApp(user);
+    } else {
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appContainer').style.display = 'none';
+    }
+  });
+}
+var _fbReady = false; // true dupa prima incarcare din Firestore
+
+// ── Jurnal - Firestore ─────────────────────────────────────────────────────
 </script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -633,101 +731,6 @@ var J = {}; // jurnal - cache local, sursa de adevar = Firestore
 window.REMINDERE = []; // remindere - cache local
 window.currentUser = null; // utilizatorul logat curent
 
-function showApp(user){
-  window.currentUser = user;
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appContainer').style.display = 'flex';
-  dst(); renderDB(); renderPL(); renderF(); updateReminderBadge();
-  setTimeout(renderRemindere, 200);
-  var name = user.displayName || user.email || 'Agent';
-  var el = document.getElementById('userInfo');
-  if(el){
-    el.innerHTML = '<div style="font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + name + '</div>' +
-      '<div style="font-size:10px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + user.email + '</div>';
-  }
-  var av = document.getElementById('userAvatar');
-  if(av){
-    av.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ptext)">' + name[0].toUpperCase() + '</div>';
-  }
-  jLoad(); rLoad();
-  // Incarca datele de import din cloud
-  setTimeout(loadImportFromFirestore, 800);
-  // Porneste real-time listeners
-  function startJurnalListener(){
-    if(!window.db) return;
-    window.db.collection('jurnal').onSnapshot(function(snapshot){
-      snapshot.docChanges().forEach(function(change){
-        if(change.type==='modified'||change.type==='added'){
-          var data=change.doc.data();
-          if(data.partener&&Array.isArray(data.note)) J[data.partener]=data.note;
-        }
-      });
-      _updateJurnalStatus();
-      if(typeof selP!=='undefined'&&selP) renderJR(selP);
-      renderPL();
-    }, function(e){ console.warn('Jurnal listener error:',e); });
-  }
-  function startImportListener(){
-    if(!window.db) return;
-    window.db.collection('imports').doc('latest').onSnapshot(function(snap){
-      if(snap.exists&&snap.metadata.hasPendingWrites===false){
-        var d=snap.data();
-        if(d&&d.meta&&d.meta.importat_la){
-          var imported=new Date(d.meta.importat_la);
-          var diff=(new Date()-imported)/1000;
-          if(diff<30&&window.currentUser&&d.meta.importat_de!==(window.currentUser.displayName||window.currentUser.email)){
-            toast('&#9729; '+d.meta.importat_de+' a importat date noi. Se actualizeaza...','success');
-            setTimeout(loadImportFromFirestore,1000);
-          }
-        }
-      }
-    }, function(e){ console.warn('Import listener error:',e); });
-  }
-  if(window._fbLoaded){ startJurnalListener(); startImportListener(); }
-  else{ window._fbQueue.push(startJurnalListener); window._fbQueue.push(startImportListener); }
-}
-
-function startAuthListener(){
-  if(!window.auth) return;
-  window.auth.onAuthStateChanged(function(user){
-    if(user){
-      showApp(user);
-    } else {
-      document.getElementById('loginScreen').style.display = 'flex';
-      document.getElementById('appContainer').style.display = 'none';
-    }
-  });
-}
-function signInGoogle(){
-  // Email/parola login - compatibil cu toate browserele si GitHub Pages
-  var email = document.getElementById('loginEmail').value.trim();
-  var pass = document.getElementById('loginPass').value;
-  if(!email || !pass){ toast('Completeaza email si parola','error'); return; }
-  if(!window.auth){ toast('Se incarca... incearca din nou in cateva secunde','error'); return; }
-  document.getElementById('loginBtn').textContent = 'Se conecteaza...';
-  document.getElementById('loginBtn').disabled = true;
-  window.auth.signInWithEmailAndPassword(email, pass)
-    .then(function(result){
-      showApp(result.user);
-    })
-    .catch(function(e){
-      var msg = 'Email sau parola incorecta';
-      if(e.code === 'auth/too-many-requests') msg = 'Prea multe incercari. Incearca mai tarziu.';
-      if(e.code === 'auth/user-not-found') msg = 'Cont inexistent. Contacteaza administratorul.';
-      toast(msg, 'error');
-      document.getElementById('loginBtn').textContent = 'Conecteaza-te';
-      document.getElementById('loginBtn').disabled = false;
-    });
-}
-function signOut(){
-  if(!window.auth) return;
-  window.auth.signOut().then(function(){
-    toast('Deconectat cu succes');
-  });
-}
-var _fbReady = false; // true dupa prima incarcare din Firestore
-
-// ── Jurnal - Firestore ─────────────────────────────────────────────────────
 function jSave(){
   try { localStorage.setItem('crm_jurnal_backup', JSON.stringify(J)); } catch(e){}
   _updateJurnalStatus();
