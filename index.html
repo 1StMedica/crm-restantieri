@@ -256,20 +256,31 @@ tbody tr:hover{background:var(--bg)}
 </head>
 <body>
 <!-- LOGIN SCREEN -->
-<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:var(--bg);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:0">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.08)">
-    <div style="width:56px;height:56px;border-radius:14px;background:var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:28px;height:28px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+<div id="loginScreen" style="display:flex;position:fixed;inset:0;background:var(--bg);z-index:999;align-items:center;justify-content:center;flex-direction:column">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.08)">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:52px;height:52px;border-radius:12px;background:var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:26px;height:26px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:600;margin-bottom:4px">CRM Restante</div>
+      <div style="font-size:12px;color:var(--t3)">Acces restrictionat — membrii echipei</div>
     </div>
-    <div style="font-size:22px;font-weight:600;margin-bottom:6px">CRM Restante</div>
-    <div style="font-size:13px;color:var(--t3);margin-bottom:28px">Autentifica-te cu contul Google al firmei pentru a accesa aplicatia</div>
-    <div id="loginBtnWrap">
-    <button onclick="signInGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 20px;border:1px solid var(--bmed);border-radius:var(--rs);background:var(--surface);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--text);transition:all .15s">
-      <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Continua cu Google
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px">Email</div>
+      <input id="loginEmail" type="email" placeholder="email@firma.eu" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()"
+        style="width:100%;padding:10px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none">
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px">Parola</div>
+      <input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')signInGoogle()"
+        style="width:100%;padding:10px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none">
+    </div>
+    <button id="loginBtn" onclick="signInGoogle()"
+      style="width:100%;padding:11px;border:none;border-radius:var(--rs);background:var(--purple);color:white;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:background .15s">
+      Conecteaza-te
     </button>
-    </div>
-    <div style="margin-top:20px;font-size:11px;color:var(--t3)">Acces restrictionat la membrii echipei autorizati</div>
+    <div id="loginErr" style="margin-top:12px;font-size:12px;color:var(--red);text-align:center;display:none"></div>
+    <div style="margin-top:16px;font-size:11px;color:var(--t3);text-align:center">Contacteaza administratorul pentru acces</div>
   </div>
 </div>
 
@@ -562,63 +573,51 @@ function showApp(user){
   document.getElementById('appContainer').style.display = 'flex';
   dst(); renderDB(); renderPL(); renderF(); updateReminderBadge();
   setTimeout(renderRemindere, 200);
+  var name = user.displayName || user.email || 'Agent';
   var el = document.getElementById('userInfo');
   if(el){
-    el.innerHTML = '<div style="font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + (user.displayName||user.email) + '</div>' +
+    el.innerHTML = '<div style="font-weight:500;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + name + '</div>' +
       '<div style="font-size:10px;color:var(--t3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + user.email + '</div>';
   }
   var av = document.getElementById('userAvatar');
   if(av){
-    if(user.photoURL) av.innerHTML = '<img src="'+user.photoURL+'" style="width:32px;height:32px;border-radius:50%;object-fit:cover">';
-    else av.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--ptext)">' + (user.displayName||user.email||'?')[0].toUpperCase() + '</div>';
+    av.innerHTML = '<div style="width:32px;height:32px;border-radius:50%;background:var(--pbg);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--ptext)">' + name[0].toUpperCase() + '</div>';
   }
   jLoad(); rLoad();
 }
 
 function startAuthListener(){
   if(!window.auth) return;
-  // Arata loading in timp ce verificam starea auth
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginBtnWrap').innerHTML = '<div style="padding:12px;text-align:center;color:var(--t3);font-size:13px">Se verifica autentificarea...</div>';
-  
-  // Primul pas: verifica daca venim dintr-un redirect Google
-  window.auth.getRedirectResult().then(function(result){
-    if(result && result.user){
-      // Redirect reusit - userul e logat
-      showApp(result.user);
+  window.auth.onAuthStateChanged(function(user){
+    if(user){
+      showApp(user);
     } else {
-      // Nu venim din redirect - verifica starea curenta
-      window.auth.onAuthStateChanged(function(user){
-        if(user){
-          showApp(user);
-        } else {
-          // Nimeni logat - arata butonul de login
-          document.getElementById('loginBtnWrap').innerHTML = '<button onclick="signInGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 20px;border:1px solid var(--bmed);border-radius:var(--rs);background:var(--surface);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--text);transition:all .15s"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\"><path fill=\"#4285F4\" d=\"M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z\"/><path fill=\"#34A853\" d=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\"/><path fill=\"#FBBC05\" d=\"M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z\"/><path fill=\"#EA4335\" d=\"M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\"/></svg>Continua cu Google</button>';
-          document.getElementById('loginScreen').style.display = 'flex';
-          document.getElementById('appContainer').style.display = 'none';
-        }
-      }, {once: false});
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('appContainer').style.display = 'none';
     }
-  }).catch(function(e){
-    console.warn('getRedirectResult error:', e.code, e.message);
-    // In caz de eroare, arata butonul normal
-    document.getElementById('loginBtnWrap').innerHTML = '<button onclick="signInGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 20px;border:1px solid var(--bmed);border-radius:var(--rs);background:var(--surface);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--text)"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\"><path fill=\"#4285F4\" d=\"M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z\"/><path fill=\"#34A853\" d=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z\"/><path fill=\"#FBBC05\" d=\"M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z\"/><path fill=\"#EA4335\" d=\"M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z\"/></svg>Continua cu Google</button>';
-    window.auth.onAuthStateChanged(function(user){
-      if(user) showApp(user);
-    });
   });
 }
-
 function signInGoogle(){
-  if(!window.auth){ toast('Firebase nu s-a incarcat inca. Incearca din nou.','error'); return; }
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({'prompt': 'select_account'});
-  // Folosim redirect in loc de popup (mai compatibil cu GitHub Pages)
-  window.auth.signInWithRedirect(provider).catch(function(e){
-    toast('Eroare la autentificare: ' + e.message, 'error');
-  });
+  // Email/parola login - compatibil cu toate browserele si GitHub Pages
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  if(!email || !pass){ toast('Completeaza email si parola','error'); return; }
+  if(!window.auth){ toast('Se incarca... incearca din nou in cateva secunde','error'); return; }
+  document.getElementById('loginBtn').textContent = 'Se conecteaza...';
+  document.getElementById('loginBtn').disabled = true;
+  window.auth.signInWithEmailAndPassword(email, pass)
+    .then(function(result){
+      showApp(result.user);
+    })
+    .catch(function(e){
+      var msg = 'Email sau parola incorecta';
+      if(e.code === 'auth/too-many-requests') msg = 'Prea multe incercari. Incearca mai tarziu.';
+      if(e.code === 'auth/user-not-found') msg = 'Cont inexistent. Contacteaza administratorul.';
+      toast(msg, 'error');
+      document.getElementById('loginBtn').textContent = 'Conecteaza-te';
+      document.getElementById('loginBtn').disabled = false;
+    });
 }
-
 function signOut(){
   if(!window.auth) return;
   window.auth.signOut().then(function(){
