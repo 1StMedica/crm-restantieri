@@ -651,6 +651,39 @@ function showApp(user){
   jLoad(); rLoad();
   // Incarca datele de import din cloud
   setTimeout(loadImportFromFirestore, 800);
+  // Porneste real-time listeners
+  function startJurnalListener(){
+    if(!window.db) return;
+    window.db.collection('jurnal').onSnapshot(function(snapshot){
+      snapshot.docChanges().forEach(function(change){
+        if(change.type==='modified'||change.type==='added'){
+          var data=change.doc.data();
+          if(data.partener&&Array.isArray(data.note)) J[data.partener]=data.note;
+        }
+      });
+      _updateJurnalStatus();
+      if(typeof selP!=='undefined'&&selP) renderJR(selP);
+      renderPL();
+    }, function(e){ console.warn('Jurnal listener error:',e); });
+  }
+  function startImportListener(){
+    if(!window.db) return;
+    window.db.collection('imports').doc('latest').onSnapshot(function(snap){
+      if(snap.exists&&snap.metadata.hasPendingWrites===false){
+        var d=snap.data();
+        if(d&&d.meta&&d.meta.importat_la){
+          var imported=new Date(d.meta.importat_la);
+          var diff=(new Date()-imported)/1000;
+          if(diff<30&&window.currentUser&&d.meta.importat_de!==(window.currentUser.displayName||window.currentUser.email)){
+            toast('&#9729; '+d.meta.importat_de+' a importat date noi. Se actualizeaza...','success');
+            setTimeout(loadImportFromFirestore,1000);
+          }
+        }
+      }
+    }, function(e){ console.warn('Import listener error:',e); });
+  }
+  if(window._fbLoaded){ startJurnalListener(); startImportListener(); }
+  else{ window._fbQueue.push(startJurnalListener); window._fbQueue.push(startImportListener); }
 }
 
 function startAuthListener(){
@@ -1006,8 +1039,11 @@ function loadImportFromFirestore(){
       return;
     }
     const data = doc.data();
-    PD = data.PD || [];
-    DESF = data.DESF || {};
+    PD = (data.PD || []).filter(function(p){ return p.sold_net > 0; });
+    var deskFull = data.DESF || {};
+    var pdSet = new Set(PD.map(function(p){ return p.p; }));
+    DESF = {};
+    Object.keys(deskFull).forEach(function(nm){ if(pdSet.has(nm)) DESF[nm]=deskFull[nm]; });
     const nrChunks = data.nr_chunks || 1;
     const meta = data.meta || {};
 
@@ -1259,7 +1295,7 @@ function renderP(){
 // JURNAL
 function renderPL(f){
   f=f||(document.getElementById('plsrch')||{value:''}).value||'';
-  // Include parteneri din DESF care nu sunt in PD (sold net negativ dar cu facturi restante sau note)
+  // Doar parteneri cu sold_net > 0
   const pdNames = new Set(PD.map(d=>d.p));
   const extraFromDesf = Object.keys(DESF).filter(nm=>
     !pdNames.has(nm) && (DESF[nm].facturi.length > 0 || (J[nm]&&J[nm].length>0))
