@@ -361,7 +361,23 @@ tbody tr:hover{background:var(--bg)}
       </div>
       <div class="g3">
         <div class="card"><div class="ch"><div><div class="ct">Top restantieri</div><div class="cs">dupa sold net (col AB)</div></div></div><div class="tw"><table><thead><tr><th style="width:30px">#</th><th>Partener</th><th>Facturi</th><th>Incasat</th><th>Sold net</th><th>Max zile</th></tr></thead><tbody id="tTop"><tr><td colspan="6"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
-        <div class="card"><div class="ch"><div class="ct">Distributie aging</div></div><div class="cw" style="height:220px"><canvas id="agingChart"></canvas></div></div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card"><div class="ch"><div class="ct">Distributie aging</div></div><div class="cw" style="height:200px"><canvas id="agingChart"></canvas></div></div>
+          <!-- PANEL ALERTE FOLLOWUP -->
+          <div class="card" id="alertPanel" style="flex:1">
+            <div class="ch" style="background:var(--rbg);border-bottom-color:rgba(163,45,45,.15)">
+              <div>
+                <div class="ct" style="color:var(--red);display:flex;align-items:center;gap:7px">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px;flex-shrink:0"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                  Alerte followup
+                </div>
+                <div class="cs" id="alertSubtitle">Se incarca...</div>
+              </div>
+              <a onclick="showPage('remindere',document.querySelectorAll('.ni')[3])" style="font-size:11px;color:var(--purple);cursor:pointer;text-decoration:none;font-weight:500;flex-shrink:0">Vezi toate →</a>
+            </div>
+            <div id="alertList" style="max-height:280px;overflow-y:auto"></div>
+          </div>
+        </div>
       </div>
       <div class="card"><div class="ch"><div><div class="ct">Facturi prioritare</div><div class="cs">cu rest de plata, sortate dupa risc</div></div></div><div class="tw"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>Judet</th><th>Scadenta</th><th>Zile dep.</th><th>Total fact.</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th><th>Act.</th></tr></thead><tbody id="tPri"><tr><td colspan="11"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
@@ -715,7 +731,7 @@ function rLoad(){
       if(doc.exists && Array.isArray(doc.data().lista)){
         window.REMINDERE = doc.data().lista;
         try { localStorage.setItem('crm_remindere_backup', JSON.stringify(window.REMINDERE)); } catch(e){}
-        updateReminderBadge(); renderRemindere();
+        updateReminderBadge(); renderRemindere(); renderAlerts();
       }
     }).catch(e => console.warn('Firestore remindere read:', e));
   }
@@ -990,6 +1006,7 @@ function renderDB(){
   </tr>`).join('');
   // Chart
   const a0=D.filter(r=>r.z>=0&&r.z<30).length,a30=D.filter(r=>r.z>=30&&r.z<60).length,a60=D.filter(r=>r.z>=60&&r.z<90).length,a90=D.filter(r=>r.z>=90).length;
+  renderAlerts();
   if(aCI)aCI.destroy();
   aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:[a0,a30,a60,a90],backgroundColor:['#EAF3DE','#FAEEDA','#fdf0e8','#FCEBEB'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:2}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12}}},cutout:'60%'}});
 }
@@ -1657,6 +1674,77 @@ function goJFromFisa(){
   const nm = _fisaNm;
   cm('fisaModal');
   setTimeout(()=>{ showPage('jurnal', document.querySelectorAll('.ni')[3]); setTimeout(()=>selPart(nm),80); },100);
+}
+
+// ALERTE FOLLOWUP
+function renderAlerts(){
+  var today = new Date().toISOString().slice(0,10);
+  var R = window.REMINDERE || [];
+  // Followup azi + depasite nerezolvate
+  var urgent = R.filter(function(r){
+    return r.status !== 'done' && (r.data === today || r.data < today);
+  }).sort(function(a,b){ return a.data.localeCompare(b.data); });
+
+  var overdue = urgent.filter(function(r){ return r.data < today; });
+  var todayR  = urgent.filter(function(r){ return r.data === today; });
+
+  var subtitle = '';
+  if(!urgent.length) subtitle = 'Niciun followup urgent';
+  else {
+    var parts = [];
+    if(todayR.length)  parts.push(todayR.length + ' azi');
+    if(overdue.length) parts.push(overdue.length + ' dep\u0103\u0219ite');
+    subtitle = parts.join(' \u00b7 ');
+  }
+  var subEl = document.getElementById('alertSubtitle');
+  if(subEl) subEl.textContent = subtitle;
+
+  var list = document.getElementById('alertList');
+  if(!list) return;
+
+  if(!urgent.length){
+    list.innerHTML = '<div style="padding:20px 16px;text-align:center;color:var(--t3);font-size:13px">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;display:block;margin:0 auto 8px;opacity:.4"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>' +
+      'Niciun followup pentru azi sau dep\u0103\u0219it</div>';
+    return;
+  }
+
+  list.innerHTML = urgent.map(function(r){
+    var isToday = r.data === today;
+    var isOverdue = r.data < today;
+    var dateFmt = new Date(r.data + 'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit'});
+    var bgColor = isOverdue ? 'rgba(163,45,45,0.04)' : 'rgba(83,74,183,0.04)';
+    var dotColor = isOverdue ? 'var(--red)' : 'var(--purple)';
+    var dateLabel = isOverdue
+      ? '<span style="background:var(--rbg);color:var(--red);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">DEP\u0102\u015eIT ' + dateFmt + '</span>'
+      : '<span style="background:var(--pbg);color:var(--ptext);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">AZI</span>';
+    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:0.5px solid var(--border);background:' + bgColor + ';transition:background .12s" ' +
+      'onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'' + bgColor + '\'">' +
+      '<div style="width:7px;height:7px;border-radius:50%;background:' + dotColor + ';margin-top:5px;flex-shrink:0"></div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">' +
+          dateLabel +
+          '<span style="font-size:12px;font-weight:500;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px" title="' + r.partener + '">' + r.partener + '</span>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--text);line-height:1.4">' + r.actiune + '</div>' +
+        '<div style="font-size:11px;color:var(--t3);margin-top:2px">' + (r.agent||'') + '</div>' +
+      '</div>' +
+      '<button onclick="markReminderDB(\'' + r.id + '\')" title="Marcat rezolvat" ' +
+        'style="background:var(--gbg);border:none;border-radius:4px;padding:4px 7px;cursor:pointer;color:var(--green);font-size:11px;font-weight:500;flex-shrink:0;white-space:nowrap">' +
+        '&#10003;</button>' +
+    '</div>';
+  }).join('');
+}
+
+function markReminderDB(id){
+  var r = (window.REMINDERE||[]).find(function(x){ return x.id===id; });
+  if(r){
+    r.status='done';
+    rSave();
+    renderAlerts();
+    updateReminderBadge();
+    toast('Followup marcat rezolvat','success');
+  }
 }
 
 // EXPORT
