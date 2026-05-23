@@ -37,12 +37,13 @@ function loadFirebase(){
           window.auth = firebase.auth();
           window._fbLoaded = true;
           window._fbReady = true;
-          _updateJurnalStatus();
-          // Start auth listener
-          startAuthListener();
-          // Run queued Firebase operations
-          window._fbQueue.forEach(function(fn){ try{fn();}catch(e){} });
-          window._fbQueue = [];
+          // Use setTimeout to ensure main script has executed before calling its functions
+          setTimeout(function(){
+            if(typeof _updateJurnalStatus === 'function') _updateJurnalStatus();
+            if(typeof startAuthListener === 'function') startAuthListener();
+            window._fbQueue.forEach(function(fn){ try{fn();}catch(e){} });
+            window._fbQueue = [];
+          }, 0);
         }catch(e){ console.warn('Firebase init error:', e); }
       };
       s3.onerror = function(){ console.warn('Firebase Firestore SDK failed to load'); };
