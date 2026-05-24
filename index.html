@@ -632,7 +632,7 @@ tbody tr:hover{background:var(--bg)}
     </div>
     <div id="nEmailRow" style="margin-bottom:12px">
       <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Email destinatar <span style="color:var(--red)">*</span></div>
-      <input id="nEmail" type="email" placeholder="email@partener.ro" class="fi" style="width:100%;font-size:13px;padding:8px 12px">
+      <input id="nEmail" type="text" placeholder="email1@partener.ro; email2@partener.ro" class="fi" style="width:100%;font-size:13px;padding:8px 12px">
       <div id="nEmailHint" style="font-size:11px;margin-top:4px"></div>
     </div>
     <div style="margin-bottom:4px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Mesaj</div><textarea id="nMsg" class="nta" style="min-height:120px;width:100%"></textarea></div>
@@ -1669,8 +1669,8 @@ function openN(r){
   if(!knownEmail){var pd=PD.find(function(p){return p.p===r.p;});if(pd&&pd.email)knownEmail=pd.email;}
   if(emailInput) emailInput.value=knownEmail;
   if(emailHint){
-    if(knownEmail){emailHint.innerHTML='<span style="color:var(--green)">&#10003; Email gasit in date</span>';}
-    else{emailHint.innerHTML='<span style="color:var(--amber)">&#9888; Introdu manual adresa email</span>';}
+    if(knownEmail){emailHint.innerHTML='<span style="color:var(--green)">&#10003; Email gasit in date (poti adauga mai multe separate prin ;)</span>';}
+    else{emailHint.innerHTML='<span style="color:var(--amber)">&#9888; Introdu adresa email (poti adauga mai multe separate prin ;)</span>';}
   }
   var st=document.getElementById('nStatus');if(st){st.style.display='none';st.textContent='';}
   var sb=document.getElementById('nSendBtn');if(sb){sb.disabled=false;sb.innerHTML='&#9993; Trimite email';}
@@ -1702,9 +1702,12 @@ async function sendN(){
     return;
   }
   // EMAIL - trimitere reala prin Firebase
-  var email=(document.getElementById('nEmail').value||'').trim();
-  if(!email){toast('Introdu adresa de email a partenerului!','error');document.getElementById('nEmail').focus();return;}
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Adresa de email invalida!','error');return;}
+  var emailRaw=(document.getElementById('nEmail').value||'').trim();
+  if(!emailRaw){toast('Introdu adresa de email a partenerului!','error');document.getElementById('nEmail').focus();return;}
+  var emailList=emailRaw.split(/[;,]+/).map(function(e){return e.trim();}).filter(function(e){return e.length>0;});
+  var emailInvalid=emailList.filter(function(e){return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);});
+  if(emailInvalid.length>0){toast('Email invalid: '+emailInvalid[0],'error');return;}
+  var email=emailList[0];
   var mesaj=(document.getElementById('nMsg').value||'').trim();
   if(!mesaj){toast('Mesajul este gol!','error');return;}
   // Loading state
@@ -1713,17 +1716,18 @@ async function sendN(){
   if(closeBtn)closeBtn.disabled=true;
   if(statusEl){statusEl.style.display='block';statusEl.style.background='var(--bbg)';statusEl.style.color='var(--blue)';statusEl.innerHTML='&#9679; Se trimite catre '+email+'...';}
   try{
-    await sendEmailViaFirebase({to:email,toName:nm,subject:'Notificare restanta - '+cNR.nr,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
+    for(var _ei=0;_ei<emailList.length;_ei++){await sendEmailViaFirebase({to:emailList[_ei],toName:nm,subject:'Notificare restanta - '+cNR.nr,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
     if(statusEl){statusEl.style.background='var(--gbg)';statusEl.style.color='var(--green)';statusEl.innerHTML='&#10003; Email trimis cu succes catre <strong>'+email+'</strong>!';}
     if(sendBtn)sendBtn.innerHTML='&#10003; Trimis!';
     if(nm){
       if(!J[nm])J[nm]=[];
-      J[nm].unshift({id:uid(),type:'notificare',text:'Email notificare trimis la '+email+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
+      if(_ei===0)J[nm].unshift({id:uid(),type:'notificare',text:'Email notificare trimis la '+emailList.join(', ')+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
       jSave();
       if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
       renderPL();
     }
-    toast('Email trimis catre '+email,'success');
+    } // end for emailList
+    toast('Email trimis catre '+emailList.join(', '),'success');
     setTimeout(function(){cm('nModal');if(cancelBtn)cancelBtn.disabled=false;if(closeBtn)closeBtn.disabled=false;},2000);
   }catch(err){
     if(statusEl){statusEl.style.background='var(--rbg)';statusEl.style.color='var(--red)';statusEl.innerHTML='&#10007; Eroare: '+(err.message||'necunoscuta')+'. Verifica Firebase logs.';}
