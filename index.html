@@ -300,6 +300,7 @@ tbody tr:hover{background:var(--bg)}
 .hamb-close:hover{background:var(--bg)}
 .hamb-close svg{width:18px;height:18px}
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <!-- LOGIN SCREEN -->
@@ -1733,20 +1734,22 @@ async function sendN(){
   }
 }
 async function sendEmailViaFirebase(params){
-  var FUNCTION_URL='https://us-central1-cmr-neincasate.cloudfunctions.net/sendEmail';
-  var token='';
-  try{if(window.auth&&window.auth.currentUser)token=await window.auth.currentUser.getIdToken();}catch(e){}
-  var headers={'Content-Type':'application/json'};
-  if(token)headers['Authorization']='Bearer '+token;
-  var resp=await fetch(FUNCTION_URL,{method:'POST',headers:headers,body:JSON.stringify({
-    to:params.to,toName:params.toName||'',
-    subject:params.subject,message:params.message,
-    from:'info@1stmedia.eu',fromName:'1stMedica - Departament Financiar',
-    meta:{partener:params.partener,factura:params.factura,rest:params.rest,agent:params.agent,timestamp:new Date().toISOString()}
-  })});
-  var data=await resp.json().catch(function(){return{};});
-  if(!resp.ok)throw new Error(data.error||data.message||'HTTP '+resp.status);
-  return data;
+  // EmailJS - trimitere directa din browser
+  var SERVICE_ID='service_mtgppoa';
+  var TEMPLATE_ID='template_5luq0fu';
+  var PUBLIC_KEY='AeZwH6rd5SleiqMQc';
+  if(typeof emailjs==='undefined') throw new Error('EmailJS SDK nu este incarcat');
+  emailjs.init({publicKey: PUBLIC_KEY});
+  var templateParams={
+    to_email: params.to,
+    name: params.toName||params.to,
+    subject: params.subject,
+    message: params.message,
+    email: 'info@1stmedia.eu'
+  };
+  var result=await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+  if(result.status!==200) throw new Error('EmailJS status: '+result.status+' '+result.text);
+  return result;
 }
 
 
