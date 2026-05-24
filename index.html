@@ -147,7 +147,16 @@ tbody tr:hover{background:var(--bg)}
 .etl{font-size:15px;color:var(--t2);font-weight:500;margin-bottom:4px}
 .abtn{background:none;border:none;cursor:pointer;color:var(--t3);padding:6px;border-radius:4px;-webkit-tap-highlight-color:transparent}
 .abtn:hover{color:var(--purple);background:var(--pbg)}
-::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:10px}
+::-webkit-scrollbar{width:5px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg);border-radius:4px}
+::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:4px;cursor:grab}
+::-webkit-scrollbar-thumb:hover{background:var(--purple)}
+/* Scrollbar orizontal vizibil pentru tabelul facturi */
+#tFactWrap{scrollbar-width:thin;scrollbar-color:var(--bmed) var(--bg)}
+#tFactWrap::-webkit-scrollbar{height:10px}
+#tFactWrap::-webkit-scrollbar-track{background:var(--surface);border-radius:0 0 var(--rs) var(--rs)}
+#tFactWrap::-webkit-scrollbar-thumb{background:var(--purple);border-radius:10px;opacity:.7}
+#tFactWrap::-webkit-scrollbar-thumb:hover{background:var(--purple);opacity:1}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:10px}
 .fisa-tab{display:flex;align-items:center;gap:6px;padding:10px 16px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
 .fisa-tab:hover{color:var(--text);background:var(--surface)}
 .fisa-tab.active{color:var(--purple);border-bottom-color:var(--purple)}
@@ -433,7 +442,7 @@ tbody tr:hover{background:var(--bg)}
         </select>
         <span class="flbl" id="fcnt"></span>
       </div>
-      <div class="card"><div class="tw"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- PARTENERI -->
@@ -922,6 +931,17 @@ function hideTT(){
   var tt = document.getElementById('pnTooltip');
   if(tt) tt.style.display = 'none';
 }
+function goToJurnal(nm){
+  // Naviga la jurnal si selecteaza partenerul
+  const jurnalNav = document.querySelectorAll('.ni')[3]; // jurnal is 4th nav item
+  // find jurnal nav item by text
+  const allNi = document.querySelectorAll('.ni');
+  let jurnalNi = null;
+  allNi.forEach(function(ni){ if(ni.textContent.includes('Jurnal')) jurnalNi = ni; });
+  showPage('jurnal', jurnalNi || jurnalNav);
+  closeSidebar();
+  setTimeout(function(){ selPart(nm); }, 80);
+}
 function toggleSidebar(){
   document.querySelector('.sidebar').classList.toggle('open');
   document.getElementById('sidebarOverlay').classList.toggle('open');
@@ -1188,7 +1208,7 @@ function renderDB(){
   // Top partners
   document.getElementById('tTop').innerHTML=PD.slice(0,8).map((d,i)=>`<tr>
     <td style="color:var(--t3);font-size:12px">${i+1}</td>
-    <td style="min-width:120px;max-width:300px"><div class="pn-wrap"><div class="pn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${d.p}" onmouseenter="showTT(event,'${d.p}')" onmousemove="moveTT(event)" onmouseleave="hideTT()">${d.p}</div></div></td>
+    <td style="min-width:120px;max-width:300px"><div class="pn-wrap"><div class="pn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${d.p}" onmouseenter="showTT(event,'${d.p}')" onmousemove="moveTT(event)" onmouseleave="hideTT()">${d.p}</div></div></td>
     <td style="text-align:center">${d.nr_facturi}</td>
     <td style="color:var(--green);font-size:12px">${fv(d.total_incasat,'')}</td>
     <td><span class="amt amtr">${fv(d.sold_net,d.m)}</span></td>
@@ -1198,7 +1218,7 @@ function renderDB(){
   const urg=[...D].filter(r=>r.z>=0).sort((a,b)=>b.z-a.z).slice(0,12);
   document.getElementById('tPri').innerHTML=urg.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
-    <td style="min-width:120px;max-width:300px"><div class="pn-wrap"><div class="pn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.p}" onmouseenter="showTT(event,'${r.p}')" onmousemove="moveTT(event)" onmouseleave="hideTT()">${r.p}</div></div></td>
+    <td style="min-width:120px;max-width:300px"><div class="pn-wrap"><div class="pn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${r.p}" onmouseenter="showTT(event,'${r.p}')" onmousemove="moveTT(event)" onmouseleave="hideTT()">${r.p}</div></div></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:12px;white-space:nowrap">${r.ds}</td>
     <td style="text-align:center;font-weight:600;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':'var(--t2)'}">${r.z}</td>
@@ -1265,7 +1285,7 @@ function renderF(){
   if(!d.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
   tb.innerHTML=d.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
-    <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.p}">${r.p}</div></td>
+    <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${r.p}" title="Click pentru jurnal interactiuni">${r.p}</div></td>
     <td><span class="pcui">${r.cui||'-'}</span></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.adresa||''}">${r.adresa||'-'}</td>
@@ -1294,7 +1314,7 @@ function renderP(){
   tb.innerHTML=src.map(d=>{
     const nm=d.p;const nc=(J[nm]||[]).length;
     return`<tr>
-      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${nm}">${nm}</div></td>
+      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${nm}" title="Click pentru jurnal interactiuni">${nm}</div></td>
       <td><span class="pcui">${d.cui||'-'}</span></td>
       <td style="font-size:12px">${d.judet||'-'}</td>
       <td style="font-size:12px">${d.tel||'-'}</td>
@@ -1666,7 +1686,7 @@ function renderA(){
   });
   const rows=PD.map(p=>({nm:p.p,ag:p.ag,sn:p.sold_net,v:(byP[p.p]||{v:[0,0,0,0]}).v})).sort((a,b)=>b.sn-a.sn);
   tb.innerHTML=rows.map(r=>`<tr>
-    <td><div class="pn" style="cursor:pointer;color:var(--purple)" onclick="openFisa(this.dataset.nm)" data-nm="${r.nm}">${r.nm}</div></td>
+    <td><div class="pn" style="cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${r.nm}" title="Click pentru jurnal interactiuni">${r.nm}</div></td>
     <td style="font-size:12px;color:var(--t2)">${r.ag||'-'}</td>
     <td style="color:var(--green)">${r.v[0]>0?fv(r.v[0],''):'-'}</td>
     <td style="color:var(--amber)">${r.v[1]>0?fv(r.v[1],''):'-'}</td>
