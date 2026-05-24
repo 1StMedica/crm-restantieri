@@ -622,16 +622,25 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- NOTIF MODAL -->
 <div class="mbg" id="nModal"><div class="modal">
-  <div class="mh"><div class="mtl">Genereaza notificare de plata</div><button class="bcl" onclick="cm('nModal')">&#x2715;</button></div>
+  <div class="mh"><div class="mtl">Trimite notificare de plata</div><button class="bcl" id="nCloseBtn" onclick="cm('nModal')">&#x2715;</button></div>
   <div class="mb">
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Partener</div><div id="nPart" style="font-weight:500;font-size:14px"></div></div>
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Detalii</div><div id="nFact" style="font-size:13px;color:var(--t2)"></div></div>
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:6px;font-weight:500">Canal notificare</div>
-      <div style="display:flex;gap:8px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked> Email</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp"> WhatsApp</label></div>
+      <div style="display:flex;gap:8px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked onchange="toggleEmailRow(this)"> Email</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms" onchange="toggleEmailRow(this)"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp" onchange="toggleEmailRow(this)"> WhatsApp</label></div>
+    </div>
+    <div id="nEmailRow" style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Email destinatar <span style="color:var(--red)">*</span></div>
+      <input id="nEmail" type="email" placeholder="email@partener.ro" class="fi" style="width:100%;font-size:13px;padding:8px 12px">
+      <div id="nEmailHint" style="font-size:11px;margin-top:4px"></div>
     </div>
     <div style="margin-bottom:4px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Mesaj</div><textarea id="nMsg" class="nta" style="min-height:120px;width:100%"></textarea></div>
+    <div id="nStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:var(--rs);font-size:13px"></div>
   </div>
-  <div class="mf"><button class="btn" onclick="cm('nModal')">Anuleaza</button><button class="btn btnp" onclick="sendN()">Genereaza &amp; trimite</button></div>
+  <div class="mf">
+    <button class="btn" id="nCancelBtn" onclick="cm('nModal')">Anuleaza</button>
+    <button class="btn btnp" id="nSendBtn" onclick="sendN()">&#9993; Trimite email</button>
+  </div>
 </div></div>
 <div class="toast" id="toast"></div>
 <div class="pn-tt" id="pnTooltip"></div>
@@ -1643,26 +1652,103 @@ function goJ(nm){
 }
 
 // NOTIFICARE
+function toggleEmailRow(radio){
+  var row=document.getElementById('nEmailRow');
+  if(row) row.style.display=radio.value==='email'?'':'none';
+}
 function openN(r){
-  if(typeof r==='string')r=JSON.parse(r);cNR=r;
+  if(typeof r==='string')r=JSON.parse(r);
+  cNR=r;
   document.getElementById('nPart').textContent=r.p;
   document.getElementById('nFact').textContent='Nr. '+r.nr+' · Total: '+fv(r.v,r.m)+' · Rest: '+fv(r.rest,r.m)+' · Scadenta: '+r.ds+(r.z>0?' ('+r.z+' zile depasita)':'');
-  document.getElementById('nMsg').value=`Stimate partener ${r.p},\n\nVa notificam ca aveti o restanta in valoare de ${fv(r.rest,r.m)}, aferenta facturii nr. ${r.nr}, cu data scadentei ${r.ds}${r.z>0?' (depasita cu '+r.z+' zile)':''}.\n\nVa rugam sa efectuati plata in cel mai scurt timp posibil sau sa ne contactati pentru a stabili un plan de plata.\n\nCu stima,\nDepartamentul Financiar`;
+  document.getElementById('nMsg').value='Stimate partener '+r.p+',\n\nVa notificam ca aveti o restanta in valoare de '+fv(r.rest,r.m)+', aferenta facturii nr. '+r.nr+', cu data scadentei '+r.ds+(r.z>0?' (depasita cu '+r.z+' zile)':'')+'.\n\nVa rugam sa efectuati plata in cel mai scurt timp posibil sau sa ne contactati pentru a stabili un plan de plata.\n\nCu stima,\nDepartamentul Financiar - 1stMedica';
+  var emailInput=document.getElementById('nEmail');
+  var emailHint=document.getElementById('nEmailHint');
+  var knownEmail=r.email||'';
+  if(!knownEmail){var pd=PD.find(function(p){return p.p===r.p;});if(pd&&pd.email)knownEmail=pd.email;}
+  if(emailInput) emailInput.value=knownEmail;
+  if(emailHint){
+    if(knownEmail){emailHint.innerHTML='<span style="color:var(--green)">&#10003; Email gasit in date</span>';}
+    else{emailHint.innerHTML='<span style="color:var(--amber)">&#9888; Introdu manual adresa email</span>';}
+  }
+  var st=document.getElementById('nStatus');if(st){st.style.display='none';st.textContent='';}
+  var sb=document.getElementById('nSendBtn');if(sb){sb.disabled=false;sb.innerHTML='&#9993; Trimite email';}
+  var cb=document.getElementById('nCancelBtn');if(cb)cb.disabled=false;
+  var xb=document.getElementById('nCloseBtn');if(xb)xb.disabled=false;
+  var emailRow=document.getElementById('nEmailRow');if(emailRow)emailRow.style.display='';
+  document.querySelectorAll('input[name="canal"]').forEach(function(x){x.checked=x.value==='email';});
   document.getElementById('nModal').classList.add('open');
 }
-function sendN(){
-  const canal=document.querySelector('input[name="canal"]:checked').value;
-  cm('nModal');const lbl={email:'Email',sms:'SMS',whatsapp:'WhatsApp'};
-  const nm=cNR?.p;
-  if(nm){
-    if(!J[nm])J[nm]=[];
-    J[nm].unshift({id:uid(),type:'notificare',text:`Notificare ${lbl[canal]} trimisa. Factura: ${cNR.nr} · Rest: ${fv(cNR.rest,cNR.m)}`,date:new Date().toISOString(),agent:'Sistem'});
-    jSave();
-    if(selP===nm){const nid=nm.replace(/[^a-zA-Z0-9]/g,'_');const ti=document.getElementById('tli-'+nid);const tc=document.getElementById('tlcnt-'+nid);const nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
-    renderPL();
+async function sendN(){
+  var canal=document.querySelector('input[name="canal"]:checked').value;
+  var lbl={email:'Email',sms:'SMS',whatsapp:'WhatsApp'};
+  var nm=cNR&&cNR.p;
+  var statusEl=document.getElementById('nStatus');
+  var sendBtn=document.getElementById('nSendBtn');
+  var cancelBtn=document.getElementById('nCancelBtn');
+  var closeBtn=document.getElementById('nCloseBtn');
+  // SMS / WhatsApp - doar jurnal, fara Firebase
+  if(canal!=='email'){
+    cm('nModal');
+    if(nm){
+      if(!J[nm])J[nm]=[];
+      J[nm].unshift({id:uid(),type:'notificare',text:'Notificare '+lbl[canal]+' generata. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:'Sistem'});
+      jSave();
+      if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
+      renderPL();
+    }
+    toast('Notificare '+lbl[canal]+' generata pentru '+nm,'success');
+    return;
   }
-  toast('Notificare '+lbl[canal]+' generata pentru '+nm,'success');
+  // EMAIL - trimitere reala prin Firebase
+  var email=(document.getElementById('nEmail').value||'').trim();
+  if(!email){toast('Introdu adresa de email a partenerului!','error');document.getElementById('nEmail').focus();return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){toast('Adresa de email invalida!','error');return;}
+  var mesaj=(document.getElementById('nMsg').value||'').trim();
+  if(!mesaj){toast('Mesajul este gol!','error');return;}
+  // Loading state
+  if(sendBtn){sendBtn.disabled=true;sendBtn.innerHTML='&#8987; Se trimite...';}
+  if(cancelBtn)cancelBtn.disabled=true;
+  if(closeBtn)closeBtn.disabled=true;
+  if(statusEl){statusEl.style.display='block';statusEl.style.background='var(--bbg)';statusEl.style.color='var(--blue)';statusEl.innerHTML='&#9679; Se trimite catre '+email+'...';}
+  try{
+    await sendEmailViaFirebase({to:email,toName:nm,subject:'Notificare restanta - '+cNR.nr,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
+    if(statusEl){statusEl.style.background='var(--gbg)';statusEl.style.color='var(--green)';statusEl.innerHTML='&#10003; Email trimis cu succes catre <strong>'+email+'</strong>!';}
+    if(sendBtn)sendBtn.innerHTML='&#10003; Trimis!';
+    if(nm){
+      if(!J[nm])J[nm]=[];
+      J[nm].unshift({id:uid(),type:'notificare',text:'Email notificare trimis la '+email+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
+      jSave();
+      if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
+      renderPL();
+    }
+    toast('Email trimis catre '+email,'success');
+    setTimeout(function(){cm('nModal');if(cancelBtn)cancelBtn.disabled=false;if(closeBtn)closeBtn.disabled=false;},2000);
+  }catch(err){
+    if(statusEl){statusEl.style.background='var(--rbg)';statusEl.style.color='var(--red)';statusEl.innerHTML='&#10007; Eroare: '+(err.message||'necunoscuta')+'. Verifica Firebase logs.';}
+    if(sendBtn){sendBtn.disabled=false;sendBtn.innerHTML='&#9993; Incearca din nou';}
+    if(cancelBtn)cancelBtn.disabled=false;
+    if(closeBtn)closeBtn.disabled=false;
+    toast('Eroare trimitere: '+(err.message||''),'error');
+  }
 }
+async function sendEmailViaFirebase(params){
+  var FUNCTION_URL='https://us-central1-cmr-neincasate.cloudfunctions.net/sendEmail';
+  var token='';
+  try{if(window.auth&&window.auth.currentUser)token=await window.auth.currentUser.getIdToken();}catch(e){}
+  var headers={'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  var resp=await fetch(FUNCTION_URL,{method:'POST',headers:headers,body:JSON.stringify({
+    to:params.to,toName:params.toName||'',
+    subject:params.subject,message:params.message,
+    from:'info@1stmedia.eu',fromName:'1stMedica - Departament Financiar',
+    meta:{partener:params.partener,factura:params.factura,rest:params.rest,agent:params.agent,timestamp:new Date().toISOString()}
+  })});
+  var data=await resp.json().catch(function(){return{};});
+  if(!resp.ok)throw new Error(data.error||data.message||'HTTP '+resp.status);
+  return data;
+}
+
 
 // AGING
 function renderA(){
