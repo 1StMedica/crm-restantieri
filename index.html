@@ -2243,6 +2243,30 @@ var DESF = {"FLOREA MARIAN": {"facturi": [{"nr": "RA-7291", "de": "22/05/2026", 
 })();
 </script>
 <script>
+// Nr somatie autoincrement din Firestore
+function getSomatieNr() {
+  return new Promise(function(resolve) {
+    try {
+      var db = firebase.firestore();
+      var ref = db.collection('settings').doc('somatieCounter');
+      ref.get().then(function(doc) {
+        var nr = doc.exists ? (doc.data().nr || 0) + 1 : 1;
+        resolve(nr);
+      }).catch(function() { resolve(1); });
+    } catch(e) { resolve(1); }
+  });
+}
+
+function incrementSomatieNr() {
+  try {
+    var db = firebase.firestore();
+    db.collection('settings').doc('somatieCounter').get().then(function(doc) {
+      var nr = doc.exists ? (doc.data().nr || 0) + 1 : 1;
+      db.collection('settings').doc('somatieCounter').set({ nr: nr });
+    });
+  } catch(e) {}
+}
+
 function openSomatie() {
   var nm = selP;
   if (!nm) { toast('Selecteaza un partener mai intai', 'error'); return; }
@@ -2250,70 +2274,72 @@ function openSomatie() {
   var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
   var totalRest = facturi.reduce(function(s, f){ return s + parseFloat(f.rest || 0); }, 0);
 
-  var anCurent = new Date().getFullYear();
-  var nrAuto = String(Date.now()).slice(-4);
-  document.getElementById('somatieNr').value = nrAuto + '/' + anCurent;
-  document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
-  document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
+  getSomatieNr().then(function(nr) {
+    var anCurent = new Date().getFullYear();
+    document.getElementById('somatieNr').value = nr + '/' + anCurent;
+    document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
+    document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
 
-  var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'2-digit',year:'numeric'});
+    var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'2-digit',year:'numeric'});
+    var adresaPartener = [p.adresa, p.localitate, p.judet].filter(function(x){ return x && x.trim() && x.trim() !== '.'; }).join(', ');
 
-  var listaFacturi = '';
-  facturi.forEach(function(f) {
-    var dsParts = f.ds ? f.ds.split('/') : null;
-    var ds = dsParts ? dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2] : '-';
-    listaFacturi += '  - ' + (f.nr||'-') + '  |  ' + parseFloat(f.rest||0).toFixed(2) + ' Lei  |  Scadenta: ' + ds + '\n';
+    var listaFacturi = '';
+    facturi.forEach(function(f) {
+      var dsParts = f.ds ? f.ds.split('/') : null;
+      var ds = dsParts ? dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2] : '-';
+      listaFacturi += '  ' + (f.nr||'-') + ' | ' + parseFloat(f.v||0).toFixed(0) + ' Lei | ' + ds + ' | ' + parseFloat(f.rest||0).toFixed(0) + ' Lei\n';
+    });
+
+    var text = [
+      'Electromagnetica Business Park,',
+      'Bucuresti, Sector 5,',
+      'Calea Rahovei 266-268, Corp 2, Birou 12D',
+      'Tel: 031 436 91 12 | contact@1stmedica.ro | www.1stmedica.ro',
+      '',
+      'Somatie nr. ' + nr + '/' + anCurent + '   Data: ' + dataAzi,
+      '',
+      'CATRE: ' + nm,
+      adresaPartener || '',
+      p.cui ? 'CUI: ' + p.cui : '',
+      '',
+      'Subscrisa 1St Medica S.R.L. cu sediul in Bucuresti, str. Calea Rahovei nr. 266-268, Corp 2, etaj 2, Birou 12D, sector 5, reprezentata legal de dl. Dorin Dumitru-Didita in calitate de creditoare,',
+      '',
+      'In temeiul art. 1015 alin. (1) Cod Procedura Civila, va inaintam prezenta',
+      '',
+      'S O M A T I E',
+      '',
+      'prin care va solicitam ca, in termen de 15 (cincisprezece) zile de la primirea prezentei, sa procedati la plata catre subscrisa a urmatoarei sume:',
+      '',
+      '    ' + totalRest.toFixed(2) + ' Lei reprezentand debit restant aferent facturilor neachitate, astfel cum sunt descrise mai jos:',
+      '',
+      '  Factura | Suma facturata | Scadenta | Rest de plata',
+      listaFacturi,
+      'Ca urmare a serviciilor prestate de subscrisa, v-ati obligat la plata facturilor emise si necontestate conform contractului incheiat intre parti.',
+      '',
+      'Totodata, potrivit dispozitiilor Contractuale, in cazul in care Beneficiarul nu efectueaza plata la termenul convenit, acesta va datora subscrisei penalitati in cuantum de 0,2% pe zi de intarziere din valoarea sumei debitului restant, acestea calculandu-se din ziua imediat urmatoare datei scadente si pana la indeplinirea integrala a obligatiei.',
+      '',
+      'In consecinta, va punem in vedere ca, in termen de cel mult 15 (cincisprezece) zile, de la primirea prezentei, sa procedati la plata debitului restant in cuantum de ' + totalRest.toFixed(2) + ' Lei in Cont RON IBAN: RO08BTRLRONCRT00E1440702, deschis la Transilvania Bank, avand ca beneficiar pe 1ST MEDICA S.R.L.',
+      '',
+      'In situatia in care nu va veti conforma solicitarilor noastre, vom fi nevoiti sa consideram atitudinea dumneavoastra drept rea-credinta si sa continuam demersurile in instanta, ocazie cu care vom solicita daune interese (penalitatile de intarziere) pentru acoperirea prejudiciilor cauzate pentru neindeplinirea acestor obligatii.',
+      '',
+      'Totodata, pe langa aceste sume veti fi nevoiti sa suportati si cheltuielile de judecata ce includ taxele judiciare, onorariile de avocat, onorariul de executare si orice alte cheltuieli ocazionate de acest proces sau de executarea silita a obligatiilor ce va incumba.',
+      '',
+      'Subscrisa, nutrim speranta ca veti da curs prezentei solicitari, preintampinand astfel o situatie litigioasa nedorita de vreuna din parti.',
+      '',
+      'Pentru orice alte detalii referitoare la prezenta somatie, nu ezitati sa ne contactati.',
+      '',
+      '',
+      '1ST MEDICA S.R.L.',
+      'prin',
+      'Dorin Dumitru-Didita',
+      'Administrator',
+      'contact@1stmedica.ro',
+      '031.436.91.12'
+    ].join('\n');
+
+    document.getElementById('somatieText').value = text;
+    document.getElementById('somatieModal').style.display = 'flex';
   });
-
-  var adresaPartener = [p.adresa, p.localitate, p.judet].filter(function(x){ return x && x.trim() && x.trim() !== '.'; }).join(', ');
-
-  var text = [
-    'Electromagnetica Business Park,',
-    'Bucuresti, Sector 5,',
-    'Calea Rahovei 266-268, Corp 2, Birou 12D',
-    'Tel: 031 436 91 12',
-    'contact@1stmedica.ro | www.1stmedica.ro',
-    '',
-    'Somatie nr. ' + nrAuto + '/' + anCurent + '   Data: ' + dataAzi,
-    '',
-    'CATRE: ' + nm,
-    adresaPartener ? adresaPartener : '',
-    (p.cui ? 'CUI: ' + p.cui : ''),
-    '',
-    'Subscrisa 1St Medica S.R.L. cu sediul in Bucuresti, str. Calea Rahovei nr. 266-268, Corp 2, etaj 2, Birou 12D, sector 5, reprezentata legal de dl. Dorin Dumitru-Didita in calitate de creditoare,',
-    '',
-    'In temeiul art. 1015 alin. (1) Cod Procedura Civila, va inaintam prezenta',
-    '',
-    'S O M A T I E',
-    '',
-    'prin care va solicitam ca, in termen de 5 (cinci) zile de la primirea prezentei, sa procedati la plata catre subscrisa a urmatoarei sume:',
-    '',
-    '    ' + totalRest.toFixed(2) + ' Lei reprezentand debit restant aferent facturilor neachitate, astfel cum sunt descrise mai jos:',
-    '',
-    listaFacturi,
-    'Ca urmare a serviciilor prestate de subscrisa, v-ati obligat la plata facturilor emise si necontestate conform contractului incheiat intre parti.',
-    '',
-    'Totodata, potrivit dispozitiilor Contractuale, in cazul in care Beneficiarul nu efectueaza plata la termenul convenit, acesta va datora subscrisei penalitati in cuantum de 0,2% pe zi de intarziere din valoarea sumei debitului restant.',
-    '',
-    'In consecinta, va punem in vedere ca, in termen de cel mult 5 (cinci) zile, de la primirea prezentei, sa procedati la plata debitului restant in cuantum de ' + totalRest.toFixed(2) + ' Lei in Cont RON IBAN: RO08BTRLRONCRT00E1440702, deschis la Transilvania Bank, avand ca beneficiar pe 1ST MEDICA S.R.L.',
-    '',
-    'In situatia in care nu va veti conforma solicitarilor noastre, vom fi nevoiti sa consideram atitudinea dumneavoastra drept rea-credinta si sa continuam demersurile in instanta, ocazie cu care vom solicita daune interese pentru acoperirea prejudiciilor cauzate.',
-    '',
-    'Subscrisa, nutrim speranta ca veti da curs prezentei solicitari, preintampinand astfel o situatie litigioasa nedorita de vreuna din parti.',
-    '',
-    'Pentru orice alte detalii referitoare la prezenta somatie, nu ezitati sa ne contactati.',
-    '',
-    '',
-    '1ST MEDICA S.R.L.',
-    'prin',
-    'Dorin Dumitru-Didita',
-    'Administrator',
-    'contact@1stmedica.ro',
-    '031.436.91.12'
-  ].join('\n');
-
-  document.getElementById('somatieText').value = text;
-  document.getElementById('somatieModal').style.display = 'flex';
 }
 
 function closeSomatie() {
@@ -2329,20 +2355,83 @@ function genereazaSomatieWord() {
   var btn = event.target;
   btn.disabled = true; btn.textContent = 'Se genereaza...';
 
+  var p = PD.find(function(x){ return x.p === nm; }) || {};
+  var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
+
   function doDownload() {
     var Document = docx.Document, Packer = docx.Packer, Paragraph = docx.Paragraph,
         TextRun = docx.TextRun, AlignmentType = docx.AlignmentType,
         Table = docx.Table, TableRow = docx.TableRow, TableCell = docx.TableCell,
-        WidthType = docx.WidthType, BorderStyle = docx.BorderStyle;
+        WidthType = docx.WidthType, BorderStyle = docx.BorderStyle, ShadingType = docx.ShadingType,
+        VerticalAlign = docx.VerticalAlign;
 
+    var border = { style: BorderStyle.SINGLE, size: 1, color: 'AAAAAA' };
+    var borders = { top: border, bottom: border, left: border, right: border };
+
+    function cell(text, bold, bg) {
+      return new TableCell({
+        borders: borders,
+        shading: bg ? { fill: bg, type: ShadingType.CLEAR } : undefined,
+        margins: { top: 80, bottom: 80, left: 120, right: 120 },
+        children: [new Paragraph({
+          children: [new TextRun({ text: text, font: 'Arial', size: 20, bold: bold || false })]
+        })]
+      });
+    }
+
+    // Header tabel
+    var headerRow = new TableRow({
+      children: [
+        cell('Nr. Factura', true, 'E8F0FE'),
+        cell('Suma facturata', true, 'E8F0FE'),
+        cell('Scadenta', true, 'E8F0FE'),
+        cell('Rest de plata', true, 'E8F0FE')
+      ]
+    });
+
+    var dataRows = facturi.map(function(f) {
+      var dsParts = f.ds ? f.ds.split('/') : null;
+      var ds = dsParts ? dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2] : '-';
+      return new TableRow({
+        children: [
+          cell(f.nr || '-', false),
+          cell(parseFloat(f.v||0).toFixed(2) + ' Lei', false),
+          cell(ds, false),
+          cell(parseFloat(f.rest||0).toFixed(2) + ' Lei', false)
+        ]
+      });
+    });
+
+    var tabelFacturi = new Table({
+      width: { size: 9026, type: WidthType.DXA },
+      columnWidths: [2256, 2256, 2257, 2257],
+      rows: [headerRow].concat(dataRows)
+    });
+
+    // Construieste paragrafele din text, inlocuind sectiunea cu tabelul
     var linii = textSom.split('\n');
     var children = [];
+    var skipTabel = false;
 
-    linii.forEach(function(linie) {
+    for (var i = 0; i < linii.length; i++) {
+      var linie = linii[i];
       var trimmed = linie.trim();
+
+      // Detecteaza sectiunea tabel (header + randuri cu |)
+      if (trimmed.indexOf('Factura | Suma') === 0) {
+        children.push(tabelFacturi);
+        children.push(new Paragraph({ spacing: { after: 160 }, children: [] }));
+        // Sari peste randurile cu | din text
+        while (i + 1 < linii.length && linii[i+1].indexOf('|') !== -1) i++;
+        continue;
+      }
+
       var isTitlu = trimmed === 'S O M A T I E';
-      var isAntet = linii.indexOf(linie) < 6;
-      var isSemnatura = trimmed === '1ST MEDICA S.R.L.' || trimmed === 'prin' || trimmed === 'Dorin Dumitru-Didita' || trimmed === 'Administrator';
+      var isAntet = i < 4;
+      var isSomNr = trimmed.indexOf('Somatie nr.') === 0;
+      var isCatre = trimmed.indexOf('CATRE:') === 0;
+      var isSemnatura = ['1ST MEDICA S.R.L.', 'prin', 'Dorin Dumitru-Didita', 'Administrator'].indexOf(trimmed) !== -1;
+      var isSubtotal = trimmed.indexOf('Lei reprezentand debit') !== -1;
 
       children.push(new Paragraph({
         alignment: isTitlu ? AlignmentType.CENTER : (isAntet ? AlignmentType.RIGHT : AlignmentType.LEFT),
@@ -2350,18 +2439,18 @@ function genereazaSomatieWord() {
         children: [new TextRun({
           text: linie,
           font: 'Arial',
-          size: isTitlu ? 28 : (isAntet ? 20 : 22),
-          bold: isTitlu || isSemnatura
+          size: isTitlu ? 28 : (isAntet ? 18 : 22),
+          bold: isTitlu || isSomNr || isCatre || isSemnatura || isSubtotal
         })]
       }));
-    });
+    }
 
     var doc = new Document({
       sections: [{
         properties: {
           page: {
             size: { width: 11906, height: 16838 },
-            margin: { top: 1134, right: 1134, bottom: 1134, left: 1134 }
+            margin: { top: 720, right: 1134, bottom: 720, left: 1134 }
           }
         },
         children: children
@@ -2377,6 +2466,7 @@ function genereazaSomatieWord() {
       var ag = (window.currentUser && window.currentUser.email) || 'Sistem';
       J[nm].push({ id: uid(), type: 'notif_interna', text: 'Somatie nr. ' + nrSom + ' generata.', date: new Date().toISOString(), agent: ag });
       jSave();
+      incrementSomatieNr();
       toast('Somatie generata!', 'success');
       closeSomatie();
       btn.disabled = false; btn.textContent = 'Genereaza Word';
