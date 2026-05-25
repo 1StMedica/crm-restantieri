@@ -301,6 +301,7 @@ tbody tr:hover{background:var(--bg)}
 .hamb-close svg{width:18px;height:18px}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://unpkg.com/docx@7.8.2/build/index.js"></script>
 </head>
 <body>
 <!-- LOGIN SCREEN -->
@@ -641,6 +642,64 @@ tbody tr:hover{background:var(--bg)}
   <div class="mf">
     <button class="btn" id="nCancelBtn" onclick="cm('nModal')">Anuleaza</button>
     <button class="btn btnp" id="nSendBtn" onclick="sendN()">&#9993; Trimite email</button>
+  </div>
+</div></div>
+
+<!-- SOMATIE MODAL -->
+<div class="mbg" id="somModal"><div class="modal" style="max-width:600px;width:95%">
+  <div class="mh"><div class="mtl">&#9878; Generează Somație</div><button class="bcl" onclick="cm('somModal')">&#x2715;</button></div>
+  <div class="mb" style="max-height:70vh;overflow-y:auto">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Partener</div>
+        <div id="somPart" style="font-weight:600;font-size:14px;color:var(--blue)"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Nr. Somație / An</div>
+        <div style="display:flex;gap:8px">
+          <input id="somNr" type="number" class="fi" style="width:80px;font-size:13px;padding:6px 10px" placeholder="1343">
+          <span style="line-height:34px;color:var(--t3)">/</span>
+          <input id="somAn" type="number" class="fi" style="width:70px;font-size:13px;padding:6px 10px" placeholder="2026">
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Adresa partenerului</div>
+      <input id="somAdresa" type="text" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="MUN. BUCURESTI, STR. ..., NR. ..., SEC. ...">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Nr. Contract</div>
+        <input id="somNrContract" type="text" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="435">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Data Contract</div>
+        <input id="somDataContract" type="text" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="29.11.2024">
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Dispozitiv / Obiect contract</div>
+      <input id="somDispozitiv" type="text" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="APAP PRISMA SMART MAX model/serie 26650132">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Debit restant (Lei)</div>
+        <input id="somDebit" type="number" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="0">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Daune interese (Lei)</div>
+        <input id="somDaune" type="number" class="fi" style="width:100%;font-size:13px;padding:8px 12px" placeholder="0">
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Facturi restante</div>
+      <div id="somFacturi" style="font-size:12px;color:var(--t2);background:var(--bg2);padding:8px 12px;border-radius:var(--rs);max-height:120px;overflow-y:auto"></div>
+    </div>
+    <div id="somStatus" style="display:none;margin-top:8px;padding:8px 12px;border-radius:var(--rs);font-size:13px"></div>
+  </div>
+  <div class="mf">
+    <button class="btn" onclick="cm('somModal')">Anulează</button>
+    <button class="btn btnp" id="somBtn" onclick="genSomatie()">&#128196; Generează Word</button>
   </div>
 </div></div>
 <div class="toast" id="toast"></div>
@@ -1650,6 +1709,306 @@ function goJ(nm){
   const ni=document.querySelectorAll('.ni');
   showPage('jurnal', ni[3]||null);
   setTimeout(()=>selPart(nm),80);
+}
+
+
+// ═══════════════════════════════════════════
+// SOMATIE - Generare Word
+// ═══════════════════════════════════════════
+var _somNrCurent = null;
+
+function getSomatieNr() {
+  // Auto-increment din localStorage per an
+  var an = new Date().getFullYear();
+  var key = 'somatie_nr_' + an;
+  var nr = parseInt(localStorage.getItem(key) || '1340');
+  return {nr: nr, an: an};
+}
+
+function incrementSomatieNr() {
+  var an = new Date().getFullYear();
+  var key = 'somatie_nr_' + an;
+  var nr = parseInt(localStorage.getItem(key) || '1340') + 1;
+  localStorage.setItem(key, nr);
+  return nr;
+}
+
+function openSomatie(partenerNume) {
+  if(!partenerNume) return;
+  var pd = PD.find(function(p){ return p.p === partenerNume; });
+  var facturi = D.filter(function(f){ return f.p === partenerNume && f.rest > 0; });
+  
+  // Seteaza partener
+  document.getElementById('somPart').textContent = partenerNume;
+  
+  // Nr somatie auto-increment
+  var nrData = getSomatieNr();
+  document.getElementById('somNr').value = nrData.nr;
+  document.getElementById('somAn').value = nrData.an;
+  
+  // Adresa din date
+  var adresa = '';
+  if(pd) adresa = [pd.adresa, pd.localitate, pd.judet].filter(Boolean).join(', ');
+  document.getElementById('somAdresa').value = adresa;
+  
+  // Debit total
+  var totalDebit = facturi.reduce(function(s,f){ return s + (f.rest||0); }, 0);
+  document.getElementById('somDebit').value = Math.round(totalDebit * 100) / 100;
+  document.getElementById('somDaune').value = '';
+  document.getElementById('somNrContract').value = '';
+  document.getElementById('somDataContract').value = '';
+  document.getElementById('somDispozitiv').value = '';
+  
+  // Preview facturi
+  var html = '<table style="width:100%;border-collapse:collapse;font-size:11px">';
+  html += '<tr style="font-weight:600;border-bottom:1px solid var(--brd)"><td style="padding:3px 6px">Factură</td><td style="padding:3px 6px;text-align:right">Sumă</td><td style="padding:3px 6px;text-align:right">Scadență</td><td style="padding:3px 6px;text-align:right">Achitat</td></tr>';
+  facturi.forEach(function(f){
+    html += '<tr style="border-bottom:1px solid var(--brd)"><td style="padding:3px 6px">'+f.nr+'</td><td style="padding:3px 6px;text-align:right">'+fv(f.v,f.m)+'</td><td style="padding:3px 6px;text-align:right">'+f.ds+'</td><td style="padding:3px 6px;text-align:right">'+fv(f.incasat,f.m)+'</td></tr>';
+  });
+  html += '</table>';
+  document.getElementById('somFacturi').innerHTML = html;
+  
+  var st = document.getElementById('somStatus');
+  st.style.display = 'none';
+  
+  document.getElementById('somModal').classList.add('open');
+}
+
+async function genSomatie() {
+  var partener = document.getElementById('somPart').textContent;
+  var nrSom = document.getElementById('somNr').value;
+  var anSom = document.getElementById('somAn').value;
+  var adresa = document.getElementById('somAdresa').value.trim();
+  var nrContract = document.getElementById('somNrContract').value.trim();
+  var dataContract = document.getElementById('somDataContract').value.trim();
+  var dispozitiv = document.getElementById('somDispozitiv').value.trim();
+  var debit = parseFloat(document.getElementById('somDebit').value) || 0;
+  var daune = parseFloat(document.getElementById('somDaune').value) || 0;
+  var totalSom = debit + daune;
+  
+  if(!nrContract){ toast('Introdu numărul contractului!','error'); return; }
+  if(!dataContract){ toast('Introdu data contractului!','error'); return; }
+  if(!dispozitiv){ toast('Introdu dispozitivul/obiectul contractului!','error'); return; }
+  if(!adresa){ toast('Introdu adresa partenerului!','error'); return; }
+  
+  var st = document.getElementById('somStatus');
+  var btn = document.getElementById('somBtn');
+  st.style.display = 'block';
+  st.style.background = 'var(--bbg)';
+  st.style.color = 'var(--blue)';
+  st.textContent = 'Se generează documentul Word...';
+  btn.disabled = true;
+  
+  try {
+    var facturi = D.filter(function(f){ return f.p === partener && f.rest > 0; });
+    var today = new Date();
+    var dataSomatie = today.getDate().toString().padStart(2,'0') + '.' + 
+                      (today.getMonth()+1).toString().padStart(2,'0') + '.' + 
+                      today.getFullYear();
+    
+    await _genSomatieWord({
+      partener: partener,
+      adresa: adresa,
+      nrSomatie: nrSom,
+      anSomatie: anSom,
+      dataSomatie: dataSomatie,
+      nrContract: nrContract,
+      dataContract: dataContract,
+      dispozitiv: dispozitiv,
+      debit: debit,
+      daune: daune,
+      totalSomatie: totalSom,
+      facturi: facturi
+    });
+    
+    // Increment nr somatie
+    incrementSomatieNr();
+    
+    // Salveaza in jurnal
+    if(!J[partener]) J[partener] = [];
+    J[partener].unshift({
+      id: uid(),
+      type: 'notificare',
+      text: 'Somație nr. '+nrSom+'/'+anSom+' generată. Debit: '+debit+' Lei.',
+      date: new Date().toISOString(),
+      agent: window.currentUser ? (window.currentUser.displayName || window.currentUser.email) : 'Sistem'
+    });
+    jSave();
+    
+    st.style.background = 'var(--gbg)';
+    st.style.color = 'var(--green)';
+    st.textContent = '✓ Document Word generat și descărcat!';
+    btn.disabled = false;
+    
+    toast('Somație generată pentru ' + partener, 'success');
+    setTimeout(function(){ cm('somModal'); }, 2000);
+    
+  } catch(err) {
+    st.style.background = 'var(--rbg)';
+    st.style.color = 'var(--red)';
+    st.textContent = '✗ Eroare: ' + (err.message || 'necunoscută');
+    btn.disabled = false;
+  }
+}
+
+async function _genSomatieWord(d) {
+  var docx = window.docx;
+  if(!docx) throw new Error('docx.js nu este încărcat');
+  
+  var {Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+       AlignmentType, BorderStyle, WidthType, WidthType: WT} = docx;
+  
+  var bold = function(t, opts) { return new TextRun(Object.assign({text:t, bold:true, font:'Times New Roman', size:22}, opts||{})); };
+  var normal = function(t, opts) { return new TextRun(Object.assign({text:t, font:'Times New Roman', size:22}, opts||{})); };
+  var br = function() { return new Paragraph({children:[new TextRun({text:'', size:22})]}); };
+  
+  var bord = {style: BorderStyle.SINGLE, size:1, color:'000000'};
+  var bords = {top:bord, bottom:bord, left:bord, right:bord};
+  
+  // Rand tabel factura
+  function factRow(cells, isHeader) {
+    return new TableRow({
+      children: cells.map(function(txt, i) {
+        return new TableCell({
+          borders: bords,
+          width: { size: [1800,1800,1800,1800][i], type: WidthType.DXA },
+          margins: {top:60, bottom:60, left:100, right:100},
+          children: [new Paragraph({
+            alignment: i>0 ? AlignmentType.CENTER : AlignmentType.LEFT,
+            children: [new TextRun({text: String(txt), bold: isHeader, font:'Times New Roman', size:20})]
+          })]
+        });
+      })
+    });
+  }
+  
+  var factRows = [factRow(['Factură','Sumă facturată','Scadență','Sumă achitată'], true)];
+  d.facturi.forEach(function(f) {
+    factRows.push(factRow([f.nr, String(Math.round(f.v*100)/100), f.ds, String(Math.round((f.incasat||0)*100)/100)], false));
+  });
+  
+  var doc = new Document({
+    sections: [{
+      properties: {
+        page: {
+          size: { width: 11906, height: 16838 },
+          margin: { top: 1134, right: 850, bottom: 1134, left: 1701 }
+        }
+      },
+      children: [
+        // ANTET dreapta
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('Electromagnetica Business Park,')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('București, Sector 5,')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('Calea Rahovei 266 - 268, Corp 2')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('Birou 12 D')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('Tel: 031 436 91 12')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:0}, children: [normal('contact@1stmedica.ro')] }),
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:240}, children: [normal('www.1stmedica.ro')] }),
+
+        // NR SOMATIE
+        new Paragraph({ alignment: AlignmentType.RIGHT, spacing:{after:360}, children: [bold('Somatie: '+d.nrSomatie+' / '+d.dataSomatie)] }),
+
+        // DESTINATAR
+        new Paragraph({ spacing:{after:60}, children: [bold('CĂTRE: '), bold(d.partener + ' – titular contract')] }),
+        new Paragraph({ spacing:{after:360}, children: [bold(d.adresa)] }),
+
+        // INTRO
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('Subscrisa '), bold('1St Medica S.R.L.'),
+          normal(' cu sediul în București, str. Calea Rahovei nr. 266-268, Corp 2, etaj 2, Birou 12D, sector 5, reprezentată legal de dl. Dorin Dumitru-Didiță în calitate de creditoare')
+        ]}),
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('În temeiul '), bold('art. 1015 alin. (1) Cod Procedură Civilă'), normal(', vă înaintăm prezenta')
+        ]}),
+
+        // TITLU
+        new Paragraph({ alignment: AlignmentType.CENTER, spacing:{before:240, after:240}, children: [bold('SOMAȚIE', {size:28, underline:{}})] }),
+
+        // CORP
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('prin care vă solicităm ca, în termen de '), bold('5 (cinci) zile'),
+          normal(' de la primirea prezentei, să '), bold('procedați la plata'),
+          normal(' către subscrisa a următoarei sume:')
+        ]}),
+
+        new Paragraph({ spacing:{after:60}, indent:{left:720}, children: [
+          bold(String(d.totalSomatie) + ' Lei'),
+          normal(' reprezentând debit restant aferent facturilor neachitate și penalități, dar și daune interese, astfel cum sunt descrise în cele de mai jos:')
+        ]}),
+        new Paragraph({ spacing:{after:60}, indent:{left:720}, children: [normal('- ' + d.debit + ' Lei reprezentând debit restant;')] }),
+        new Paragraph({ spacing:{after:240}, indent:{left:720}, children: [normal('- ' + d.daune + ' Lei daune interese conform art. 30 din contract')] }),
+
+        // CONTRACT
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('Între subscrisa și dumneavoastră a fost încheiat contractul cu numărul '),
+          bold(d.nrContract), normal(' din data de '), bold(d.dataContract), normal('.'),
+          normal(' Angajamentul are ca obiect transmiterea dreptului de folosință asupra dispozitivelor medicale specificate in Anexa nr. 1, respectiv '),
+          bold(d.dispozitiv), normal('.')
+        ]}),
+
+        new Paragraph({ spacing:{after:240}, children: [
+          normal('Ca urmare a serviciilor prestate de subscrisa, v-ați obligat la plata facturilor emise și necontestate conform contractului enunțat anterior.')
+        ]}),
+
+        // TABEL FACTURI
+        new Table({
+          width: { size: 7200, type: WidthType.DXA },
+          rows: factRows
+        }),
+        br(),
+
+        // PENALITATI
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('Totodata, potrivit '), bold('dispozițiilor Contractuale de la "Valoarea contractului și condiții de plată"'),
+          normal(', în cazul în care Beneficiarul nu efectuează plata la termenul convenit, acesta va datora subscrisei penalități în cuantum de '),
+          bold('0,2%'), normal(' pe zi de întârziere din valoarea sumei debitului restant, acestea calculându-se din ziua imediat următoare datei scadente și până la îndeplinirea integrală a obligației.')
+        ]}),
+
+        // CONCLUZIE
+        new Paragraph({ spacing:{before:240, after:120}, children: [
+          normal('În consecință, vă punem în vedere ca, în termen de cel mult '), bold('5 (cinci) zile'),
+          normal(', de la primirea prezentei, să procedați la plata debitului restant in cuantum de '),
+          bold(d.debit + ' Lei în Cont RON IBAN: RO08BTRLRONCRT00E1440702, deschis la Transilvania Bank'),
+          normal(' și având ca beneficiar pe '), bold('1ST MEDICA S.R.L.'), normal(' si returnarea echipamentului inchiriat')
+        ]}),
+
+        new Paragraph({ spacing:{after:120}, children: [
+          normal('În situația în care nu vă veți conforma solicitărilor noastre, vom fi nevoiți să considerăm atitudinea dumneavoastră drept rea-credință și să continuăm demersurile în instanță, ocazie cu care vom solicita '),
+          bold('daune interese (penalitățile de întârziere)'), normal(' pentru acoperirea prejudiciilor cauzate pentru neîndeplinirea acestor obligații.')
+        ]}),
+
+        new Paragraph({ spacing:{after:240}, children: [
+          normal('Totodată, pe lângă aceste sume '), bold('veți fi nevoiți să suportați și cheltuielile de judecată ce includ taxele judiciare, onorariile de avocat, onorariul de executare și orice alte cheltuieli ocazionate de acest proces sau de executarea silită a obligațiilor ce vă incumbă.')
+        ]}),
+
+        new Paragraph({ spacing:{after:480}, children: [
+          normal('Subscrisa, nutrim speranța că veți da curs prezentei solicitări, preîntâmpinând astfel o situație litigioasă nedorită de vreuna din părți.')
+        ]}),
+
+        new Paragraph({ spacing:{after:60}, children: [normal('Pentru orice alte detalii referitoare la prezenta somație, nu ezitați să ne contactați.')] }),
+
+        br(), br(),
+
+        // SEMNATURA
+        new Paragraph({ spacing:{after:60}, children: [bold('1ST MEDICA S.R.L.')] }),
+        new Paragraph({ spacing:{after:0}, children: [bold('prin')] }),
+        new Paragraph({ spacing:{after:0}, children: [bold('Dorin Dumitru-Didita')] }),
+        new Paragraph({ spacing:{after:0}, children: [bold('Administrator')] }),
+        new Paragraph({ spacing:{after:0}, children: [normal('contact@1stmedica.ro')] }),
+        new Paragraph({ spacing:{after:0}, children: [normal('031.436.91.12')] }),
+      ]
+    }]
+  });
+  
+  var buf = await Packer.toBlob(doc);
+  var url = URL.createObjectURL(buf);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'Somatie_' + d.nrSomatie + '_' + d.partener.replace(/[^a-zA-Z0-9]/g,'_') + '.docx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // NOTIFICARE
