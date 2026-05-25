@@ -2281,7 +2281,7 @@ function openSomatie() {
     document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
 
     var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'2-digit',year:'numeric'});
-    var adresaPartener = [p.adresa, p.localitate, p.judet].filter(function(x){ return x && x.trim() && x.trim() !== '.'; }).join(', ');
+    var adresaPartener = [p.tel, p.judet].filter(function(x){ return x && x.trim() && x.trim() !== '.'; }).join(', ');
 
     var listaFacturi = '';
     facturi.forEach(function(f) {
