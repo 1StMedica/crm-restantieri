@@ -1394,7 +1394,7 @@ function renderPL(f){
     });
   });
 }
-function selPart(nm){selP=nm;renderPL();renderJR(nm);}
+function selPart(nm){selP=nm;renderPL();renderJR(nm);var jr=document.getElementById("jRight");if(jr)jr.scrollTop=0;var cont=document.querySelector(".content");if(cont)cont.scrollTop=0;}
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
