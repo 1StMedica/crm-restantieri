@@ -1341,7 +1341,6 @@ function renderF(){
   // Populate agents filter
   const agEl=document.getElementById('sag');
   if(agEl.options.length<=1){const ags=[...new Set(D.map(r=>r.ag).filter(Boolean))].sort();ags.forEach(a=>{const o=document.createElement('option');o.value=a;o.textContent=a;agEl.appendChild(o);});}
-  if(window._fSort){D.sort(window._fSort);}
   let d=D.filter(r=>{
     if(q&&!r.p.toLowerCase().includes(q)&&!r.nr.toLowerCase().includes(q)&&!(r.judet||'').toLowerCase().includes(q))return false;
     if(sf==='critic'&&r.z<90)return false;
@@ -1356,6 +1355,7 @@ function renderF(){
   else if(so==='sa')d.sort((a,b)=>(a.dsd||'')>(b.dsd||'')?1:-1);
   else d.sort((a,b)=>a.p.localeCompare(b.p));
   document.getElementById('fcnt').textContent=d.length+' facturi · rest total: '+fv(d.reduce((s,r)=>s+r.rest,0),'LEI');
+  if(window._fSort){d.sort(window._fSort);}
   const tb=document.getElementById('tFact');
   if(!d.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
   tb.innerHTML=d.map(r=>`<tr>
