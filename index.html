@@ -1029,11 +1029,12 @@ function sortTable(tabel, camp) {
     };
     renderP();
   } else if (tabel === 'remindere') {
-    var R = window.REMINDERE || [];
-    R.sort(function(a, b) {
-      var av = a[camp] || '', bv = b[camp] || '';
-      return dir * String(av).localeCompare(String(bv));
-    });
+    var _camp = camp, _dir = dir;
+    window._rSort = function(a, b) {
+      var av = a[_camp] !== undefined ? a[_camp] : '';
+      var bv = b[_camp] !== undefined ? b[_camp] : '';
+      return _dir * String(av).localeCompare(String(bv), 'ro');
+    };
     renderRemindere();
   }
 }
