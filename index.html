@@ -446,7 +446,7 @@ tbody tr:hover{background:var(--bg)}
         </select>
         <span class="flbl" id="fcnt"></span>
       </div>
-      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th onclick="sortTable('facturi','nr')" style="cursor:pointer;user-select:none">Nr. Factura <span id="sort-facturi-nr"></span></th><th onclick="sortTable('facturi','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-facturi-p"></span></th><th onclick="sortTable('facturi','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-facturi-cui"></span></th><th onclick="sortTable('facturi','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-facturi-judet"></span></th><th>Adresa</th><th>Telefon</th><th onclick="sortTable('facturi','de')" style="cursor:pointer;user-select:none">Data emiterii <span id="sort-facturi-de"></span></th><th onclick="sortTable('facturi','ds')" style="cursor:pointer;user-select:none">Data scadentei <span id="sort-facturi-ds"></span></th><th onclick="sortTable('facturi','z')" style="cursor:pointer;user-select:none">Zile dep. <span id="sort-facturi-z"></span></th><th onclick="sortTable('facturi','v')" style="cursor:pointer;user-select:none">Total factura <span id="sort-facturi-v"></span></th><th onclick="sortTable('facturi','rest')" style="cursor:pointer;user-select:none">Rest plata <span id="sort-facturi-rest"></span></th><th>Valuta</th><th onclick="sortTable('facturi','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-facturi-ag"></span></th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th onclick="sortTable('facturi','nr')" style="cursor:pointer;user-select:none">Nr. Factura <span id="sort-facturi-nr"></span></th><th onclick="sortTable('facturi','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-facturi-p"></span></th><th onclick="sortTable('facturi','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-facturi-cui"></span></th><th onclick="sortTable('facturi','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-facturi-judet"></span></th><th>Adresa</th><th>Telefon</th><th onclick="sortTable('facturi','de')" style="cursor:pointer;user-select:none">Data emiterii <span id="sort-facturi-de"></span></th><th onclick="sortTable('facturi','ds')" style="cursor:pointer;user-select:none">Data scadentei <span id="sort-facturi-ds"></span></th><th onclick="sortTable('facturi','z')" style="cursor:pointer;user-select:none">Zile dep. <span id="sort-facturi-z"></span></th><th onclick="sortTable('facturi','v')" style="cursor:pointer;user-select:none">Total factura <span id="sort-facturi-v"></span></th><th onclick="sortTable('facturi','rest')" style="cursor:pointer;user-select:none">Rest plata <span id="sort-facturi-rest"></span></th><th>Valuta</th><th onclick="sortTable('facturi','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-facturi-ag"></span></th><th>Text document</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- PARTENERI -->
@@ -1213,7 +1213,7 @@ function doImport(){
       sd:pdt(row[18]),ed:pdt(row[17]),
       w:gn(22),aa:gn(26),ab:gn(27),ba:gn(52),
       m:g(37)||'LEI',ag:g(11),
-      tel:g(45),telefon:g(46),adresa:g(47),localitate:g(44),judet:g(10),
+      tel:g(45),telefon:g(46),adresa:g(47),localitate:g(44),judet:g(10),text_doc:g(41),
     };
   });
 
@@ -1225,7 +1225,7 @@ function doImport(){
       tel:r.tel,telefon:r.telefon||'',adresa:r.adresa,localitate:r.localitate,judet:r.judet,
       de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',
       ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',
-      dsd:r.sd?r.sd.toISOString():null,z,v:r.w,rest:r.ba,m:r.m,ag:r.ag,st:'Neplatit'};
+      dsd:r.sd?r.sd.toISOString():null,z,v:r.w,rest:r.ba,m:r.m,ag:r.ag,st:'Neplatit',text_doc:r.text_doc||''};
   });
 
   // Sold net per partener = suma AB din TOATE randurile (facturi + incasari)
@@ -1260,7 +1260,7 @@ function doImport(){
     if(r.tip==='Factura'&&r.ba>0){
       const z=r.sd?Math.floor((today2-r.sd)/86400000):0;
       const incasat=Math.round((r.w-r.ba)*100)/100;
-      DESF[r.p].facturi.push({nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:r.ba,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat'});
+      DESF[r.p].facturi.push({nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:r.ba,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat',text_doc:r.text_doc||''});
     } else if(r.tip!=='Factura'&&r.aa>0){
       const tipInc=r.tip.toLowerCase().includes('banca')?'Banca':'Numerar';
       DESF[r.p].incasari.push({tip:tipInc,data:r.ed?r.ed.toLocaleDateString('ro-RO'):'',val:r.aa,m:r.m});
@@ -1360,7 +1360,7 @@ function renderF(){
   document.getElementById('fcnt').textContent=d.length+' facturi · rest total: '+fv(d.reduce((s,r)=>s+r.rest,0),'LEI');
   if(window._fSort){d.sort(window._fSort);}
   const tb=document.getElementById('tFact');
-  if(!d.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
+  if(!d.length){tb.innerHTML='<tr><td colspan="15"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
   tb.innerHTML=d.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
     <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${r.p}" title="Click pentru jurnal interactiuni">${r.p}</div></td>
@@ -1375,6 +1375,7 @@ function renderF(){
     <td><span class="amt amtr">${fv(r.rest,'')}</span></td>
     <td style="font-size:12px">${r.m}</td>
     <td style="font-size:12px;color:var(--t2)">${r.ag||'-'}</td>
+    <td style="font-size:11px;color:var(--t3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.text_doc||''}">${r.text_doc||'-'}</td>
     <td>${rb(r.z)}</td>
   </tr>`).join('');
 }
@@ -1515,6 +1516,7 @@ function renderJR(nm){
               <th>Valuta</th>
               <th>Status</th>
               <th>Agent</th>
+              <th>Text document</th>
             </tr>
           </thead>
           <tbody>
@@ -1533,6 +1535,7 @@ function renderJR(nm){
                 : `<span class="badge br">Neincasat</span>`
               }</td>
               <td style="font-size:12px;color:var(--t2)">${f.ag||'-'}</td>
+              <td style="font-size:11px;color:var(--t3);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.text_doc||''}">${f.text_doc||'-'}</td>
             </tr>`).join('')}
           </tbody>
           <tfoot>
@@ -1541,7 +1544,7 @@ function renderJR(nm){
               <td><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.total,0),'')}</span></td>
               <td style="color:var(--green)"><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.incasat,0),'')}</span></td>
               <td><span class="amt amtr" style="font-weight:700">${fv((PD.find(p=>p.p===_fisaNm)||{sold_net:desf.facturi.reduce((s,f)=>s+f.rest,0)}).sold_net,'')}</span></td>
-              <td colspan="3"></td>
+              <td colspan="4"></td>
             </tr>
           </tfoot>
         </table>
@@ -2082,7 +2085,7 @@ function _renderFisaFacturi(nm, desf){
         <thead><tr>
           <th>Nr. Factura</th><th>Data emiterii</th><th>Data scadentei</th>
           <th>Zile dep.</th><th>Total factura</th><th>Incasat</th><th>Rest plata</th>
-          <th>Valuta</th><th>Status</th><th>Agent</th>
+          <th>Valuta</th><th>Status</th><th>Agent</th><th>Text document</th>
         </tr></thead>
         <tbody>
           ${desf.facturi.map(f=>`<tr style="${f.status==='partial'?'background:rgba(133,79,11,0.04)':''}">
@@ -2096,6 +2099,7 @@ function _renderFisaFacturi(nm, desf){
             <td style="font-size:12px">${f.m}</td>
             <td>${f.status==='partial'?'<span class="badge ba">Partial platit</span>':'<span class="badge br">Neincasat</span>'}</td>
             <td style="font-size:12px;color:var(--t2)">${f.ag||'-'}</td>
+            <td style="font-size:11px;color:var(--t3);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.text_doc||''}">${f.text_doc||'-'}</td>
           </tr>`).join('')}
         </tbody>
         <tfoot><tr style="background:var(--bg);border-top:2px solid var(--bmed)">
@@ -2103,7 +2107,7 @@ function _renderFisaFacturi(nm, desf){
           <td><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.total,0),'')}</span></td>
           <td style="color:var(--green)"><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.incasat,0),'')}</span></td>
           <td><span class="amt amtr" style="font-weight:700">${fv(d.sold_net||dRestTotal,'')}</span></td>
-          <td colspan="3"></td>
+          <td colspan="4"></td>
         </tr></tfoot>
       </table>
     </div>`;
