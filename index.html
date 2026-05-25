@@ -1420,7 +1420,7 @@ function renderJR(nm){
     <div class="pch">
       <div class="pcht">
         <div class="pchav">${av}</div>
-        <div style="flex:1"><div class="pchn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px">${nm}</div><div class="pchcui">${d.cui||dCui||'-'} &middot; ID: ${d.id_partener||dId||'-'}</div></div>
+        <div style="flex:1"><div class="pchn" style="white-space:normal;overflow:visible;word-break:break-word;">${nm}</div><div class="pchcui">${d.cui||dCui||'-'} &middot; ID: ${d.id_partener||dId||'-'}</div></div>
         <button class="btn btnsm" onclick='openN({"p":"${nm.replace(/"/g,'\\"')}","nr":"multiple","v":${d.total_facturi||0},"rest":${d.sold_net||0},"m":"${d.m||'LEI'}","ds":"-","z":${d.max_zile||0},"email":""})'>${TICO.notificare} Notificare</button>
       </div>
       <div class="pchcs">
