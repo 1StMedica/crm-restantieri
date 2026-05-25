@@ -1146,7 +1146,7 @@ function doImport(){
       sd:pdt(row[18]),ed:pdt(row[17]),
       w:gn(22),aa:gn(26),ab:gn(27),ba:gn(52),
       m:g(37)||'LEI',ag:g(11),
-      tel:g(45),adresa:g(48),localitate:g(44),judet:g(10),
+      tel:g(45),telefon:g(46),adresa:g(48),localitate:g(44),judet:g(10),
     };
   });
 
@@ -1155,7 +1155,7 @@ function doImport(){
     const z=r.sd?Math.floor((today-r.sd)/86400000):0;
     return{nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),
       p:r.p,cui:r.cui,id_partener:r.id_partener,tip:'Factura',email:'',
-      tel:r.tel,adresa:r.adresa,localitate:r.localitate,judet:r.judet,
+      tel:r.tel,telefon:r.telefon||'',adresa:r.adresa,localitate:r.localitate,judet:r.judet,
       de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',
       ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',
       dsd:r.sd?r.sd.toISOString():null,z,v:r.w,rest:r.ba,m:r.m,ag:r.ag,st:'Neplatit'};
@@ -1165,7 +1165,7 @@ function doImport(){
   const byP={};
   allRows.forEach(r=>{
     if(!r.p)return;
-    if(!byP[r.p])byP[r.p]={cui:r.cui,id_partener:r.id_partener,tel:r.tel,adresa:r.adresa,localitate:r.localitate,judet:r.judet,ag:r.ag,m:r.m,sold_net:0,total_facturi:0,total_incasat:0,nr_facturi:0,nr_incasari:0,max_zile:0};
+    if(!byP[r.p])byP[r.p]={cui:r.cui,id_partener:r.id_partener,tel:r.tel,telefon:r.telefon||'',adresa:r.adresa,localitate:r.localitate,judet:r.judet,ag:r.ag,m:r.m,sold_net:0,total_facturi:0,total_incasat:0,nr_facturi:0,nr_incasari:0,max_zile:0};
     byP[r.p].sold_net+=r.ab;
     if(r.tip==='Factura'){byP[r.p].total_facturi+=r.w;byP[r.p].nr_facturi++;const z=r.sd?Math.floor((today-r.sd)/86400000):0;byP[r.p].max_zile=Math.max(byP[r.p].max_zile,z);}
     else{byP[r.p].total_incasat+=r.aa;byP[r.p].nr_incasari++;}
@@ -1697,7 +1697,7 @@ async function sendN(){
   // SMS / WhatsApp - deschide aplicatia cu mesajul pregatit
   if(canal!=='email'){
     var mesajSW=(document.getElementById('nMsg').value||'').trim();
-    var telPartener=(function(){var pd=PD.find(function(p){return p.p===nm;});return pd&&pd.tel?pd.tel:'';})();
+    var telPartener=(function(){var pd=PD.find(function(p){return p.p===nm;});return pd&&(pd.telefon||pd.tel)?pd.telefon||pd.tel:'';})();
     if(canal==='sms'){
       if(!telPartener){toast('Partenerul nu are numar de telefon!','error');return;}
       var smsUrl='sms:'+telPartener+'?body='+encodeURIComponent(mesajSW);
