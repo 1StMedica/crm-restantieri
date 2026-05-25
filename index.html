@@ -1324,7 +1324,7 @@ function renderP(){
   tb.innerHTML=src.map(d=>{
     const nm=d.p;const nc=(J[nm]||[]).length;
     return`<tr>
-      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${nm}" title="Click pentru jurnal interactiuni">${nm}</div></td>
+      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${nm}" title="${nm}">${nm}</div></td>
       <td><span class="pcui">${d.cui||'-'}</span></td>
       <td style="font-size:12px">${d.judet||'-'}</td>
       <td style="font-size:12px">${d.tel||'-'}</td>
