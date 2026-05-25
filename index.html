@@ -2250,7 +2250,7 @@ function openSomatie() {
   var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
   var totalRest = facturi.reduce(function(s, f){ return s + parseFloat(f.rest || 0); }, 0);
 
-  getSomatieNr().then(function(nr) {
+  Promise.resolve(new Date().getFullYear().toString().slice(2) + String(Date.now()).slice(-4)).then(function(nr) {
     var anCurent = new Date().getFullYear();
     document.getElementById('somatieNr').value = nr + '/' + anCurent;
     document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
