@@ -916,7 +916,7 @@ const TICO={
   notif_interna:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
   notif_externa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
 };
-const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa',prom_neonorata:'Promisiune neonorata',notif_interna:'Somatie plata',notif_externa:'Notificare externa - Avocatura'};
+const TLBL={apel:'Apel telefonic',email:'Email',whatsapp:'WhatsApp',intalnire:'Intalnire',promisiune:'Promisiune plata',notificare:'Notificare trimisa',prom_neonorata:'Promisiune neonorata',notif_interna:'Notificare interna (PDF)',notif_externa:'Notificare externa - Avocatura'};
 
 function showTT(e, text){
   var tt = document.getElementById('pnTooltip');
@@ -1500,7 +1500,7 @@ function renderJR(nm){
         <button class="tb" onclick="setT(this,'intalnire')">${TICO.intalnire} Intalnire</button>
         <button class="tb" onclick="setT(this,'promisiune')">${TICO.promisiune} Promisiune plata</button>
         <button class="tb" onclick="setT(this,'prom_neonorata')" style="border-color:rgba(163,45,45,.3)">${TICO.prom_neonorata} Promisiune neonorata</button>
-        <button class="tb" onclick="openSomatie()" style="border-color:rgba(24,95,165,.3)">${TICO.notif_interna} Somatie plata</button>
+        <button class="tb" onclick="setT(this,'notif_interna')" style="border-color:rgba(24,95,165,.3)">${TICO.notif_interna} Notificare interna</button>
         <button class="tb" onclick="setT(this,'notif_externa')" style="border-color:rgba(123,16,16,.3);color:#7B1010">${TICO.notif_externa} Notificare externa</button>
       </div>
       <textarea class="nta" id="nta" placeholder="Descrie ce s-a discutat, acorduri, rezultate..."></textarea>
@@ -1598,9 +1598,7 @@ function addN(nm){
     toast('Nota + reminder pe '+fuData+' adaugat!','success');
   }
 
-  
-
-// Notificare interna - genereaza PDF
+  // Notificare interna - genereaza PDF
   if(_ct==='notif_interna'){
     n.pdf_generat=true;
     setTimeout(()=>generateNotifPDF(nm, n), 300);
@@ -2213,172 +2211,7 @@ function generateNotifPDF(nm, nota){
     <div class="footer">
       Agent: ${nota.agent} &nbsp;&middot;&nbsp; Data: ${today} &nbsp;&middot;&nbsp; CRM Restante v2.0
     </div>
-    <script>
-// ── SOMATIE MODAL ──────────────────────────────────────────────────────────
-
-function openSomatie() {
-  var nm = selP;
-  if (!nm) { toast('Selecteaza un partener mai intai', 'error'); return; }
-
-  var p = PD.find(function(x){ return x.p === nm; }) || {};
-  var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
-  var totalRest = facturi.reduce(function(s, f){ return s + parseFloat(f.rest || 0); }, 0);
-
-  getSomatieNr().then(function(nr) {
-    var anCurent = new Date().getFullYear();
-    document.getElementById('somatieNr').value = nr + '/' + anCurent;
-    document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
-
-    var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'long',year:'numeric'});
-    var listaFacturi = '';
-    facturi.forEach(function(f) {
-      var zile = f.z ? parseInt(f.z) : 0;
-      var ds = f.ds ? new Date(f.ds+'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'}) : '-';
-      listaFacturi += '  - Factura ' + (f.nr||'-') + ' din ' + ds + ' - Rest: ' + parseFloat(f.rest||0).toFixed(2) + ' LEI' + (zile > 0 ? ' (' + zile + ' zile intarziere)' : '') + '\n';
-    });
-
-    var text = [
-      'Catre,',
-      nm,
-      p.adresa || '',
-      ((p.localitate || '') + ' ' + (p.judet || '')).trim(),
-      'CUI: ' + (p.cui || ''),
-      '',
-      '',
-      'SOMATIE DE PLATA NR. ' + nr + '/' + anCurent,
-      'Data: ' + dataAzi,
-      '',
-      '',
-      'Stimate partener,',
-      '',
-      'Societatea noastra 1stMedica SRL, cu sediul in Bucuresti, Str. Miscarii nr. 8, tel. 0773.975.267, va notifica prin prezenta ca inregistrati facturi restante neachitate dupa cum urmeaza:',
-      '',
-      listaFacturi,
-      'TOTAL DE ACHITAT: ' + totalRest.toFixed(2) + ' LEI',
-      '',
-      'Va solicitam in mod ferm achitarea sumei totale de ' + totalRest.toFixed(2) + ' LEI in termen de 5 (cinci) zile lucratoare de la primirea prezentei somatii, in contul societatii noastre sau la sediul nostru.',
-      '',
-      'In cazul neachitarii in termenul indicat, 1stMedica SRL va fi nevoita sa recurga la mijloace legale de recuperare a creantei, inclusiv actiune in instanta si/sau externalizarea creantei catre un cabinet de avocatura, cheltuielile de judecata urmand a fi suportate de dumneavoastra.',
-      '',
-      'Speram ca veti da curs prezentei solicitari si va asiguram ca, la achitarea integrala a datoriei, relatiile comerciale vor continua in conditii normale.',
-      '',
-      '',
-      'Cu stima,',
-      '',
-      '1stMedica SRL',
-      'Bucuresti, Str. Miscarii nr. 8',
-      'Tel: 0773.975.267',
-      'Email: info@1stmedia.eu'
-    ].join('\n');
-
-    document.getElementById('somatieText').value = text;
-    document.getElementById('somatieModal').style.display = 'flex';
-  });
-}
-
-function closeSomatie() {
-  document.getElementById('somatieModal').style.display = 'none';
-}
-
-function genereazaSomatieWord() {
-  var nm = selP;
-  if (!nm) return;
-
-  var nrSom = document.getElementById('somatieNr').value.trim();
-  var textSom = document.getElementById('somatieText').value.trim();
-  if (!textSom) { toast('Textul somatiei este gol', 'error'); return; }
-
-  var btn = event.target;
-  btn.disabled = true;
-  btn.textContent = 'Se genereaza...';
-
-  _genSomatieWordFromText({
-    nrSomatie: nrSom,
-    partener: nm,
-    text: textSom
-  }).then(function() {
-    if (!J[nm]) J[nm] = [];
-    var ag = (window.currentUser && window.currentUser.email) || 'Sistem';
-    J[nm].push({
-      id: uid(),
-      type: 'notif_interna',
-      text: 'Somatie de plata nr. ' + nrSom + ' generata si descarcata.',
-      date: new Date().toISOString(),
-      agent: ag
-    });
-    jSave();
-    incrementSomatieNr();
-    toast('Somatie generata cu succes!', 'success');
-    closeSomatie();
-    if (selP) {
-      var nid = selP.replace(/[^a-zA-Z0-9]/g,'_');
-      var el = document.getElementById('tli-'+nid);
-      if (el) el.innerHTML = renderTLI(selP);
-    }
-  }).catch(function(e) {
-    console.error(e);
-    toast('Eroare la generare: ' + e.message, 'error');
-  }).finally(function() {
-    btn.disabled = false;
-    btn.textContent = 'Genereaza Word';
-  });
-}
-
-function _genSomatieWordFromText(d) {
-  return new Promise(function(resolve, reject) {
-    function doGen() {
-      try {
-        var Document = docx.Document, Packer = docx.Packer, Paragraph = docx.Paragraph,
-            TextRun = docx.TextRun, AlignmentType = docx.AlignmentType;
-
-        var linii = d.text.split('\n');
-        var children = linii.map(function(linie) {
-          var isTitlu = linie.indexOf('SOMATIE DE PLATA') === 0;
-          return new Paragraph({
-            alignment: isTitlu ? AlignmentType.CENTER : AlignmentType.LEFT,
-            spacing: { after: linie.trim() === '' ? 80 : 160 },
-            children: [new TextRun({ text: linie, font: 'Arial', size: isTitlu ? 26 : 22, bold: isTitlu })]
-          });
-        });
-
-        var doc = new Document({
-          sections: [{
-            properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1800 } } },
-            children: children
-          }]
-        });
-
-        Packer.toBuffer(doc).then(function(buffer) {
-          var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = 'Somatie_' + d.nrSomatie.replace(/\//g,'_') + '_' + d.partener.replace(/[^a-zA-Z0-9]/g,'_') + '.docx';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          resolve();
-        }).catch(reject);
-      } catch(e) { reject(e); }
-    }
-
-    if (typeof docx !== 'undefined') {
-      doGen();
-    } else {
-      var s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js';
-      s.onload = doGen;
-      s.onerror = function(){ reject(new Error('Nu s-a putut incarca biblioteca docx')); };
-      document.head.appendChild(s);
-    }
-  });
-}
-
-// ── SFARSIT SOMATIE MODAL ──────────────────────────────────────────────────
-</script>
-</body></html>`;
+    </body></html>`;
 
   const win = window.open('','_blank','width=800,height=600');
   if(win){
@@ -2409,33 +2242,5 @@ var DESF = {"FLOREA MARIAN": {"facturi": [{"nr": "RA-7291", "de": "22/05/2026", 
 
 })();
 </script>
-
-<!-- MODAL SOMATIE PLATA -->
-<div id="somatieModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)closeSomatie()">
-  <div style="background:#fff;border-radius:12px;width:720px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.25);">
-    <div style="padding:20px 24px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <h3 style="margin:0;font-size:17px;font-weight:700;color:#1e293b">Genereaza Somatie de Plata</h3>
-        <p id="somatieSubtitle" style="margin:4px 0 0;font-size:13px;color:#64748b"></p>
-      </div>
-      <button onclick="closeSomatie()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8;line-height:1">&times;</button>
-    </div>
-    <div style="padding:12px 24px 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <label style="font-size:13px;font-weight:600;color:#374151;white-space:nowrap">Nr. Somatie:</label>
-      <input id="somatieNr" type="text" style="width:120px;padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;font-weight:600" />
-      <label style="font-size:13px;font-weight:600;color:#374151;white-space:nowrap">Data:</label>
-      <input id="somatieData" type="date" style="padding:6px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:14px;" />
-    </div>
-    <div style="padding:12px 24px;flex:1;overflow:auto;">
-      <label style="font-size:13px;font-weight:600;color:#374151;display:block;margin-bottom:6px">Text somatie (editabil):</label>
-      <textarea id="somatieText" style="width:100%;height:320px;padding:12px;border:1px solid #d1d5db;border-radius:8px;font-size:13px;line-height:1.6;font-family:monospace;resize:vertical;box-sizing:border-box;"></textarea>
-    </div>
-    <div style="padding:14px 24px;border-top:1px solid #e5e7eb;display:flex;justify-content:flex-end;gap:10px;">
-      <button onclick="closeSomatie()" style="padding:9px 20px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;color:#374151">Anuleaza</button>
-      <button onclick="genereazaSomatieWord()" style="padding:9px 22px;border:none;border-radius:8px;background:#1e40af;color:#fff;cursor:pointer;font-size:14px;font-weight:600">Genereaza Word</button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
