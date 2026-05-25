@@ -446,7 +446,7 @@ tbody tr:hover{background:var(--bg)}
         </select>
         <span class="flbl" id="fcnt"></span>
       </div>
-      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th onclick="sortTable('facturi','nr')" style="cursor:pointer;user-select:none">Nr. Factura <span id="sort-facturi-nr"></span></th><th onclick="sortTable('facturi','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-facturi-p"></span></th><th onclick="sortTable('facturi','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-facturi-cui"></span></th><th onclick="sortTable('facturi','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-facturi-judet"></span></th><th>Adresa</th><th>Telefon</th><th onclick="sortTable('facturi','de')" style="cursor:pointer;user-select:none">Data emiterii <span id="sort-facturi-de"></span></th><th onclick="sortTable('facturi','ds')" style="cursor:pointer;user-select:none">Data scadentei <span id="sort-facturi-ds"></span></th><th onclick="sortTable('facturi','z')" style="cursor:pointer;user-select:none">Zile dep. <span id="sort-facturi-z"></span></th><th onclick="sortTable('facturi','v')" style="cursor:pointer;user-select:none">Total factura <span id="sort-facturi-v"></span></th><th onclick="sortTable('facturi','rest')" style="cursor:pointer;user-select:none">Rest plata <span id="sort-facturi-rest"></span></th><th>Valuta</th><th onclick="sortTable('facturi','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-facturi-ag"></span></th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- PARTENERI -->
@@ -457,7 +457,7 @@ tbody tr:hover{background:var(--bg)}
           <option value="sold">Sold net desc</option><option value="zile">Zile desc</option><option value="az">A-Z</option>
         </select>
       </div>
-      <div class="card"><div class="tw"><table><thead><tr><th>Partener</th><th>CUI</th><th>Judet</th><th>Telefon</th><th>Agent</th><th>Facturi</th><th>Incasari</th><th>Total facturat</th><th>Total incasat</th><th>Sold net (AB)</th><th>Max zile</th><th>Risc</th><th>Note</th><th>Jurnal</th></tr></thead><tbody id="tPart"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw"><table><thead><tr><th onclick="sortTable('parteneri','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-parteneri-p"></span></th><th onclick="sortTable('parteneri','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-parteneri-cui"></span></th><th onclick="sortTable('parteneri','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-parteneri-judet"></span></th><th>Telefon</th><th onclick="sortTable('parteneri','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-parteneri-ag"></span></th><th onclick="sortTable('parteneri','nr_facturi')" style="cursor:pointer;user-select:none">Facturi <span id="sort-parteneri-nr_facturi"></span></th><th>Incasari</th><th onclick="sortTable('parteneri','total_facturi')" style="cursor:pointer;user-select:none">Total facturat <span id="sort-parteneri-total_facturi"></span></th><th onclick="sortTable('parteneri','total_incasat')" style="cursor:pointer;user-select:none">Total incasat <span id="sort-parteneri-total_incasat"></span></th><th onclick="sortTable('parteneri','sold_net')" style="cursor:pointer;user-select:none">Sold net (AB) <span id="sort-parteneri-sold_net"></span></th><th onclick="sortTable('parteneri','max_zile')" style="cursor:pointer;user-select:none">Max zile <span id="sort-parteneri-max_zile"></span></th><th>Risc</th><th>Note</th><th>Jurnal</th></tr></thead><tbody id="tPart"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- JURNAL -->
@@ -502,13 +502,13 @@ tbody tr:hover{background:var(--bg)}
           <table>
             <thead>
               <tr>
-                <th>Data follow-up</th>
-                <th>Partener</th>
-                <th>Agent</th>
-                <th>Tip actiune</th>
+                <th onclick="sortTable('remindere','data')" style="cursor:pointer;user-select:none">Data follow-up <span id="sort-remindere-data"></span></th>
+                <th onclick="sortTable('remindere','partener')" style="cursor:pointer;user-select:none">Partener <span id="sort-remindere-partener"></span></th>
+                <th onclick="sortTable('remindere','agent')" style="cursor:pointer;user-select:none">Agent <span id="sort-remindere-agent"></span></th>
+                <th onclick="sortTable('remindere','actiune')" style="cursor:pointer;user-select:none">Tip actiune <span id="sort-remindere-actiune"></span></th>
                 <th>Nota / Context</th>
-                <th>Adaugat la</th>
-                <th>Status</th>
+                <th onclick="sortTable('remindere','creat')" style="cursor:pointer;user-select:none">Adaugat la <span id="sort-remindere-creat"></span></th>
+                <th onclick="sortTable('remindere','status')" style="cursor:pointer;user-select:none">Status <span id="sort-remindere-status"></span></th>
                 <th>Actiuni</th>
               </tr>
             </thead>
@@ -990,6 +990,50 @@ function showPage(id,el){
   if(id==='remindere')renderRemindere();
   if(id==='jurnal')renderPL();
 }
+
+// ── SORTARE TABELE ──────────────────────────────────────────────────────
+var _sortState = {};
+
+function sortTable(tabel, camp) {
+  var prev = _sortState[tabel] || {camp: null, dir: 1};
+  var dir = (prev.camp === camp) ? -prev.dir : 1;
+  _sortState[tabel] = {camp: camp, dir: dir};
+
+  // Reseteaza toate icoanele
+  document.querySelectorAll('[id^="sort-'+tabel+'-"]').forEach(function(el) {
+    el.textContent = '';
+  });
+  var ico = document.getElementById('sort-'+tabel+'-'+camp);
+  if (ico) ico.textContent = dir === 1 ? ' ▲' : ' ▼';
+
+  if (tabel === 'facturi') {
+    D.sort(function(a, b) {
+      var av = a[camp] || '', bv = b[camp] || '';
+      if (camp === 'z' || camp === 'v' || camp === 'rest') {
+        return dir * (parseFloat(av)||0 - parseFloat(bv)||0);
+      }
+      return dir * String(av).localeCompare(String(bv));
+    });
+    renderF();
+  } else if (tabel === 'parteneri') {
+    PD.sort(function(a, b) {
+      var av = a[camp] || '', bv = b[camp] || '';
+      if (camp === 'sold_net' || camp === 'total_facturi' || camp === 'total_incasat' || camp === 'nr_facturi' || camp === 'max_zile') {
+        return dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
+      }
+      return dir * String(av).localeCompare(String(bv));
+    });
+    renderP();
+  } else if (tabel === 'remindere') {
+    var R = window.REMINDERE || [];
+    R.sort(function(a, b) {
+      var av = a[camp] || '', bv = b[camp] || '';
+      return dir * String(av).localeCompare(String(bv));
+    });
+    renderRemindere();
+  }
+}
+// ── SFARSIT SORTARE ──────────────────────────────────────────────────────
 function uid(){return Math.random().toString(36).slice(2);}
 function fv(v,c){return new Intl.NumberFormat('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0)+(c?' '+c:'');}
 function rb(z){if(z>=90)return'<span class="badge br">Critic</span>';if(z>=60)return'<span class="badge" style="background:#fdf0e8;color:#993C1D">Ridicat</span>';if(z>=30)return'<span class="badge ba">Moderat</span>';if(z>0)return'<span class="badge bb">Recent</span>';return'<span class="badge bg">La termen</span>';}
