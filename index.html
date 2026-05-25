@@ -1016,13 +1016,14 @@ function sortTable(tabel, camp) {
     });
     renderF();
   } else if (tabel === 'parteneri') {
+    var _camp = camp, _dir = dir;
     window._pSort = function(a, b) {
-      var av = a[camp] !== undefined ? a[camp] : '';
-      var bv = b[camp] !== undefined ? b[camp] : '';
-      if (['sold_net','total_facturi','total_incasat','nr_facturi','max_zile'].indexOf(camp) !== -1) {
-        return dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
+      var av = a[_camp] !== undefined ? a[_camp] : '';
+      var bv = b[_camp] !== undefined ? b[_camp] : '';
+      if (['sold_net','total_facturi','total_incasat','nr_facturi','max_zile'].indexOf(_camp) !== -1) {
+        return _dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
       }
-      return dir * String(av).localeCompare(String(bv), 'ro');
+      return _dir * String(av).localeCompare(String(bv), 'ro');
     };
     renderP();
   } else if (tabel === 'remindere') {
