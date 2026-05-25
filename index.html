@@ -1735,7 +1735,7 @@ async function sendN(){
   if(closeBtn)closeBtn.disabled=true;
   if(statusEl){statusEl.style.display='block';statusEl.style.background='var(--bbg)';statusEl.style.color='var(--blue)';statusEl.innerHTML='&#9679; Se trimite catre '+email+'...';}
   try{
-    for(var _ei=0;_ei<emailList.length;_ei++){await sendEmailViaFirebase({to:emailList[_ei],toName:nm,subject:'Situatie facturi - '+cNR.nr,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
+    for(var _ei=0;_ei<emailList.length;_ei++){await sendEmailViaFirebase({to:emailList[_ei],toName:nm,subject:'Situatie facturi - '+r.p,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
     if(statusEl){statusEl.style.background='var(--gbg)';statusEl.style.color='var(--green)';statusEl.innerHTML='&#10003; Email trimis cu succes catre <strong>'+email+'</strong>!';}
     if(sendBtn)sendBtn.innerHTML='&#10003; Trimis!';
     if(nm){
