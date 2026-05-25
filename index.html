@@ -2635,38 +2635,40 @@ function openSomatie() {
       listaFacturi += '  • Factura ' + (f.nr||'-') + ' din ' + ds + ' — Rest: ' + parseFloat(f.rest||0).toFixed(2) + ' LEI' + (zile > 0 ? ' (' + zile + ' zile întârziere)' : '') + '\n';
     });
 
-    const text =
-`Către,
-${nm}
-${p.adresa || ''}
-${p.localitate || ''} ${p.judet || ''}
-CUI: ${p.cui || ''}
-
-
-SOMAȚIE DE PLATĂ NR. ${nr}/${anCurent}
-Data: ${dataAzi}
-
-
-Stimate partener,
-
-Societatea noastră 1stMedica SRL, cu sediul în București, Str. Mișcării nr. 8, tel. 0773.975.267, vă notifică prin prezenta că înregistrați facturi restante neachitate după cum urmează:
-
-${listaFacturi}
-TOTAL DE ACHITAT: ${totalRest.toFixed(2)} LEI
-
-Vă solicităm în mod ferm achitarea sumei totale de ${totalRest.toFixed(2)} LEI în termen de 5 (cinci) zile lucrătoare de la primirea prezentei somații, în contul societății noastre sau la sediul nostru.
-
-În cazul neachitării în termenul indicat, 1stMedica SRL va fi nevoită să recurgă la mijloace legale de recuperare a creanței, inclusiv acțiune în instanță și/sau externalizarea creanței către un cabinet de avocatură, cheltuielile de judecată urmând a fi suportate de dumneavoastră.
-
-Sperăm că veți da curs prezentei solicitări și vă asigurăm că, la achitarea integrală a datoriei, relațiile comerciale vor continua în condiții normale.
-
-
-Cu stimă,
-
-1stMedica SRL
-București, Str. Mișcării nr. 8
-Tel: 0773.975.267
-Email: info@1stmedia.eu`;
+    const linii_adresa = [p.adresa||'', (p.localitate||'') + ' ' + (p.judet||''), 'CUI: ' + (p.cui||'')].filter(x=>x.trim());
+    const text = [
+      'Catre,',
+      nm,
+      p.adresa || '',
+      ((p.localitate || '') + ' ' + (p.judet || '')).trim(),
+      'CUI: ' + (p.cui || ''),
+      '',
+      '',
+      'SOMATIE DE PLATA NR. ' + nr + '/' + anCurent,
+      'Data: ' + dataAzi,
+      '',
+      '',
+      'Stimate partener,',
+      '',
+      'Societatea noastra 1stMedica SRL, cu sediul in Bucuresti, Str. Miscarii nr. 8, tel. 0773.975.267, va notifica prin prezenta ca inregistrati facturi restante neachitate dupa cum urmeaza:',
+      '',
+      listaFacturi,
+      'TOTAL DE ACHITAT: ' + totalRest.toFixed(2) + ' LEI',
+      '',
+      'Va solicitam in mod ferm achitarea sumei totale de ' + totalRest.toFixed(2) + ' LEI in termen de 5 (cinci) zile lucratoare de la primirea prezentei somatii, in contul societatii noastre sau la sediul nostru.',
+      '',
+      'In cazul neachitarii in termenul indicat, 1stMedica SRL va fi nevoita sa recurga la mijloace legale de recuperare a creantei, inclusiv actiune in instanta si/sau externalizarea creantei catre un cabinet de avocatura, cheltuielile de judecata urmand a fi suportate de dumneavoastra.',
+      '',
+      'Speram ca veti da curs prezentei solicitari si va asiguram ca, la achitarea integrala a datoriei, relatiile comerciale vor continua in conditii normale.',
+      '',
+      '',
+      'Cu stima,',
+      '',
+      '1stMedica SRL',
+      'Bucuresti, Str. Miscarii nr. 8',
+      'Tel: 0773.975.267',
+      'Email: info@1stmedia.eu'
+    ].join('\n');
 
     document.getElementById('somatieText').value = text;
     const modal = document.getElementById('somatieModal');
