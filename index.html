@@ -168,8 +168,8 @@ tbody tr:hover{background:var(--bg)}
 .fisa-stat-lbl{font-size:11px;color:var(--t3)}
 
 /* JURNAL */
-.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;min-height:600px}
-.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
+.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;height:calc(100vh - 80px);overflow:hidden}
+.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;height:100%}
 .plh{padding:12px 14px;border-bottom:1px solid var(--border)}
 .plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
 .pli{overflow-y:auto;flex:1}
@@ -467,7 +467,7 @@ tbody tr:hover{background:var(--bg)}
           <div class="plh"><input class="plsearch" type="text" id="plsrch" placeholder="Cauta partener..." oninput="renderPL(this.value)"></div>
           <div class="pli" id="plItems"><div class="empty" style="padding:30px 10px"><div class="etl">Se incarca...</div></div></div>
         </div>
-        <div id="jRight"><div class="nosel"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="font-size:14px;font-weight:500;color:var(--t2)">Selecteaza un partener</div><div style="font-size:12px">pentru a vedea istoricul si a adauga note</div></div></div>
+        <div id="jRight" style="overflow-y:auto;height:100%"><div class="nosel"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="font-size:14px;font-weight:500;color:var(--t2)">Selecteaza un partener</div><div style="font-size:12px">pentru a vedea istoricul si a adauga note</div></div></div>
       </div>
     </div>
 
