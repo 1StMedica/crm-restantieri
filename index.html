@@ -401,13 +401,13 @@ tbody tr:hover{background:var(--bg)}
               <div style="flex:1;padding:12px 14px;border-right:0.5px solid var(--border)">
                 <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Valori neincasate</div>
                 <div id="agingValGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-bottom:10px"></div>
-                <div style="height:130px"><canvas id="agingChart"></canvas></div>
+                <div style="height:130px" title="Click pentru a filtra facturile"><canvas id="agingChart" style="cursor:pointer"></canvas></div>
               </div>
               <!-- DREAPTA: Nr. facturi + bare -->
               <div style="flex:1;padding:12px 14px">
                 <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Nr. facturi</div>
                 <div id="agingCntGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-bottom:10px"></div>
-                <div style="height:130px"><canvas id="agingBarDash"></canvas></div>
+                <div style="height:130px" title="Click pentru a filtra facturile"><canvas id="agingBarDash" style="cursor:pointer"></canvas></div>
               </div>
             </div>
           </div>
@@ -570,8 +570,8 @@ tbody tr:hover{background:var(--bg)}
         <div class="ac a90"><div class="av" id="av90">-</div><div class="al">90+ zile (critic)</div><div class="acnt" id="ac90">- facturi</div></div>
       </div>
       <div class="g2">
-        <div class="card"><div class="ch"><div class="ct">Rest de plata pe bucket</div></div><div class="cw" style="height:260px"><canvas id="barChart"></canvas></div></div>
-        <div class="card"><div class="ch"><div class="ct">Distributie nr. facturi</div></div><div class="cw" style="height:260px"><canvas id="pieChart"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Rest de plata pe bucket</div></div><div class="cw" style="height:260px"><canvas id="barChart" style="cursor:pointer" title="Click pentru a filtra facturile"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Distributie nr. facturi</div></div><div class="cw" style="height:260px"><canvas id="pieChart" style="cursor:pointer" title="Click pentru a filtra facturile"></canvas></div></div>
       </div>
       <div class="card"><div class="ch"><div class="ct">Aging complet per partener</div><div class="cs">sold net = suma col AB</div></div><div class="tw"><table><thead><tr><th>Partener</th><th>Agent</th><th>0-30 zile</th><th>31-60 zile</th><th>61-90 zile</th><th>90+ zile</th><th>Sold net total</th></tr></thead><tbody id="tAging"><tr><td colspan="7"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
@@ -1329,10 +1329,10 @@ function renderDB(){
   if(cg) cg.innerHTML=BUCK_LABELS.map((l,i)=>`<div style="background:${BUCK_BG[i]};border-radius:6px;padding:5px 7px"><div style="font-size:9px;font-weight:600;color:${BUCK_BD[i]}">${l} zile</div><div style="font-size:14px;font-weight:700;color:${BUCK_BD[i]}">${cnts[i]}</div></div>`).join('');
   // Donut - valori
   if(aCI)aCI.destroy();
-  aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:BUCK_LABELS,datasets:[{data:vals,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%'}});
+  aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:BUCK_LABELS,datasets:[{data:vals,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%',onClick:function(e,els){if(els.length)filterFact(els[0].index);}}});
   // Bar - facturi
   if(window._agingBarDash)window._agingBarDash.destroy();
-  window._agingBarDash=new Chart(document.getElementById('agingBarDash').getContext('2d'),{type:'bar',data:{labels:BUCK_LABELS,datasets:[{data:cnts,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{color:'rgba(0,0,0,0.04)'},beginAtZero:true},x:{ticks:{font:{family:'DM Sans',size:10}},grid:{display:false}}}}});
+  window._agingBarDash=new Chart(document.getElementById('agingBarDash').getContext('2d'),{type:'bar',data:{labels:BUCK_LABELS,datasets:[{data:cnts,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},onClick:function(e,els){if(els.length)filterFact(els[0].index);},scales:{y:{ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{color:'rgba(0,0,0,0.04)'},beginAtZero:true},x:{ticks:{font:{family:'DM Sans',size:10}},grid:{display:false}}}}});
 }
 
 // FACTURI
@@ -1861,6 +1861,21 @@ async function sendEmailViaFirebase(params){
 
 
 // AGING
+function filterFact(bi){
+  // bi: 0=0-30, 1=31-60, 2=61-90, 3=90+
+  const vals=['recent','moderat','ridicat','critic'];
+  const labels=['0-30 zile','31-60 zile','61-90 zile','90+ zile'];
+  const sfil=document.getElementById('sfil');
+  if(sfil){sfil.value=vals[bi];}
+  showPage('facturi',document.querySelector('.ni[onclick*="facturi"]'));
+  setTimeout(()=>{
+    const sfil2=document.getElementById('sfil');
+    if(sfil2){sfil2.value=vals[bi];renderF();}
+    // Scroll to top of facturi table
+    const pg=document.getElementById('page-facturi');
+    if(pg)pg.scrollTop=0;
+  },80);
+}
 function renderA(){
   const bk=[r=>r.z>=0&&r.z<30,r=>r.z>=30&&r.z<60,r=>r.z>=60&&r.z<90,r=>r.z>=90];
   const vs=bk.map(f=>D.filter(f).reduce((s,r)=>s+r.rest,0));
@@ -1868,9 +1883,9 @@ function renderA(){
   ['av0','av30','av60','av90'].forEach((id,i)=>document.getElementById(id).textContent=fv(vs[i],'LEI'));
   ['ac0','ac30','ac60','ac90'].forEach((id,i)=>document.getElementById(id).textContent=cs[i]+' facturi');
   if(aBI)aBI.destroy();
-  aBI=new Chart(document.getElementById('barChart').getContext('2d'),{type:'bar',data:{labels:['0-30 zile','31-60 zile','61-90 zile','90+ zile'],datasets:[{label:'Rest plata (LEI)',data:vs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'DM Sans',size:11}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}}}}});
+  aBI=new Chart(document.getElementById('barChart').getContext('2d'),{type:'bar',data:{labels:['0-30 zile','31-60 zile','61-90 zile','90+ zile'],datasets:[{label:'Rest plata (LEI)',data:vs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},onClick:function(e,els){if(els.length)filterFact(els[0].index);},scales:{y:{ticks:{font:{family:'DM Sans',size:11}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}}}}});
   if(aPI)aPI.destroy();
-  aPI=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'pie',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:cs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}}}});
+  aPI=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'pie',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:cs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}},onClick:function(e,els){if(els.length)filterFact(els[0].index);}}});
   // Aging table per partner using PD
   const tb=document.getElementById('tAging');
   if(!PD.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="etl">Nicio data</div></div></td></tr>';return;}
