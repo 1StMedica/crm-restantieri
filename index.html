@@ -1919,7 +1919,8 @@ function renderRemindere(){
     if(stF === 'done'     && r.status !== 'done')     return false;
     if(stF === 'overdue'  && r.status !== 'overdue')  return false;
     return true;
-  }).sort((a,b) => a.data.localeCompare(b.data));
+  });
+  if(window._rSort){filtered.sort(window._rSort);}else{filtered.sort((a,b) => a.data.localeCompare(b.data));}
 
   document.getElementById('reminderCount').textContent =
     filtered.length + ' remindere' +
