@@ -1016,13 +1016,14 @@ function sortTable(tabel, camp) {
     });
     renderF();
   } else if (tabel === 'parteneri') {
-    PD.sort(function(a, b) {
-      var av = a[camp] || '', bv = b[camp] || '';
-      if (camp === 'sold_net' || camp === 'total_facturi' || camp === 'total_incasat' || camp === 'nr_facturi' || camp === 'max_zile') {
+    window._pSort = function(a, b) {
+      var av = a[camp] !== undefined ? a[camp] : '';
+      var bv = b[camp] !== undefined ? b[camp] : '';
+      if (['sold_net','total_facturi','total_incasat','nr_facturi','max_zile'].indexOf(camp) !== -1) {
         return dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
       }
-      return dir * String(av).localeCompare(String(bv));
-    });
+      return dir * String(av).localeCompare(String(bv), 'ro');
+    };
     renderP();
   } else if (tabel === 'remindere') {
     var R = window.REMINDERE || [];
@@ -1378,7 +1379,8 @@ function renderP(){
   const q=(document.getElementById('psrch')||{value:''}).value.toLowerCase();
   const so=(document.getElementById('psrt')||{value:'sold'}).value;
   let src=[...PD].filter(d=>d.sold_net>0 && (!q||d.p.toLowerCase().includes(q)));
-  if(so==='zile')src.sort((a,b)=>b.max_zile-a.max_zile);
+  if(window._pSort){src.sort(window._pSort);}
+  else if(so==='zile')src.sort((a,b)=>b.max_zile-a.max_zile);
   else if(so==='az')src.sort((a,b)=>a.p.localeCompare(b.p));
   else src.sort((a,b)=>b.sold_net-a.sold_net);
   const tb=document.getElementById('tPart');
