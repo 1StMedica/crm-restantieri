@@ -2241,7 +2241,8 @@ function renderAlerts(){
     var dateLabel = isOverdue
       ? '<span style="background:var(--rbg);color:var(--red);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">DEP\u0102\u015eIT ' + dateFmt + '</span>'
       : '<span style="background:var(--pbg);color:var(--ptext);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">AZI</span>';
-    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:0.5px solid var(--border);background:' + bgColor + ';transition:background .12s" ' +
+    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:0.5px solid var(--border);background:' + bgColor + ';transition:background .12s;cursor:pointer" ' +
+      'onclick="goToJurnal(\'' + r.partener.replace(/'/g, "\\\\'" ) + '\')" ' +
       'onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'' + bgColor + '\'">' +
       '<div style="width:7px;height:7px;border-radius:50%;background:' + dotColor + ';margin-top:5px;flex-shrink:0"></div>' +
       '<div style="flex:1;min-width:0">' +
