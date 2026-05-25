@@ -1409,7 +1409,7 @@ function renderJR(nm){
         <button class="btn btnsm" onclick='openN({"p":"${nm.replace(/"/g,'\\"')}","nr":"multiple","v":${d.total_facturi||0},"rest":${d.sold_net||0},"m":"${d.m||'LEI'}","ds":"-","z":${d.max_zile||0},"email":""})'>${TICO.notificare} Notificare</button>
       </div>
       <div class="pchcs">
-        ${(d.tel||dTel)?`<div class="pchc">${TICO.apel} ${d.tel||dTel}</div>`:''}
+        ${(d.telefon||d.tel||dTel)?`<div class="pchc">${TICO.apel} ${d.telefon||d.tel||dTel}</div>`:''}
         ${(d.adresa||dAdr)?`<div class="pchc" style="font-size:11px">${d.adresa||dAdr}</div>`:''}
         ${(d.judet||dJud)?`<div class="pchc" style="font-size:11px">${d.judet||dJud}</div>`:''}
       </div>
