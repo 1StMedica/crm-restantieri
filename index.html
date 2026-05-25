@@ -962,11 +962,25 @@ function closeSidebar(){
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
+var _pageHistory = ['dashboard'];
+function goBack(){
+  if(_pageHistory.length > 1){
+    _pageHistory.pop();
+    var prev = _pageHistory[_pageHistory.length - 1] || 'dashboard';
+    _pageHistory.pop();
+    var navEl = null;
+    document.querySelectorAll('.ni').forEach(function(el){
+      if(el.getAttribute('onclick') && el.getAttribute('onclick').indexOf("'"+prev+"'") !== -1) navEl = el;
+    });
+    showPage(prev, navEl);
+  }
+}
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el)el.classList.add('active');
+  if(_pageHistory[_pageHistory.length-1] !== id) _pageHistory.push(id);
   document.getElementById('ptitle').textContent=PAGES[id]||id;
   var btnBack=document.getElementById('btnBack');
   if(btnBack)btnBack.style.display=id==='dashboard'?'none':'inline-flex';
