@@ -1363,6 +1363,21 @@ function renderPL(f){
       </div>
     </div>`;
   }).join('');
+  // Tooltip mouse tracking
+  cont.querySelectorAll('.plitem').forEach(function(item){
+    item.addEventListener('mouseenter',function(e){
+      var tip=item.querySelector('.pltip');
+      if(tip){tip.style.display='block';tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY+10)+'px';}
+    });
+    item.addEventListener('mousemove',function(e){
+      var tip=item.querySelector('.pltip');
+      if(tip&&tip.style.display==='block'){tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY+10)+'px';}
+    });
+    item.addEventListener('mouseleave',function(){
+      var tip=item.querySelector('.pltip');
+      if(tip)tip.style.display='none';
+    });
+  });
 }
 function selPart(nm){selP=nm;renderPL();renderJR(nm);}
 function renderJR(nm){
