@@ -1656,6 +1656,12 @@ function goJ(nm){
 function toggleEmailRow(radio){
   var row=document.getElementById('nEmailRow');
   if(row) row.style.display=radio.value==='email'?'':'none';
+  var btn=document.getElementById('nSendBtn');
+  if(btn){
+    if(radio.value==='email') btn.innerHTML='&#9993; Trimite email';
+    else if(radio.value==='sms') btn.innerHTML='&#128241; Trimite SMS';
+    else if(radio.value==='whatsapp') btn.innerHTML='&#128172; Trimite WhatsApp';
+  }
 }
 function openN(r){
   if(typeof r==='string')r=JSON.parse(r);
@@ -1693,9 +1699,11 @@ async function sendN(){
     var mesajSW=(document.getElementById('nMsg').value||'').trim();
     var telPartener=(function(){var pd=PD.find(function(p){return p.p===nm;});return pd&&pd.tel?pd.tel:'';})();
     if(canal==='sms'){
+      if(!telPartener){toast('Partenerul nu are numar de telefon!','error');return;}
       var smsUrl='sms:'+telPartener+'?body='+encodeURIComponent(mesajSW);
-      window.open(smsUrl,'_blank');
+      var a=document.createElement('a');a.href=smsUrl;a.click();
     } else if(canal==='whatsapp'){
+      if(!telPartener){toast('Partenerul nu are numar de telefon!','error');return;}
       var waNum=telPartener.replace(/[^0-9]/g,'');
       if(waNum.startsWith('0'))waNum='40'+waNum.substring(1);
       var waUrl='https://wa.me/'+waNum+'?text='+encodeURIComponent(mesajSW);
