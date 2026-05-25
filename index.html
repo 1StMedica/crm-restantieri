@@ -1399,7 +1399,7 @@ function renderF(){
     <td><span class="pcui">${r.cui||'-'}</span></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.adresa||''}">${r.adresa||'-'}</td>
-    <td style="font-size:12px">${r.tel||'-'}</td>
+    <td style="font-size:12px">${r.telefon||r.tel||'-'}</td>
     <td style="font-size:12px;white-space:nowrap">${r.de}</td>
     <td style="font-size:12px;white-space:nowrap">${r.ds}</td>
     <td style="text-align:center;font-weight:600;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':r.z>0?'var(--blue)':'var(--t2)'}">${r.z}</td>
@@ -2380,7 +2380,7 @@ function exportData(){
   if(!D.length){toast('Nicio data de exportat','error');return;}
   const h=['Nr. Factura','Partener','CUI','Judet','Adresa','Telefon','Data emiterii','Data scadentei','Zile depasire','Total factura','Rest plata','Valuta','Agent','Risc'];
   const riskLbl=z=>z>=90?'Critic':z>=60?'Ridicat':z>=30?'Moderat':z>0?'Recent':'La termen';
-  const rows=D.map(r=>[r.nr,r.p,r.cui,r.judet,r.adresa,r.tel,r.de,r.ds,r.z,r.v,r.rest,r.m,r.ag,riskLbl(r.z)]);
+  const rows=D.map(r=>[r.nr,r.p,r.cui,r.judet,r.adresa,r.telefon||r.tel,r.de,r.ds,r.z,r.v,r.rest,r.m,r.ag,riskLbl(r.z)]);
   const csv=[h,...rows].map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download='crm-restantieri-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
