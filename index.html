@@ -1688,17 +1688,28 @@ async function sendN(){
   var sendBtn=document.getElementById('nSendBtn');
   var cancelBtn=document.getElementById('nCancelBtn');
   var closeBtn=document.getElementById('nCloseBtn');
-  // SMS / WhatsApp - doar jurnal, fara Firebase
+  // SMS / WhatsApp - deschide aplicatia cu mesajul pregatit
   if(canal!=='email'){
+    var mesajSW=(document.getElementById('nMsg').value||'').trim();
+    var telPartener=(function(){var pd=PD.find(function(p){return p.p===nm;});return pd&&pd.tel?pd.tel:'';})();
+    if(canal==='sms'){
+      var smsUrl='sms:'+telPartener+'?body='+encodeURIComponent(mesajSW);
+      window.open(smsUrl,'_blank');
+    } else if(canal==='whatsapp'){
+      var waNum=telPartener.replace(/[^0-9]/g,'');
+      if(waNum.startsWith('0'))waNum='40'+waNum.substring(1);
+      var waUrl='https://wa.me/'+waNum+'?text='+encodeURIComponent(mesajSW);
+      window.open(waUrl,'_blank');
+    }
     cm('nModal');
     if(nm){
       if(!J[nm])J[nm]=[];
-      J[nm].unshift({id:uid(),type:'notificare',text:'Notificare '+lbl[canal]+' generata. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:'Sistem'});
+      J[nm].unshift({id:uid(),type:'notificare',text:'Notificare '+lbl[canal]+' initiata'+(telPartener?' la '+telPartener:'')+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
       jSave();
       if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
       renderPL();
     }
-    toast('Notificare '+lbl[canal]+' generata pentru '+nm,'success');
+    toast('Se deschide '+lbl[canal]+' pentru '+nm,'success');
     return;
   }
   // EMAIL - trimitere reala prin Firebase
