@@ -175,7 +175,8 @@ tbody tr:hover{background:var(--bg)}
 .pli{overflow-y:auto;flex:1}
 .plitem{padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent}
 .plitem:hover{background:var(--bg)}.plitem.active{background:var(--pbg);border-left:3px solid var(--purple)}
-.plname{font-size:13px;font-weight:500;margin-bottom:2px}
+.plname{font-size:13px;font-weight:500;margin-bottom:2px;position:relative}
+.plname:hover::after{content:attr(data-tip);position:absolute;left:0;top:100%;z-index:999;background:#1e40af;color:#fff;padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap;pointer-events:none;margin-top:2px}
 .plmeta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
 .jmain{display:flex;flex-direction:column;gap:14px}
 .pch{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
@@ -1352,7 +1353,7 @@ function renderPL(f){
     const nm=d.p;const nc=(J[nm]||[]).length;
     const rc=d.max_zile>=90?'br':d.max_zile>=60?'ba':d.max_zile>=30?'bb':'bg';
     return`<div class="plitem${selP===nm?' active':''}" onclick="selPart(this.dataset.nm)" data-nm="${nm}"\\'").replace(/\\/g,'\\\\')}')" >
-      <div class="plname" title="${nm}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
+      <div class="plname" data-tip="${nm}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
       <div class="plmeta">
         <span class="badge ${rc}" style="font-size:10px;padding:1px 6px">${d.max_zile} zile</span>
         <span style="font-family:'DM Mono',monospace;font-size:10px">${fv(d.sold_net,'')} ${d.m}</span>
