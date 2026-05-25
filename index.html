@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>CRM Restantieri v1.2</title>
+<title>CRM Restanțieri v2.2</title>
 <!-- Firebase SDK - async to not block page render -->
 <script>
 window._fbLoaded = false;
@@ -277,6 +277,32 @@ tbody tr:hover{background:var(--bg)}
   .agrid{grid-template-columns:1fr}
   .mval{font-size:18px}
 }
+
+/* ── MOBIL: jurnal split-view ── */
+@media(max-width:680px){
+  /* Jurnal: initial arata lista, ascunde detalii */
+  .jlay{display:block!important;height:auto!important;overflow:visible!important}
+  #jLeft{display:block}
+  #jRight{display:none;height:auto!important}
+  /* Cand e selectat un partener pe mobil */
+  .jlay.partner-selected #jLeft{display:none}
+  .jlay.partner-selected #jRight{display:block}
+  /* Buton inapoi la lista in jurnal */
+  #btnBackToList{display:flex!important}
+  /* Lista parteneri full height pe mobil */
+  .plist{height:calc(100vh - 120px)!important;border-radius:var(--r)}
+  /* jRight full screen pe mobil */
+  #jRight{min-height:calc(100vh - 120px)}
+  /* Filtrele pe mobil - stack vertical */
+  .filters{flex-wrap:wrap!important}
+  .fi{min-width:0;flex:1 1 45%}
+  /* Topbar - ascunde texte butoane */
+  .tactions .btn-label{display:none}
+  /* Touch targets mai mari */
+  .plitem{padding:14px 16px!important;min-height:56px}
+  /* Carduri aging mai compacte */
+  .agrid .acard{padding:10px 12px}
+}
 .hamb{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text);border-radius:var(--rs);flex-shrink:0}
 .hamb:hover{background:var(--bg)}
 .hamb svg{width:20px;height:20px}
@@ -375,7 +401,7 @@ tbody tr:hover{background:var(--bg)}
     <button class="hamb" id="hambBtn" onclick="toggleSidebar()" aria-label="Meniu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <button id="btnBack" onclick="goBack()" style="display:none;background:none;border:none;cursor:pointer;color:var(--t2);padding:4px 8px;border-radius:6px;font-size:13px;align-items:center;gap:4px;margin-right:8px" onmouseover="this.style.background="var(--bg2)"" onmouseout="this.style.background="none""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg> Inapoi</button><div class="ptitle" id="ptitle">Dashboard</div>
+    <button id="btnBackToList" onclick="backToList()" style="display:none;background:none;border:none;cursor:pointer;color:var(--purple);padding:4px 8px;border-radius:6px;font-size:13px;align-items:center;gap:4px;margin-right:4px;font-weight:500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg> Lista</button><button id="btnBack" onclick="goBack()" style="display:none;background:none;border:none;cursor:pointer;color:var(--t2);padding:4px 8px;border-radius:6px;font-size:13px;align-items:center;gap:4px;margin-right:8px" onmouseover="this.style.background="var(--bg2)"" onmouseout="this.style.background="none""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg> Inapoi</button><div class="ptitle" id="ptitle">Dashboard</div>
     <div class="tactions">
       <button class="btn btn-top-hide" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
       <button class="btn btnp" onclick="showPage('import',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import nou</button>
@@ -976,6 +1002,12 @@ function goBack(){
   }
 }
 function showPage(id,el){
+  // Reset jurnal mobile state
+  var jlay=document.querySelector('.jlay');
+  if(jlay)jlay.classList.remove('partner-selected');
+  var btnBL=document.getElementById('btnBackToList');
+  if(btnBL)btnBL.style.display='none';
+
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -1446,7 +1478,23 @@ function renderPL(f){
     });
   });
 }
-function selPart(nm){selP=nm;renderPL();renderJR(nm);}
+function selPart(nm){
+  selP=nm;renderPL();renderJR(nm);
+  // Pe mobil: ascunde lista, arata detalii
+  if(window.innerWidth<=680){
+    var jlay=document.querySelector('.jlay');
+    if(jlay){jlay.classList.add('partner-selected');}
+    var btn=document.getElementById('btnBackToList');
+    if(btn)btn.style.display='flex';
+  }
+}
+function backToList(){
+  var jlay=document.querySelector('.jlay');
+  if(jlay){jlay.classList.remove('partner-selected');}
+  var btn=document.getElementById('btnBackToList');
+  if(btn)btn.style.display='none';
+  selP=null;renderPL();
+}
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
