@@ -1599,169 +1599,6 @@ function addN(nm){
   }
 
   
-// ── SOMATIE MODAL ──────────────────────────────────────────────────────────
-
-function openSomatie() {
-  var nm = selP;
-  if (!nm) { toast('Selecteaza un partener mai intai', 'error'); return; }
-
-  var p = PD.find(function(x){ return x.p === nm; }) || {};
-  var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
-  var totalRest = facturi.reduce(function(s, f){ return s + parseFloat(f.rest || 0); }, 0);
-
-  getSomatieNr().then(function(nr) {
-    var anCurent = new Date().getFullYear();
-    document.getElementById('somatieNr').value = nr + '/' + anCurent;
-    document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
-
-    var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'long',year:'numeric'});
-    var listaFacturi = '';
-    facturi.forEach(function(f) {
-      var zile = f.z ? parseInt(f.z) : 0;
-      var ds = f.ds ? new Date(f.ds+'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'}) : '-';
-      listaFacturi += '  - Factura ' + (f.nr||'-') + ' din ' + ds + ' - Rest: ' + parseFloat(f.rest||0).toFixed(2) + ' LEI' + (zile > 0 ? ' (' + zile + ' zile intarziere)' : '') + '\n';
-    });
-
-    var text = [
-      'Catre,',
-      nm,
-      p.adresa || '',
-      ((p.localitate || '') + ' ' + (p.judet || '')).trim(),
-      'CUI: ' + (p.cui || ''),
-      '',
-      '',
-      'SOMATIE DE PLATA NR. ' + nr + '/' + anCurent,
-      'Data: ' + dataAzi,
-      '',
-      '',
-      'Stimate partener,',
-      '',
-      'Societatea noastra 1stMedica SRL, cu sediul in Bucuresti, Str. Miscarii nr. 8, tel. 0773.975.267, va notifica prin prezenta ca inregistrati facturi restante neachitate dupa cum urmeaza:',
-      '',
-      listaFacturi,
-      'TOTAL DE ACHITAT: ' + totalRest.toFixed(2) + ' LEI',
-      '',
-      'Va solicitam in mod ferm achitarea sumei totale de ' + totalRest.toFixed(2) + ' LEI in termen de 5 (cinci) zile lucratoare de la primirea prezentei somatii, in contul societatii noastre sau la sediul nostru.',
-      '',
-      'In cazul neachitarii in termenul indicat, 1stMedica SRL va fi nevoita sa recurga la mijloace legale de recuperare a creantei, inclusiv actiune in instanta si/sau externalizarea creantei catre un cabinet de avocatura, cheltuielile de judecata urmand a fi suportate de dumneavoastra.',
-      '',
-      'Speram ca veti da curs prezentei solicitari si va asiguram ca, la achitarea integrala a datoriei, relatiile comerciale vor continua in conditii normale.',
-      '',
-      '',
-      'Cu stima,',
-      '',
-      '1stMedica SRL',
-      'Bucuresti, Str. Miscarii nr. 8',
-      'Tel: 0773.975.267',
-      'Email: info@1stmedia.eu'
-    ].join('\n');
-
-    document.getElementById('somatieText').value = text;
-    document.getElementById('somatieModal').style.display = 'flex';
-  });
-}
-
-function closeSomatie() {
-  document.getElementById('somatieModal').style.display = 'none';
-}
-
-function genereazaSomatieWord() {
-  var nm = selP;
-  if (!nm) return;
-
-  var nrSom = document.getElementById('somatieNr').value.trim();
-  var textSom = document.getElementById('somatieText').value.trim();
-  if (!textSom) { toast('Textul somatiei este gol', 'error'); return; }
-
-  var btn = event.target;
-  btn.disabled = true;
-  btn.textContent = 'Se genereaza...';
-
-  _genSomatieWordFromText({
-    nrSomatie: nrSom,
-    partener: nm,
-    text: textSom
-  }).then(function() {
-    if (!J[nm]) J[nm] = [];
-    var ag = (window.currentUser && window.currentUser.email) || 'Sistem';
-    J[nm].push({
-      id: uid(),
-      type: 'notif_interna',
-      text: 'Somatie de plata nr. ' + nrSom + ' generata si descarcata.',
-      date: new Date().toISOString(),
-      agent: ag
-    });
-    jSave();
-    incrementSomatieNr();
-    toast('Somatie generata cu succes!', 'success');
-    closeSomatie();
-    if (selP) {
-      var nid = selP.replace(/[^a-zA-Z0-9]/g,'_');
-      var el = document.getElementById('tli-'+nid);
-      if (el) el.innerHTML = renderTLI(selP);
-    }
-  }).catch(function(e) {
-    console.error(e);
-    toast('Eroare la generare: ' + e.message, 'error');
-  }).finally(function() {
-    btn.disabled = false;
-    btn.textContent = 'Genereaza Word';
-  });
-}
-
-function _genSomatieWordFromText(d) {
-  return new Promise(function(resolve, reject) {
-    function doGen() {
-      try {
-        var Document = docx.Document, Packer = docx.Packer, Paragraph = docx.Paragraph,
-            TextRun = docx.TextRun, AlignmentType = docx.AlignmentType;
-
-        var linii = d.text.split('\n');
-        var children = linii.map(function(linie) {
-          var isTitlu = linie.indexOf('SOMATIE DE PLATA') === 0;
-          return new Paragraph({
-            alignment: isTitlu ? AlignmentType.CENTER : AlignmentType.LEFT,
-            spacing: { after: linie.trim() === '' ? 80 : 160 },
-            children: [new TextRun({ text: linie, font: 'Arial', size: isTitlu ? 26 : 22, bold: isTitlu })]
-          });
-        });
-
-        var doc = new Document({
-          sections: [{
-            properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1800 } } },
-            children: children
-          }]
-        });
-
-        Packer.toBuffer(doc).then(function(buffer) {
-          var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-          var url = URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = 'Somatie_' + d.nrSomatie.replace(/\//g,'_') + '_' + d.partener.replace(/[^a-zA-Z0-9]/g,'_') + '.docx';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          resolve();
-        }).catch(reject);
-      } catch(e) { reject(e); }
-    }
-
-    if (typeof docx !== 'undefined') {
-      doGen();
-    } else {
-      var s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js';
-      s.onload = doGen;
-      s.onerror = function(){ reject(new Error('Nu s-a putut incarca biblioteca docx')); };
-      document.head.appendChild(s);
-    }
-  });
-}
-
-// ── SFARSIT SOMATIE MODAL ──────────────────────────────────────────────────
 
 // Notificare interna - genereaza PDF
   if(_ct==='notif_interna'){
@@ -2376,7 +2213,172 @@ function generateNotifPDF(nm, nota){
     <div class="footer">
       Agent: ${nota.agent} &nbsp;&middot;&nbsp; Data: ${today} &nbsp;&middot;&nbsp; CRM Restante v2.0
     </div>
-    </body></html>`;
+    <script>
+// ── SOMATIE MODAL ──────────────────────────────────────────────────────────
+
+function openSomatie() {
+  var nm = selP;
+  if (!nm) { toast('Selecteaza un partener mai intai', 'error'); return; }
+
+  var p = PD.find(function(x){ return x.p === nm; }) || {};
+  var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
+  var totalRest = facturi.reduce(function(s, f){ return s + parseFloat(f.rest || 0); }, 0);
+
+  getSomatieNr().then(function(nr) {
+    var anCurent = new Date().getFullYear();
+    document.getElementById('somatieNr').value = nr + '/' + anCurent;
+    document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
+    document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
+
+    var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'long',year:'numeric'});
+    var listaFacturi = '';
+    facturi.forEach(function(f) {
+      var zile = f.z ? parseInt(f.z) : 0;
+      var ds = f.ds ? new Date(f.ds+'T00:00:00').toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'}) : '-';
+      listaFacturi += '  - Factura ' + (f.nr||'-') + ' din ' + ds + ' - Rest: ' + parseFloat(f.rest||0).toFixed(2) + ' LEI' + (zile > 0 ? ' (' + zile + ' zile intarziere)' : '') + '\n';
+    });
+
+    var text = [
+      'Catre,',
+      nm,
+      p.adresa || '',
+      ((p.localitate || '') + ' ' + (p.judet || '')).trim(),
+      'CUI: ' + (p.cui || ''),
+      '',
+      '',
+      'SOMATIE DE PLATA NR. ' + nr + '/' + anCurent,
+      'Data: ' + dataAzi,
+      '',
+      '',
+      'Stimate partener,',
+      '',
+      'Societatea noastra 1stMedica SRL, cu sediul in Bucuresti, Str. Miscarii nr. 8, tel. 0773.975.267, va notifica prin prezenta ca inregistrati facturi restante neachitate dupa cum urmeaza:',
+      '',
+      listaFacturi,
+      'TOTAL DE ACHITAT: ' + totalRest.toFixed(2) + ' LEI',
+      '',
+      'Va solicitam in mod ferm achitarea sumei totale de ' + totalRest.toFixed(2) + ' LEI in termen de 5 (cinci) zile lucratoare de la primirea prezentei somatii, in contul societatii noastre sau la sediul nostru.',
+      '',
+      'In cazul neachitarii in termenul indicat, 1stMedica SRL va fi nevoita sa recurga la mijloace legale de recuperare a creantei, inclusiv actiune in instanta si/sau externalizarea creantei catre un cabinet de avocatura, cheltuielile de judecata urmand a fi suportate de dumneavoastra.',
+      '',
+      'Speram ca veti da curs prezentei solicitari si va asiguram ca, la achitarea integrala a datoriei, relatiile comerciale vor continua in conditii normale.',
+      '',
+      '',
+      'Cu stima,',
+      '',
+      '1stMedica SRL',
+      'Bucuresti, Str. Miscarii nr. 8',
+      'Tel: 0773.975.267',
+      'Email: info@1stmedia.eu'
+    ].join('\n');
+
+    document.getElementById('somatieText').value = text;
+    document.getElementById('somatieModal').style.display = 'flex';
+  });
+}
+
+function closeSomatie() {
+  document.getElementById('somatieModal').style.display = 'none';
+}
+
+function genereazaSomatieWord() {
+  var nm = selP;
+  if (!nm) return;
+
+  var nrSom = document.getElementById('somatieNr').value.trim();
+  var textSom = document.getElementById('somatieText').value.trim();
+  if (!textSom) { toast('Textul somatiei este gol', 'error'); return; }
+
+  var btn = event.target;
+  btn.disabled = true;
+  btn.textContent = 'Se genereaza...';
+
+  _genSomatieWordFromText({
+    nrSomatie: nrSom,
+    partener: nm,
+    text: textSom
+  }).then(function() {
+    if (!J[nm]) J[nm] = [];
+    var ag = (window.currentUser && window.currentUser.email) || 'Sistem';
+    J[nm].push({
+      id: uid(),
+      type: 'notif_interna',
+      text: 'Somatie de plata nr. ' + nrSom + ' generata si descarcata.',
+      date: new Date().toISOString(),
+      agent: ag
+    });
+    jSave();
+    incrementSomatieNr();
+    toast('Somatie generata cu succes!', 'success');
+    closeSomatie();
+    if (selP) {
+      var nid = selP.replace(/[^a-zA-Z0-9]/g,'_');
+      var el = document.getElementById('tli-'+nid);
+      if (el) el.innerHTML = renderTLI(selP);
+    }
+  }).catch(function(e) {
+    console.error(e);
+    toast('Eroare la generare: ' + e.message, 'error');
+  }).finally(function() {
+    btn.disabled = false;
+    btn.textContent = 'Genereaza Word';
+  });
+}
+
+function _genSomatieWordFromText(d) {
+  return new Promise(function(resolve, reject) {
+    function doGen() {
+      try {
+        var Document = docx.Document, Packer = docx.Packer, Paragraph = docx.Paragraph,
+            TextRun = docx.TextRun, AlignmentType = docx.AlignmentType;
+
+        var linii = d.text.split('\n');
+        var children = linii.map(function(linie) {
+          var isTitlu = linie.indexOf('SOMATIE DE PLATA') === 0;
+          return new Paragraph({
+            alignment: isTitlu ? AlignmentType.CENTER : AlignmentType.LEFT,
+            spacing: { after: linie.trim() === '' ? 80 : 160 },
+            children: [new TextRun({ text: linie, font: 'Arial', size: isTitlu ? 26 : 22, bold: isTitlu })]
+          });
+        });
+
+        var doc = new Document({
+          sections: [{
+            properties: { page: { size: { width: 11906, height: 16838 }, margin: { top: 1440, right: 1440, bottom: 1440, left: 1800 } } },
+            children: children
+          }]
+        });
+
+        Packer.toBuffer(doc).then(function(buffer) {
+          var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = 'Somatie_' + d.nrSomatie.replace(/\//g,'_') + '_' + d.partener.replace(/[^a-zA-Z0-9]/g,'_') + '.docx';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          resolve();
+        }).catch(reject);
+      } catch(e) { reject(e); }
+    }
+
+    if (typeof docx !== 'undefined') {
+      doGen();
+    } else {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js';
+      s.onload = doGen;
+      s.onerror = function(){ reject(new Error('Nu s-a putut incarca biblioteca docx')); };
+      document.head.appendChild(s);
+    }
+  });
+}
+
+// ── SFARSIT SOMATIE MODAL ──────────────────────────────────────────────────
+</script>
+</body></html>`;
 
   const win = window.open('','_blank','width=800,height=600');
   if(win){
