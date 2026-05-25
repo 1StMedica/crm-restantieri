@@ -1365,6 +1365,45 @@ function renderPL(f){
   }).join('');
 }
 function selPart(nm){selP=nm;renderPL();renderJR(nm);}
+
+// Tooltip pozitionare la mouse
+document.addEventListener('mouseover', function(e) {
+  var el = e.target.closest('.pltip');
+    var tip = document.querySelector('.pltip[style*="block"]');
+    if (tip) tip.style.display = '';
+  }
+});
+
+document.getElementById('plItems') && document.getElementById('plItems').addEventListener('mouseover', function(e) {
+  var item = e.target.closest('.plitem');
+  if (item) {
+    var tip = item.querySelector('.pltip');
+    if (tip) {
+      tip.style.display = 'block';
+      tip.style.left = e.clientX + 10 + 'px';
+      tip.style.top = e.clientY + 10 + 'px';
+    }
+  }
+});
+
+document.getElementById('plItems') && document.getElementById('plItems').addEventListener('mousemove', function(e) {
+  var item = e.target.closest('.plitem');
+  if (item) {
+    var tip = item.querySelector('.pltip');
+    if (tip && tip.style.display === 'block') {
+      tip.style.left = e.clientX + 10 + 'px';
+      tip.style.top = e.clientY + 10 + 'px';
+    }
+  }
+});
+
+document.getElementById('plItems') && document.getElementById('plItems').addEventListener('mouseout', function(e) {
+  var item = e.target.closest('.plitem');
+  if (item) {
+    var tip = item.querySelector('.pltip');
+    if (tip) tip.style.display = 'none';
+  }
+});
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
