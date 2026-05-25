@@ -1352,7 +1352,7 @@ function renderPL(f){
     const nm=d.p;const nc=(J[nm]||[]).length;
     const rc=d.max_zile>=90?'br':d.max_zile>=60?'ba':d.max_zile>=30?'bb':'bg';
     return`<div class="plitem${selP===nm?' active':''}" onclick="selPart(this.dataset.nm)" data-nm="${nm}"\\'").replace(/\\/g,'\\\\')}')" >
-      <div class="plname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
+      <div class="plname" title="${nm}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
       <div class="plmeta">
         <span class="badge ${rc}" style="font-size:10px;padding:1px 6px">${d.max_zile} zile</span>
         <span style="font-family:'DM Mono',monospace;font-size:10px">${fv(d.sold_net,'')} ${d.m}</span>
