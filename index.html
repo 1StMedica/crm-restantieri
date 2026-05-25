@@ -1394,7 +1394,13 @@ function renderPL(f){
     });
   });
 }
-function selPart(nm){selP=nm;renderPL();renderJR(nm);window.scrollTo(0,0);}
+function selPart(nm){
+  selP=nm;renderPL();renderJR(nm);
+  var active=document.querySelector('.plitem.active');
+  if(active) active.scrollIntoView({block:'nearest'});
+  var jRight=document.getElementById('jRight');
+  if(jRight) jRight.scrollIntoView({block:'start', behavior:'smooth'});
+}
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
