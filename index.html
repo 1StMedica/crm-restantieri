@@ -1203,17 +1203,18 @@ function doImport(){
   const isKnown=rH.some(h=>h&&(String(h).includes('Document | Serie')||String(h).includes('IDPartener')||String(h).includes('Rest de plata')));
   if(!isKnown){toast('Format fisier necunoscut. Folositi fisierul standard.','error');return;}
 
+  const __h={};rH.forEach((h,i)=>{if(h)__h[String(h).trim()]=i;});const __ci=(...n)=>{for(const x of n){if(__h[x]!==undefined)return __h[x];}return -1;};const CI={tip:__ci('Tip document'),p:__ci('Nume client (din document)','Nume platitor','Partener'),cui:__ci('Cod fiscal','CUI'),id:__ci('IDPartener'),serie:__ci('Document | Serie'),numar:__ci('Document | Numar'),sd:__ci('Document | Data scadenta','Data scadenta'),ed:__ci('Document | Data emiterii','Data emiterii','Document | Data'),w:__ci('Total factura'),aa:__ci('Valoare incasare'),ab:__ci('Sold net'),ba:__ci('Rest de plata fara Disc OFF','Rest de plata','BA'),m:__ci('Valuta'),ag:__ci('Nume agent'),judet:__ci('Denumire judet','Judet'),loc:__ci('Partener|Localitatea','Localitate'),tel:__ci('Partener|Telefon','Telefon'),adr:__ci('Partener|Adresa','Adresa'),txt:__ci('Text Document')};console.log('[Import] Mapare coloane:',CI);
   const allRows=rR.map(row=>{
     const g=i=>i<row.length?String(row[i]||'').trim():'';
     const gn=i=>i<row.length?(parseFloat(String(row[i]||'0').replace(/[^\d.,-]/g,'').replace(/,(?=\d{3})/g,'').replace(',','.'))||0):0;
     const pdt=v=>{if(!v)return null;try{const s=String(v).trim();const d=new Date(s);return isNaN(d.getTime())?null:d;}catch{return null;}};
     return{
-      tip:g(14),p:g(5),cui:g(3),id_partener:g(2),
+      tip:g(CI.tip),p:g(CI.p),cui:g(CI.cui),id_partener:g(CI.id),
       serie:g(15),numar:g(16),
-      sd:pdt(row[18]),ed:pdt(row[17]),
-      w:gn(22),aa:gn(26),ab:gn(27),ba:gn(52),
-      m:g(37)||'LEI',ag:g(11),
-      tel:g(45),telefon:g(46),adresa:g(47),localitate:g(44),judet:g(10),
+      sd:pdt(row[CI.sd]),ed:pdt(row[CI.ed]),
+      w:gn(CI.w),aa:gn(CI.aa),ab:gn(CI.ab),ba:gn(CI.ba),
+      m:g(CI.m)||'LEI',ag:g(CI.ag),
+      tel:'',telefon:g(CI.tel).replace(/^'+/,''),adresa:g(CI.adr),localitate:g(CI.loc),judet:g(CI.judet),text_doc:g(CI.txt),
     };
   });
 
