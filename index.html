@@ -454,6 +454,7 @@ tbody tr:hover{background:var(--bg)}
           </div>
         </div>
       </div>
+      <div class="card" style="margin-bottom:12px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import</div></div></div><div style="padding:14px 16px"><div style="height:260px"><canvas id="evoChartDash"></canvas></div></div></div>
       <div class="card"><div class="ch"><div><div class="ct">Facturi prioritare</div><div class="cs">cu rest de plata, sortate dupa risc</div></div></div><div class="tw"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>Judet</th><th>Scadenta</th><th>Zile dep.</th><th>Total fact.</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th><th>Act.</th></tr></thead><tbody id="tPri"><tr><td colspan="11"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
@@ -585,6 +586,7 @@ tbody tr:hover{background:var(--bg)}
         <div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div>
         <div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import</div></div></div><div style="padding:14px 16px"><div style="height:260px"><canvas id="evoChartImp"></canvas></div></div></div>
       <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
     </div>
 
@@ -704,6 +706,7 @@ function showApp(user){
   }
   jLoad(); rLoad();
   setTimeout(loadImportFromFirestore, 800);
+  setTimeout(loadImportHistory, 1300);
   // Real-time listeners
   function startJurnalListener(){
     if(!window.db) return;
@@ -1022,6 +1025,7 @@ function showPage(id,el){
   if(id==='aging')renderA();
   if(id==='remindere')renderRemindere();
   if(id==='jurnal')renderPL();
+  if(id==='import'||id==='dashboard')setTimeout(loadImportHistory,100);
 }
 
 // ── SORTARE TABELE ──────────────────────────────────────────────────────
@@ -1167,6 +1171,7 @@ function saveImportToFirestore(soldTotal){
 
   batch.commit().then(() => {
     toast(D.length+' facturi salvate in cloud. Toti agentii vor vedea datele noi.','success');
+    setTimeout(loadImportHistory,700);
     // Update import history UI
     const h=document.getElementById('impHist');
     if(h&&h.querySelector('td[colspan]'))h.innerHTML='';
@@ -1174,6 +1179,62 @@ function saveImportToFirestore(soldTotal){
   }).catch(e => {
     console.error('Firestore save error:', e);
     toast('Eroare la salvare in cloud: '+e.message,'error');
+  });
+}
+
+function loadImportHistory(){
+  if(!window._fbLoaded || !window.db) return;
+  try{
+    window.db.collection('imports')
+      .where(firebase.firestore.FieldPath.documentId(),'>=','history_')
+      .where(firebase.firestore.FieldPath.documentId(),'<','history_\uf8ff')
+      .get().then(function(snap){
+        var hist=[];
+        snap.forEach(function(d){
+          var m=d.data()||{};
+          hist.push({la:m.importat_la||'',de:m.importat_de||'',fisier:m.fisier||'-',
+            facturi:m.nr_facturi||0,parteneri:m.nr_parteneri||0,sold:m.sold_total||0});
+        });
+        hist.sort(function(a,b){return String(a.la).localeCompare(String(b.la));});
+        window._importHist=hist;
+        renderImportHistTable(hist);
+        renderEvoChart('evoChartDash',hist);
+        renderEvoChart('evoChartImp',hist);
+      }).catch(function(e){console.warn('loadImportHistory error:',e);});
+  }catch(e){console.warn('loadImportHistory exception:',e);}
+}
+function renderImportHistTable(hist){
+  var h=document.getElementById('impHist');
+  if(!h)return;
+  if(!hist||!hist.length){h.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr>';return;}
+  h.innerHTML=hist.slice().reverse().map(function(r){
+    var dt=r.la?new Date(r.la).toLocaleString('ro-RO'):'-';
+    return '<tr><td>'+dt+'</td><td>'+r.fisier+'</td><td>'+r.facturi+'</td><td>'+r.parteneri+'</td><td>'+fv(r.sold,'LEI')+'</td><td><span class="badge bg">&#9729; Cloud</span></td></tr>';
+  }).join('');
+}
+function renderEvoChart(canvasId,hist){
+  var cv=document.getElementById(canvasId);
+  if(!cv||typeof Chart==='undefined'||!hist)return;
+  var labels=hist.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
+  var sold=hist.map(function(r){return r.sold;});
+  var fact=hist.map(function(r){return r.facturi;});
+  var part=hist.map(function(r){return r.parteneri;});
+  var key='_evo_'+canvasId;
+  if(window[key]){try{window[key].destroy();}catch(e){}}
+  window[key]=new Chart(cv.getContext('2d'),{type:'line',
+    data:{labels:labels,datasets:[
+      {label:'Sold net (LEI)',data:sold,yAxisID:'yLei',borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,0.08)',borderWidth:2.5,fill:true,tension:0.25,pointRadius:3,pointBackgroundColor:'#534AB7'},
+      {label:'Facturi',data:fact,yAxisID:'yCnt',borderColor:'#A32D2D',backgroundColor:'transparent',borderWidth:2,tension:0.25,pointRadius:3,borderDash:[5,3]},
+      {label:'Parteneri',data:part,yAxisID:'yCnt',borderColor:'#854F0B',backgroundColor:'transparent',borderWidth:2,tension:0.25,pointRadius:3,borderDash:[2,2]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12,usePointStyle:true}},
+        tooltip:{callbacks:{label:function(ctx){var v=ctx.parsed.y;if(ctx.dataset.yAxisID==='yLei')return ' Sold: '+fv(v,'LEI');return ' '+ctx.dataset.label+': '+v;}}}},
+      scales:{
+        yLei:{position:'left',ticks:{font:{family:'DM Sans',size:10},callback:function(v){return (v/1000).toFixed(0)+'k';}},grid:{color:'rgba(0,0,0,0.04)'},title:{display:true,text:'LEI (mii)',font:{family:'DM Sans',size:10}}},
+        yCnt:{position:'right',beginAtZero:true,ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{display:false},title:{display:true,text:'Numar',font:{family:'DM Sans',size:10}}},
+        x:{ticks:{font:{family:'DM Sans',size:10},maxRotation:45,minRotation:0},grid:{display:false}}
+      }}
   });
 }
 
