@@ -1185,12 +1185,10 @@ function saveImportToFirestore(soldTotal){
 function loadImportHistory(){
   if(!window._fbLoaded || !window.db) return;
   try{
-    window.db.collection('imports')
-      .where(firebase.firestore.FieldPath.documentId(),'>=','history_')
-      .where(firebase.firestore.FieldPath.documentId(),'<','history_\uf8ff')
-      .get().then(function(snap){
+    window.db.collection('imports').get().then(function(snap){
         var hist=[];
         snap.forEach(function(d){
+          if(!d.id || d.id.indexOf('history_')!==0) return;
           var m=d.data()||{};
           hist.push({la:m.importat_la||'',de:m.importat_de||'',fisier:m.fisier||'-',
             facturi:m.nr_facturi||0,parteneri:m.nr_parteneri||0,sold:m.sold_total||0});
@@ -1215,6 +1213,7 @@ function renderImportHistTable(hist){
 function renderEvoChart(canvasId,hist){
   var cv=document.getElementById(canvasId);
   if(!cv||typeof Chart==='undefined'||!hist)return;
+  hist=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
   var labels=hist.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
   var sold=hist.map(function(r){return r.sold;});
   var fact=hist.map(function(r){return r.facturi;});
