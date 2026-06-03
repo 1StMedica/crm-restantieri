@@ -1220,11 +1220,11 @@ function renderEvoChart(canvasId,hist){
   var part=hist.map(function(r){return r.parteneri;});
   var key='_evo_'+canvasId;
   if(window[key]){try{window[key].destroy();}catch(e){}}
-  window[key]=new Chart(cv.getContext('2d'),{type:'line',
+  window[key]=new Chart(cv.getContext('2d'),{type:'bar',
     data:{labels:labels,datasets:[
-      {label:'Sold net (LEI)',data:sold,yAxisID:'yLei',borderColor:'#534AB7',backgroundColor:'rgba(83,74,183,0.08)',borderWidth:2.5,fill:true,tension:0.25,pointRadius:3,pointBackgroundColor:'#534AB7'},
-      {label:'Facturi',data:fact,yAxisID:'yCnt',borderColor:'#A32D2D',backgroundColor:'transparent',borderWidth:2,tension:0.25,pointRadius:3,borderDash:[5,3]},
-      {label:'Parteneri',data:part,yAxisID:'yCnt',borderColor:'#854F0B',backgroundColor:'transparent',borderWidth:2,tension:0.25,pointRadius:3,borderDash:[2,2]}
+      {label:'Sold net (LEI)',data:sold,yAxisID:'yLei',backgroundColor:'rgba(83,74,183,0.85)',borderColor:'#534AB7',borderWidth:1.5,borderRadius:4},
+      {label:'Facturi',data:fact,yAxisID:'yCnt',backgroundColor:'rgba(163,45,45,0.8)',borderColor:'#A32D2D',borderWidth:1.5,borderRadius:4},
+      {label:'Parteneri',data:part,yAxisID:'yCnt',backgroundColor:'rgba(133,79,11,0.8)',borderColor:'#854F0B',borderWidth:1.5,borderRadius:4}
     ]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12,usePointStyle:true}},
