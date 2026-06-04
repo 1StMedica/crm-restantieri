@@ -423,6 +423,7 @@ tbody tr:hover{background:var(--bg)}
           </div>
         </div>
       </div>
+      <div class="card" style="margin-bottom:12px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import + variatie</div></div></div><div style="padding:14px 16px"><div id="evoSummaryDash" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px"></div><div style="height:260px"><canvas id="evoChartDash"></canvas></div></div></div>
       <div class="card"><div class="ch"><div><div class="ct">Facturi prioritare</div><div class="cs">cu rest de plata, sortate dupa risc</div></div></div><div class="tw"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>Judet</th><th>Scadenta</th><th>Zile dep.</th><th>Total fact.</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th><th>Act.</th></tr></thead><tbody id="tPri"><tr><td colspan="11"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
@@ -555,7 +556,8 @@ tbody tr:hover{background:var(--bg)}
         <div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div>
         <div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
-      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import + variatie</div></div></div><div style="padding:14px 16px"><div id="evoSummaryImp" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px"></div><div style="height:260px"><canvas id="evoChartImp"></canvas></div></div></div>
+      <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Variatie</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="7" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
     </div>
 
     <!-- AGING -->
@@ -665,6 +667,7 @@ function showApp(user){
   }
   jLoad(); rLoad();
   setTimeout(loadImportFromFirestore, 800);
+  setTimeout(loadImportHistory, 1300);
   // Real-time listeners
   function startJurnalListener(){
     if(!window.db) return;
@@ -961,6 +964,7 @@ function showPage(id,el){
   if(id==='aging')renderA();
   if(id==='remindere')renderRemindere();
   if(id==='jurnal')renderPL();
+  if(id==='import'||id==='dashboard')setTimeout(loadImportHistory,100);
 }
 function uid(){return Math.random().toString(36).slice(2);}
 function fv(v,c){return new Intl.NumberFormat('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0)+(c?' '+c:'');}
@@ -983,7 +987,7 @@ function handleFile(file){
     try{
       const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const j=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd'});
+      const j=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
       if(j.length<2){toast('Fisierul este gol','error');return;}
       // Detectam randul header - primul rand cu 10+ valori nenule
       let hIdx=0;
@@ -1057,6 +1061,7 @@ function saveImportToFirestore(soldTotal){
 
   batch.commit().then(() => {
     toast(D.length+' facturi salvate in cloud. Toti agentii vor vedea datele noi.','success');
+    setTimeout(loadImportHistory,700);
     // Update import history UI
     const h=document.getElementById('impHist');
     if(h&&h.querySelector('td[colspan]'))h.innerHTML='';
@@ -1064,6 +1069,97 @@ function saveImportToFirestore(soldTotal){
   }).catch(e => {
     console.error('Firestore save error:', e);
     toast('Eroare la salvare in cloud: '+e.message,'error');
+  });
+}
+
+function loadImportHistory(){
+  if(!window._fbLoaded || !window.db) return;
+  try{
+    window.db.collection('imports').get().then(function(snap){
+      var hist=[];
+      snap.forEach(function(d){
+        if(!d.id || d.id.indexOf('history_')!==0) return;
+        var m=d.data()||{};
+        hist.push({la:m.importat_la||'',de:m.importat_de||'',fisier:m.fisier||'-',
+          facturi:m.nr_facturi||0,parteneri:m.nr_parteneri||0,sold:m.sold_total||0});
+      });
+      hist.sort(function(a,b){return String(a.la).localeCompare(String(b.la));});
+      window._importHist=hist;
+      renderImportHistTable(hist);
+      renderEvoChart('evoChartDash',hist);
+      renderEvoChart('evoChartImp',hist);
+      renderEvoSummary('evoSummaryDash',hist);
+      renderEvoSummary('evoSummaryImp',hist);
+    }).catch(function(e){console.warn('loadImportHistory error:',e);});
+  }catch(e){console.warn('loadImportHistory exception:',e);}
+}
+function _evoDelta(cur,prev){
+  var d=cur-prev;
+  var pct=prev!==0?(d/prev*100):0;
+  var good=(d<=0);
+  var arrow=d<0?'\u25BC':(d>0?'\u25B2':'\u2192');
+  var col=d===0?'var(--t3)':(good?'#3B6D11':'#A32D2D');
+  return {d:d,pct:pct,arrow:arrow,col:col};
+}
+function renderImportHistTable(hist){
+  var h=document.getElementById('impHist');
+  if(!h)return;
+  if(!hist||!hist.length){h.innerHTML='<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr>';return;}
+  var rows=hist.map(function(r,i){
+    var v='<span style="color:var(--t3)">\u2014</span>';
+    if(i>0){
+      var dd=_evoDelta(r.sold,hist[i-1].sold);
+      var sign=dd.d>0?'+':'';
+      v='<span style="color:'+dd.col+'">'+dd.arrow+' '+sign+fv(dd.d,'LEI')+' ('+sign+dd.pct.toFixed(1)+'%)</span>';
+    }
+    return {r:r,v:v};
+  });
+  h.innerHTML=rows.slice().reverse().map(function(x){
+    var r=x.r;
+    var dt=r.la?new Date(r.la).toLocaleString('ro-RO'):'-';
+    return '<tr><td>'+dt+'</td><td>'+r.fisier+'</td><td>'+r.facturi+'</td><td>'+r.parteneri+'</td><td>'+fv(r.sold,'LEI')+'</td><td>'+x.v+'</td><td><span class="badge bg">&#9729; Cloud</span></td></tr>';
+  }).join('');
+}
+function renderEvoSummary(elId,hist){
+  var el=document.getElementById(elId);
+  if(!el)return;
+  var real=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
+  if(real.length<2){el.innerHTML='<div style="color:var(--t3);font-size:13px">Variatie disponibila dupa minim 2 importuri cu date.</div>';return;}
+  var cur=real[real.length-1], prev=real[real.length-2];
+  function box(label,cv,pv,isLei){
+    var dd=_evoDelta(cv,pv);
+    var sign=dd.d>0?'+':'';
+    var val=isLei?(sign+fv(dd.d,'LEI')):(sign+dd.d);
+    return '<div style="min-width:120px"><div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em">'+label+'</div>'
+      +'<div style="font-size:15px;font-weight:600;color:'+dd.col+'">'+dd.arrow+' '+val+'</div>'
+      +'<div style="font-size:11px;color:'+dd.col+'">'+sign+dd.pct.toFixed(1)+'% vs anterior</div></div>';
+  }
+  el.innerHTML=box('\u0394 Sold',cur.sold,prev.sold,true)+box('\u0394 Facturi',cur.facturi,prev.facturi,false)+box('\u0394 Parteneri',cur.parteneri,prev.parteneri,false);
+}
+function renderEvoChart(canvasId,hist){
+  var cv=document.getElementById(canvasId);
+  if(!cv||typeof Chart==='undefined'||!hist)return;
+  hist=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
+  var labels=hist.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
+  var sold=hist.map(function(r){return r.sold;});
+  var fact=hist.map(function(r){return r.facturi;});
+  var part=hist.map(function(r){return r.parteneri;});
+  var key='_evo_'+canvasId;
+  if(window[key]){try{window[key].destroy();}catch(e){}}
+  window[key]=new Chart(cv.getContext('2d'),{type:'bar',
+    data:{labels:labels,datasets:[
+      {label:'Sold net (LEI)',data:sold,yAxisID:'yLei',backgroundColor:'rgba(83,74,183,0.85)',borderColor:'#534AB7',borderWidth:1.5,borderRadius:4},
+      {label:'Facturi',data:fact,yAxisID:'yCnt',backgroundColor:'rgba(163,45,45,0.8)',borderColor:'#A32D2D',borderWidth:1.5,borderRadius:4},
+      {label:'Parteneri',data:part,yAxisID:'yCnt',backgroundColor:'rgba(133,79,11,0.8)',borderColor:'#854F0B',borderWidth:1.5,borderRadius:4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12,usePointStyle:true}},
+        tooltip:{callbacks:{label:function(ctx){var v=ctx.parsed.y;if(ctx.dataset.yAxisID==='yLei')return ' Sold: '+fv(v,'LEI');return ' '+ctx.dataset.label+': '+v;}}}},
+      scales:{
+        yLei:{position:'left',ticks:{font:{family:'DM Sans',size:10},callback:function(v){return (v/1000).toFixed(0)+'k';}},grid:{color:'rgba(0,0,0,0.04)'},title:{display:true,text:'LEI (mii)',font:{family:'DM Sans',size:10}}},
+        yCnt:{position:'right',beginAtZero:true,ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{display:false},title:{display:true,text:'Numar',font:{family:'DM Sans',size:10}}},
+        x:{ticks:{font:{family:'DM Sans',size:10},maxRotation:45,minRotation:0},grid:{display:false}}
+      }}
   });
 }
 
@@ -1126,17 +1222,21 @@ function doImport(){
   const isKnown=rH.some(h=>h&&(String(h).includes('Document | Serie')||String(h).includes('IDPartener')||String(h).includes('Rest de plata')));
   if(!isKnown){toast('Format fisier necunoscut. Folositi fisierul standard.','error');return;}
 
+  const __h={};rH.forEach((h,i)=>{if(h)__h[String(h).trim()]=i;});
+  const __ci=(...names)=>{for(const n of names){if(__h[n]!==undefined)return __h[n];}return -1;};
+  const CI={tip:__ci('Tip document'),p:__ci('Nume client (din document)','Nume platitor','Partener'),cui:__ci('Cod fiscal','CUI'),id:__ci('IDPartener'),serie:__ci('Document | Serie'),numar:__ci('Document | Numar'),sd:__ci('Document | Data scadenta','Data scadenta'),ed:__ci('Document | Data emiterii','Data emiterii','Document | Data'),w:__ci('Total factura'),aa:__ci('Valoare incasare'),ab:__ci('Sold net'),ba:__ci('Rest de plata fara Disc OFF','Rest de plata','BA'),m:__ci('Valuta'),ag:__ci('Nume agent'),judet:__ci('Denumire judet','Judet'),loc:__ci('Partener|Localitatea','Localitate'),tel:__ci('Partener|Telefon','Telefon'),adr:__ci('Partener|Adresa','Adresa')};
+  console.log('[Import] Mapare coloane:',CI);
   const allRows=rR.map(row=>{
     const g=i=>i<row.length?String(row[i]||'').trim():'';
     const gn=i=>i<row.length?(parseFloat(String(row[i]||'0').replace(/[^\d.,-]/g,'').replace(',','.'))||0):0;
     const pdt=v=>{if(!v)return null;try{const s=String(v).trim();const d=new Date(s);return isNaN(d.getTime())?null:d;}catch{return null;}};
     return{
-      tip:g(14),p:g(5),cui:g(3),id_partener:g(2),
-      serie:g(15),numar:g(16),
-      sd:pdt(row[18]),ed:pdt(row[17]),
-      w:gn(22),aa:gn(26),ab:gn(27),ba:gn(52),
-      m:g(37)||'LEI',ag:g(11),
-      tel:g(45),adresa:g(48),localitate:g(44),judet:g(10),
+      tip:g(CI.tip),p:g(CI.p),cui:g(CI.cui),id_partener:g(CI.id),
+      serie:g(CI.serie),numar:g(CI.numar),
+      sd:pdt(row[CI.sd]),ed:pdt(row[CI.ed]),
+      w:gn(CI.w),aa:gn(CI.aa),ab:gn(CI.ab),ba:gn(CI.ba),
+      m:g(CI.m)||'LEI',ag:g(CI.ag),
+      tel:g(CI.tel).replace(/^'+/,''),adresa:g(CI.adr),localitate:g(CI.loc),judet:g(CI.judet),
     };
   });
 
