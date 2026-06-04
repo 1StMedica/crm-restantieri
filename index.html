@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>CRM Restanțieri v2.2</title>
+<title>CRM Restantieri v1.2</title>
 <!-- Firebase SDK - async to not block page render -->
 <script>
 window._fbLoaded = false;
@@ -168,17 +168,14 @@ tbody tr:hover{background:var(--bg)}
 .fisa-stat-lbl{font-size:11px;color:var(--t3)}
 
 /* JURNAL */
-.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;height:calc(100vh - 80px);overflow:hidden}
-.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;height:100%}
+.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;min-height:600px}
+.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
 .plh{padding:12px 14px;border-bottom:1px solid var(--border)}
 .plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
 .pli{overflow-y:auto;flex:1}
 .plitem{padding:13px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;-webkit-tap-highlight-color:transparent}
 .plitem:hover{background:var(--bg)}.plitem.active{background:var(--pbg);border-left:3px solid var(--purple)}
 .plname{font-size:13px;font-weight:500;margin-bottom:2px}
-.plitem{position:relative}
-.plitem:hover .pltip{display:block}
-.pltip{display:none;position:fixed;z-index:99999;background:#1e40af;color:#fff;padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap;pointer-events:none;margin-top:2px}
 .plmeta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
 .jmain{display:flex;flex-direction:column;gap:14px}
 .pch{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
@@ -277,32 +274,6 @@ tbody tr:hover{background:var(--bg)}
   .agrid{grid-template-columns:1fr}
   .mval{font-size:18px}
 }
-
-/* ── MOBIL: jurnal split-view ── */
-@media(max-width:680px){
-  /* Jurnal: initial arata lista, ascunde detalii */
-  .jlay{display:block!important;height:auto!important;overflow:visible!important}
-  #jLeft{display:block}
-  #jRight{display:none;height:auto!important}
-  /* Cand e selectat un partener pe mobil */
-  .jlay.partner-selected #jLeft{display:none}
-  .jlay.partner-selected #jRight{display:block}
-  /* Buton inapoi la lista in jurnal */
-  #btnBackToList{display:flex!important}
-  /* Lista parteneri full height pe mobil */
-  .plist{height:calc(100vh - 120px)!important;border-radius:var(--r)}
-  /* jRight full screen pe mobil */
-  #jRight{min-height:calc(100vh - 120px)}
-  /* Filtrele pe mobil - stack vertical */
-  .filters{flex-wrap:wrap!important}
-  .fi{min-width:0;flex:1 1 45%}
-  /* Topbar - ascunde texte butoane */
-  .tactions .btn-label{display:none}
-  /* Touch targets mai mari */
-  .plitem{padding:14px 16px!important;min-height:56px}
-  /* Carduri aging mai compacte */
-  .agrid .acard{padding:10px 12px}
-}
 .hamb{display:none;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:none;cursor:pointer;color:var(--text);border-radius:var(--rs);flex-shrink:0}
 .hamb:hover{background:var(--bg)}
 .hamb svg{width:20px;height:20px}
@@ -329,7 +300,6 @@ tbody tr:hover{background:var(--bg)}
 .hamb-close:hover{background:var(--bg)}
 .hamb-close svg{width:18px;height:18px}
 </style>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 <!-- LOGIN SCREEN -->
@@ -365,7 +335,7 @@ tbody tr:hover{background:var(--bg)}
 <div id="appContainer" style="display:none;width:100%">
 <div class="app">
 <aside class="sidebar">
-  <div class="slogo" style="position:relative"><div class="lmark"><div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div><div class="ltxt">CRM Restante</div><div class="lsub">v2.2 · Firebase</div></div></div>
+  <div class="slogo" style="position:relative"><div class="lmark"><div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div><div class="ltxt">CRM Restante</div><div class="lsub">v2.0 · Firebase</div></div></div>
     <button class="hamb-close" onclick="closeSidebar()" aria-label="Inchide meniu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -401,10 +371,9 @@ tbody tr:hover{background:var(--bg)}
     <button class="hamb" id="hambBtn" onclick="toggleSidebar()" aria-label="Meniu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <button id="btnBackToList" onclick="backToList()" style="display:none;background:none;border:none;cursor:pointer;color:var(--purple);padding:4px 8px;border-radius:6px;font-size:13px;align-items:center;gap:4px;margin-right:4px;font-weight:500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg> Lista</button><button id="btnBack" onclick="goBack()" style="display:none;background:none;border:none;cursor:pointer;color:var(--t2);padding:4px 8px;border-radius:6px;font-size:13px;align-items:center;gap:4px;margin-right:8px" onmouseover="this.style.background="var(--bg2)"" onmouseout="this.style.background="none""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="15 18 9 12 15 6"/></svg> Inapoi</button><div class="ptitle" id="ptitle">Dashboard</div>
+    <div class="ptitle" id="ptitle">Dashboard</div>
     <div class="tactions">
       <button class="btn btn-top-hide" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
-      <button class="btn btn-top-hide" onclick="exportJurnalExcel()" title="Export jurnal si remindere in Excel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export Jurnal</button>
       <button class="btn btnp" onclick="showPage('import',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import nou</button>
     </div>
   </div>
@@ -428,13 +397,13 @@ tbody tr:hover{background:var(--bg)}
               <div style="flex:1;padding:12px 14px;border-right:0.5px solid var(--border)">
                 <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Valori neincasate</div>
                 <div id="agingValGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-bottom:10px"></div>
-                <div style="height:130px" title="Click pentru a filtra facturile"><canvas id="agingChart" style="cursor:pointer"></canvas></div>
+                <div style="height:130px"><canvas id="agingChart"></canvas></div>
               </div>
               <!-- DREAPTA: Nr. facturi + bare -->
               <div style="flex:1;padding:12px 14px">
                 <div style="font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Nr. facturi</div>
                 <div id="agingCntGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-bottom:10px"></div>
-                <div style="height:130px" title="Click pentru a filtra facturile"><canvas id="agingBarDash" style="cursor:pointer"></canvas></div>
+                <div style="height:130px"><canvas id="agingBarDash"></canvas></div>
               </div>
             </div>
           </div>
@@ -454,7 +423,6 @@ tbody tr:hover{background:var(--bg)}
           </div>
         </div>
       </div>
-      <div class="card" style="margin-bottom:12px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import</div></div></div><div style="padding:14px 16px"><div style="height:260px"><canvas id="evoChartDash"></canvas></div></div></div>
       <div class="card"><div class="ch"><div><div class="ct">Facturi prioritare</div><div class="cs">cu rest de plata, sortate dupa risc</div></div></div><div class="tw"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>Judet</th><th>Scadenta</th><th>Zile dep.</th><th>Total fact.</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th><th>Act.</th></tr></thead><tbody id="tPri"><tr><td colspan="11"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
@@ -474,7 +442,7 @@ tbody tr:hover{background:var(--bg)}
         </select>
         <span class="flbl" id="fcnt"></span>
       </div>
-      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th onclick="sortTable('facturi','nr')" style="cursor:pointer;user-select:none">Nr. Factura <span id="sort-facturi-nr"></span></th><th onclick="sortTable('facturi','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-facturi-p"></span></th><th onclick="sortTable('facturi','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-facturi-cui"></span></th><th onclick="sortTable('facturi','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-facturi-judet"></span></th><th>Adresa</th><th>Telefon</th><th onclick="sortTable('facturi','de')" style="cursor:pointer;user-select:none">Data emiterii <span id="sort-facturi-de"></span></th><th onclick="sortTable('facturi','ds')" style="cursor:pointer;user-select:none">Data scadentei <span id="sort-facturi-ds"></span></th><th onclick="sortTable('facturi','z')" style="cursor:pointer;user-select:none">Zile dep. <span id="sort-facturi-z"></span></th><th onclick="sortTable('facturi','v')" style="cursor:pointer;user-select:none">Total factura <span id="sort-facturi-v"></span></th><th onclick="sortTable('facturi','rest')" style="cursor:pointer;user-select:none">Rest plata <span id="sort-facturi-rest"></span></th><th>Valuta</th><th onclick="sortTable('facturi','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-facturi-ag"></span></th><th>Text document</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- PARTENERI -->
@@ -485,7 +453,7 @@ tbody tr:hover{background:var(--bg)}
           <option value="sold">Sold net desc</option><option value="zile">Zile desc</option><option value="az">A-Z</option>
         </select>
       </div>
-      <div class="card"><div class="tw"><table><thead><tr><th onclick="sortTable('parteneri','p')" style="cursor:pointer;user-select:none">Partener <span id="sort-parteneri-p"></span></th><th onclick="sortTable('parteneri','cui')" style="cursor:pointer;user-select:none">CUI <span id="sort-parteneri-cui"></span></th><th onclick="sortTable('parteneri','judet')" style="cursor:pointer;user-select:none">Judet <span id="sort-parteneri-judet"></span></th><th>Telefon</th><th onclick="sortTable('parteneri','ag')" style="cursor:pointer;user-select:none">Agent <span id="sort-parteneri-ag"></span></th><th onclick="sortTable('parteneri','nr_facturi')" style="cursor:pointer;user-select:none">Facturi <span id="sort-parteneri-nr_facturi"></span></th><th>Incasari</th><th onclick="sortTable('parteneri','total_facturi')" style="cursor:pointer;user-select:none">Total facturat <span id="sort-parteneri-total_facturi"></span></th><th onclick="sortTable('parteneri','total_incasat')" style="cursor:pointer;user-select:none">Total incasat <span id="sort-parteneri-total_incasat"></span></th><th onclick="sortTable('parteneri','sold_net')" style="cursor:pointer;user-select:none">Sold net (AB) <span id="sort-parteneri-sold_net"></span></th><th onclick="sortTable('parteneri','max_zile')" style="cursor:pointer;user-select:none">Max zile <span id="sort-parteneri-max_zile"></span></th><th>Risc</th><th>Note</th><th>Jurnal</th></tr></thead><tbody id="tPart"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw"><table><thead><tr><th>Partener</th><th>CUI</th><th>Judet</th><th>Telefon</th><th>Agent</th><th>Facturi</th><th>Incasari</th><th>Total facturat</th><th>Total incasat</th><th>Sold net (AB)</th><th>Max zile</th><th>Risc</th><th>Note</th><th>Jurnal</th></tr></thead><tbody id="tPart"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- JURNAL -->
@@ -495,7 +463,7 @@ tbody tr:hover{background:var(--bg)}
           <div class="plh"><input class="plsearch" type="text" id="plsrch" placeholder="Cauta partener..." oninput="renderPL(this.value)"></div>
           <div class="pli" id="plItems"><div class="empty" style="padding:30px 10px"><div class="etl">Se incarca...</div></div></div>
         </div>
-        <div id="jRight" style="overflow-y:auto;height:100%"><div class="nosel"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="font-size:14px;font-weight:500;color:var(--t2)">Selecteaza un partener</div><div style="font-size:12px">pentru a vedea istoricul si a adauga note</div></div></div>
+        <div id="jRight"><div class="nosel"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><div style="font-size:14px;font-weight:500;color:var(--t2)">Selecteaza un partener</div><div style="font-size:12px">pentru a vedea istoricul si a adauga note</div></div></div>
       </div>
     </div>
 
@@ -530,13 +498,13 @@ tbody tr:hover{background:var(--bg)}
           <table>
             <thead>
               <tr>
-                <th onclick="sortTable('remindere','data')" style="cursor:pointer;user-select:none">Data follow-up <span id="sort-remindere-data"></span></th>
-                <th onclick="sortTable('remindere','partener')" style="cursor:pointer;user-select:none">Partener <span id="sort-remindere-partener"></span></th>
-                <th onclick="sortTable('remindere','agent')" style="cursor:pointer;user-select:none">Agent <span id="sort-remindere-agent"></span></th>
-                <th onclick="sortTable('remindere','actiune')" style="cursor:pointer;user-select:none">Tip actiune <span id="sort-remindere-actiune"></span></th>
+                <th>Data follow-up</th>
+                <th>Partener</th>
+                <th>Agent</th>
+                <th>Tip actiune</th>
                 <th>Nota / Context</th>
-                <th onclick="sortTable('remindere','creat')" style="cursor:pointer;user-select:none">Adaugat la <span id="sort-remindere-creat"></span></th>
-                <th onclick="sortTable('remindere','status')" style="cursor:pointer;user-select:none">Status <span id="sort-remindere-status"></span></th>
+                <th>Adaugat la</th>
+                <th>Status</th>
                 <th>Actiuni</th>
               </tr>
             </thead>
@@ -573,6 +541,7 @@ tbody tr:hover{background:var(--bg)}
         <strong style="color:var(--green)">Format fisier configurat.</strong> Aplicatia recunoaste automat fisierul exportat din sistemul vostru (header pe randul 8).
         Campurile mapate: <span style="color:var(--t2)">Partener (F) · CUI (D) · IDPartener (C) · Serie+Nr (P+Q) · Tip document (O) · Data emiterii (R) · Data scadentei (S) · Total factura (W) · Valoare incasare (AA) · Sold net (AB) · Rest de plata (BA) · Valuta (AL) · Agent (L) · Judet (K) · Telefon (AU) · Adresa (AV)</span>
       </div>
+      </div>
       <div class="iz" id="izone" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="doDrop(event)">
         <svg style="width:48px;height:48px;margin:0 auto 12px;color:var(--t3);display:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         <div style="font-size:15px;font-weight:500;margin-bottom:4px">Trage fisierul Excel sau click pentru selectare</div>
@@ -586,7 +555,6 @@ tbody tr:hover{background:var(--bg)}
         <div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div>
         <div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
-      <div class="card" style="margin-top:16px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import</div></div></div><div style="padding:14px 16px"><div style="height:260px"><canvas id="evoChartImp"></canvas></div></div></div>
       <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
     </div>
 
@@ -599,8 +567,8 @@ tbody tr:hover{background:var(--bg)}
         <div class="ac a90"><div class="av" id="av90">-</div><div class="al">90+ zile (critic)</div><div class="acnt" id="ac90">- facturi</div></div>
       </div>
       <div class="g2">
-        <div class="card"><div class="ch"><div class="ct">Rest de plata pe bucket</div></div><div class="cw" style="height:260px"><canvas id="barChart" style="cursor:pointer" title="Click pentru a filtra facturile"></canvas></div></div>
-        <div class="card"><div class="ch"><div class="ct">Distributie nr. facturi</div></div><div class="cw" style="height:260px"><canvas id="pieChart" style="cursor:pointer" title="Click pentru a filtra facturile"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Rest de plata pe bucket</div></div><div class="cw" style="height:260px"><canvas id="barChart"></canvas></div></div>
+        <div class="card"><div class="ch"><div class="ct">Distributie nr. facturi</div></div><div class="cw" style="height:260px"><canvas id="pieChart"></canvas></div></div>
       </div>
       <div class="card"><div class="ch"><div class="ct">Aging complet per partener</div><div class="cs">sold net = suma col AB</div></div><div class="tw"><table><thead><tr><th>Partener</th><th>Agent</th><th>0-30 zile</th><th>31-60 zile</th><th>61-90 zile</th><th>90+ zile</th><th>Sold net total</th></tr></thead><tbody id="tAging"><tr><td colspan="7"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
@@ -654,25 +622,16 @@ tbody tr:hover{background:var(--bg)}
 
 <!-- NOTIF MODAL -->
 <div class="mbg" id="nModal"><div class="modal">
-  <div class="mh"><div class="mtl">Trimite notificare de plata</div><button class="bcl" id="nCloseBtn" onclick="cm('nModal')">&#x2715;</button></div>
+  <div class="mh"><div class="mtl">Genereaza notificare de plata</div><button class="bcl" onclick="cm('nModal')">&#x2715;</button></div>
   <div class="mb">
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Partener</div><div id="nPart" style="font-weight:500;font-size:14px"></div></div>
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Detalii</div><div id="nFact" style="font-size:13px;color:var(--t2)"></div></div>
     <div style="margin-bottom:12px"><div style="font-size:12px;color:var(--t3);margin-bottom:6px;font-weight:500">Canal notificare</div>
-      <div style="display:flex;gap:8px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked onchange="toggleEmailRow(this)"> Email</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms" onchange="toggleEmailRow(this)"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp" onchange="toggleEmailRow(this)"> WhatsApp</label></div>
-    </div>
-    <div id="nEmailRow" style="margin-bottom:12px">
-      <div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Email destinatar <span style="color:var(--red)">*</span></div>
-      <input id="nEmail" type="text" placeholder="email1@partener.ro; email2@partener.ro" class="fi" style="width:100%;font-size:13px;padding:8px 12px">
-      <div id="nEmailHint" style="font-size:11px;margin-top:4px"></div>
+      <div style="display:flex;gap:8px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="email" checked> Email</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="sms"> SMS</label><label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="radio" name="canal" value="whatsapp"> WhatsApp</label></div>
     </div>
     <div style="margin-bottom:4px"><div style="font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500">Mesaj</div><textarea id="nMsg" class="nta" style="min-height:120px;width:100%"></textarea></div>
-    <div id="nStatus" style="display:none;margin-top:10px;padding:10px 14px;border-radius:var(--rs);font-size:13px"></div>
   </div>
-  <div class="mf">
-    <button class="btn" id="nCancelBtn" onclick="cm('nModal')">Anuleaza</button>
-    <button class="btn btnp" id="nSendBtn" onclick="sendN()">&#9993; Trimite email</button>
-  </div>
+  <div class="mf"><button class="btn" onclick="cm('nModal')">Anuleaza</button><button class="btn btnp" onclick="sendN()">Genereaza &amp; trimite</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
 <div class="pn-tt" id="pnTooltip"></div>
@@ -706,7 +665,6 @@ function showApp(user){
   }
   jLoad(); rLoad();
   setTimeout(loadImportFromFirestore, 800);
-  setTimeout(loadImportHistory, 1300);
   // Real-time listeners
   function startJurnalListener(){
     if(!window.db) return;
@@ -992,90 +950,18 @@ function closeSidebar(){
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
-var _pageHistory = ['dashboard'];
-function goBack(){
-  if(_pageHistory.length > 1){
-    _pageHistory.pop();
-    var prev = _pageHistory[_pageHistory.length - 1] || 'dashboard';
-    _pageHistory.pop();
-    var navEl = null;
-    document.querySelectorAll('.ni').forEach(function(el){
-      if(el.getAttribute('onclick') && el.getAttribute('onclick').indexOf("'"+prev+"'") !== -1) navEl = el;
-    });
-    showPage(prev, navEl);
-  }
-}
 function showPage(id,el){
-  // Reset jurnal mobile state
-  var jlay=document.querySelector('.jlay');
-  if(jlay)jlay.classList.remove('partner-selected');
-  var btnBL=document.getElementById('btnBackToList');
-  if(btnBL)btnBL.style.display='none';
-
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el)el.classList.add('active');
-  if(_pageHistory[_pageHistory.length-1] !== id) _pageHistory.push(id);
   document.getElementById('ptitle').textContent=PAGES[id]||id;
-  var btnBack=document.getElementById('btnBack');
-  if(btnBack)btnBack.style.display=id==='dashboard'?'none':'inline-flex';
   if(id==='facturi')renderF();
   if(id==='parteneri')renderP();
   if(id==='aging')renderA();
   if(id==='remindere')renderRemindere();
   if(id==='jurnal')renderPL();
-  if(id==='import'||id==='dashboard')setTimeout(loadImportHistory,100);
 }
-
-// ── SORTARE TABELE ──────────────────────────────────────────────────────
-var _sortState = {};
-
-function sortTable(tabel, camp) {
-  var prev = _sortState[tabel] || {camp: null, dir: 1};
-  var dir = (prev.camp === camp) ? -prev.dir : 1;
-  _sortState[tabel] = {camp: camp, dir: dir};
-
-  // Reseteaza toate icoanele
-  document.querySelectorAll('[id^="sort-'+tabel+'-"]').forEach(function(el) {
-    el.textContent = '';
-  });
-  var ico = document.getElementById('sort-'+tabel+'-'+camp);
-  if (ico) ico.textContent = dir === 1 ? ' ▲' : ' ▼';
-
-  if (tabel === 'facturi') {
-    var _camp = camp, _dir = dir;
-    window._fSort = function(a, b) {
-      var av = a[_camp] !== undefined ? a[_camp] : '';
-      var bv = b[_camp] !== undefined ? b[_camp] : '';
-      if (['z','v','rest'].indexOf(_camp) !== -1) {
-        return _dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
-      }
-      return _dir * String(av).localeCompare(String(bv), 'ro');
-    };
-    renderF();
-  } else if (tabel === 'parteneri') {
-    var _camp = camp, _dir = dir;
-    window._pSort = function(a, b) {
-      var av = a[_camp] !== undefined ? a[_camp] : '';
-      var bv = b[_camp] !== undefined ? b[_camp] : '';
-      if (['sold_net','total_facturi','total_incasat','nr_facturi','max_zile'].indexOf(_camp) !== -1) {
-        return _dir * ((parseFloat(av)||0) - (parseFloat(bv)||0));
-      }
-      return _dir * String(av).localeCompare(String(bv), 'ro');
-    };
-    renderP();
-  } else if (tabel === 'remindere') {
-    var _camp = camp, _dir = dir;
-    window._rSort = function(a, b) {
-      var av = a[_camp] !== undefined ? a[_camp] : '';
-      var bv = b[_camp] !== undefined ? b[_camp] : '';
-      return _dir * String(av).localeCompare(String(bv), 'ro');
-    };
-    renderRemindere();
-  }
-}
-// ── SFARSIT SORTARE ──────────────────────────────────────────────────────
 function uid(){return Math.random().toString(36).slice(2);}
 function fv(v,c){return new Intl.NumberFormat('ro-RO',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v||0)+(c?' '+c:'');}
 function rb(z){if(z>=90)return'<span class="badge br">Critic</span>';if(z>=60)return'<span class="badge" style="background:#fdf0e8;color:#993C1D">Ridicat</span>';if(z>=30)return'<span class="badge ba">Moderat</span>';if(z>0)return'<span class="badge bb">Recent</span>';return'<span class="badge bg">La termen</span>';}
@@ -1097,7 +983,7 @@ function handleFile(file){
     try{
       const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const j=XLSX.utils.sheet_to_json(ws,{header:1,raw:true});
+      const j=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,dateNF:'yyyy-mm-dd'});
       if(j.length<2){toast('Fisierul este gol','error');return;}
       // Detectam randul header - primul rand cu 10+ valori nenule
       let hIdx=0;
@@ -1171,7 +1057,6 @@ function saveImportToFirestore(soldTotal){
 
   batch.commit().then(() => {
     toast(D.length+' facturi salvate in cloud. Toti agentii vor vedea datele noi.','success');
-    setTimeout(loadImportHistory,700);
     // Update import history UI
     const h=document.getElementById('impHist');
     if(h&&h.querySelector('td[colspan]'))h.innerHTML='';
@@ -1179,61 +1064,6 @@ function saveImportToFirestore(soldTotal){
   }).catch(e => {
     console.error('Firestore save error:', e);
     toast('Eroare la salvare in cloud: '+e.message,'error');
-  });
-}
-
-function loadImportHistory(){
-  if(!window._fbLoaded || !window.db) return;
-  try{
-    window.db.collection('imports').get().then(function(snap){
-        var hist=[];
-        snap.forEach(function(d){
-          if(!d.id || d.id.indexOf('history_')!==0) return;
-          var m=d.data()||{};
-          hist.push({la:m.importat_la||'',de:m.importat_de||'',fisier:m.fisier||'-',
-            facturi:m.nr_facturi||0,parteneri:m.nr_parteneri||0,sold:m.sold_total||0});
-        });
-        hist.sort(function(a,b){return String(a.la).localeCompare(String(b.la));});
-        window._importHist=hist;
-        renderImportHistTable(hist);
-        renderEvoChart('evoChartDash',hist);
-        renderEvoChart('evoChartImp',hist);
-      }).catch(function(e){console.warn('loadImportHistory error:',e);});
-  }catch(e){console.warn('loadImportHistory exception:',e);}
-}
-function renderImportHistTable(hist){
-  var h=document.getElementById('impHist');
-  if(!h)return;
-  if(!hist||!hist.length){h.innerHTML='<tr><td colspan="6" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr>';return;}
-  h.innerHTML=hist.slice().reverse().map(function(r){
-    var dt=r.la?new Date(r.la).toLocaleString('ro-RO'):'-';
-    return '<tr><td>'+dt+'</td><td>'+r.fisier+'</td><td>'+r.facturi+'</td><td>'+r.parteneri+'</td><td>'+fv(r.sold,'LEI')+'</td><td><span class="badge bg">&#9729; Cloud</span></td></tr>';
-  }).join('');
-}
-function renderEvoChart(canvasId,hist){
-  var cv=document.getElementById(canvasId);
-  if(!cv||typeof Chart==='undefined'||!hist)return;
-  hist=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
-  var labels=hist.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
-  var sold=hist.map(function(r){return r.sold;});
-  var fact=hist.map(function(r){return r.facturi;});
-  var part=hist.map(function(r){return r.parteneri;});
-  var key='_evo_'+canvasId;
-  if(window[key]){try{window[key].destroy();}catch(e){}}
-  window[key]=new Chart(cv.getContext('2d'),{type:'bar',
-    data:{labels:labels,datasets:[
-      {label:'Sold net (LEI)',data:sold,yAxisID:'yLei',backgroundColor:'rgba(83,74,183,0.85)',borderColor:'#534AB7',borderWidth:1.5,borderRadius:4},
-      {label:'Facturi',data:fact,yAxisID:'yCnt',backgroundColor:'rgba(163,45,45,0.8)',borderColor:'#A32D2D',borderWidth:1.5,borderRadius:4},
-      {label:'Parteneri',data:part,yAxisID:'yCnt',backgroundColor:'rgba(133,79,11,0.8)',borderColor:'#854F0B',borderWidth:1.5,borderRadius:4}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:12,usePointStyle:true}},
-        tooltip:{callbacks:{label:function(ctx){var v=ctx.parsed.y;if(ctx.dataset.yAxisID==='yLei')return ' Sold: '+fv(v,'LEI');return ' '+ctx.dataset.label+': '+v;}}}},
-      scales:{
-        yLei:{position:'left',ticks:{font:{family:'DM Sans',size:10},callback:function(v){return (v/1000).toFixed(0)+'k';}},grid:{color:'rgba(0,0,0,0.04)'},title:{display:true,text:'LEI (mii)',font:{family:'DM Sans',size:10}}},
-        yCnt:{position:'right',beginAtZero:true,ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{display:false},title:{display:true,text:'Numar',font:{family:'DM Sans',size:10}}},
-        x:{ticks:{font:{family:'DM Sans',size:10},maxRotation:45,minRotation:0},grid:{display:false}}
-      }}
   });
 }
 
@@ -1296,18 +1126,17 @@ function doImport(){
   const isKnown=rH.some(h=>h&&(String(h).includes('Document | Serie')||String(h).includes('IDPartener')||String(h).includes('Rest de plata')));
   if(!isKnown){toast('Format fisier necunoscut. Folositi fisierul standard.','error');return;}
 
-  const __h={};rH.forEach((h,i)=>{if(h)__h[String(h).trim()]=i;});const __ci=(...n)=>{for(const x of n){if(__h[x]!==undefined)return __h[x];}return -1;};const CI={tip:__ci('Tip document'),p:__ci('Nume client (din document)','Nume platitor','Partener'),cui:__ci('Cod fiscal','CUI'),id:__ci('IDPartener'),serie:__ci('Document | Serie'),numar:__ci('Document | Numar'),sd:__ci('Document | Data scadenta','Data scadenta'),ed:__ci('Document | Data emiterii','Data emiterii','Document | Data'),w:__ci('Total factura'),aa:__ci('Valoare incasare'),ab:__ci('Sold net'),ba:__ci('Rest de plata fara Disc OFF','Rest de plata','BA'),m:__ci('Valuta'),ag:__ci('Nume agent'),judet:__ci('Denumire judet','Judet'),loc:__ci('Partener|Localitatea','Localitate'),tel:__ci('Partener|Telefon','Telefon'),adr:__ci('Partener|Adresa','Adresa'),txt:__ci('Text Document')};console.log('[Import] Mapare coloane:',CI);
   const allRows=rR.map(row=>{
     const g=i=>i<row.length?String(row[i]||'').trim():'';
-    const gn=i=>i<row.length?(parseFloat(String(row[i]||'0').replace(/[^\d.,-]/g,'').replace(/,(?=\d{3})/g,'').replace(',','.'))||0):0;
+    const gn=i=>i<row.length?(parseFloat(String(row[i]||'0').replace(/[^\d.,-]/g,'').replace(',','.'))||0):0;
     const pdt=v=>{if(!v)return null;try{const s=String(v).trim();const d=new Date(s);return isNaN(d.getTime())?null:d;}catch{return null;}};
     return{
-      tip:g(CI.tip),p:g(CI.p),cui:g(CI.cui),id_partener:g(CI.id),
+      tip:g(14),p:g(5),cui:g(3),id_partener:g(2),
       serie:g(15),numar:g(16),
-      sd:pdt(row[CI.sd]),ed:pdt(row[CI.ed]),
-      w:gn(CI.w),aa:gn(CI.aa),ab:gn(CI.ab),ba:gn(CI.ba),
-      m:g(CI.m)||'LEI',ag:g(CI.ag),
-      tel:'',telefon:g(CI.tel).replace(/^'+/,''),adresa:g(CI.adr),localitate:g(CI.loc),judet:g(CI.judet),text_doc:g(CI.txt),
+      sd:pdt(row[18]),ed:pdt(row[17]),
+      w:gn(22),aa:gn(26),ab:gn(27),ba:gn(52),
+      m:g(37)||'LEI',ag:g(11),
+      tel:g(45),adresa:g(48),localitate:g(44),judet:g(10),
     };
   });
 
@@ -1316,17 +1145,17 @@ function doImport(){
     const z=r.sd?Math.floor((today-r.sd)/86400000):0;
     return{nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),
       p:r.p,cui:r.cui,id_partener:r.id_partener,tip:'Factura',email:'',
-      tel:r.tel,telefon:r.telefon||'',adresa:r.adresa,localitate:r.localitate,judet:r.judet,
+      tel:r.tel,adresa:r.adresa,localitate:r.localitate,judet:r.judet,
       de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',
       ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',
-      dsd:r.sd?r.sd.toISOString():null,z,v:r.w,rest:r.ba,m:r.m,ag:r.ag,st:'Neplatit',text_doc:r.text_doc||''};
+      dsd:r.sd?r.sd.toISOString():null,z,v:r.w,rest:r.ba,m:r.m,ag:r.ag,st:'Neplatit'};
   });
 
   // Sold net per partener = suma AB din TOATE randurile (facturi + incasari)
   const byP={};
   allRows.forEach(r=>{
     if(!r.p)return;
-    if(!byP[r.p])byP[r.p]={cui:r.cui,id_partener:r.id_partener,tel:r.tel,telefon:r.telefon||'',adresa:r.adresa,localitate:r.localitate,judet:r.judet,ag:r.ag,m:r.m,sold_net:0,total_facturi:0,total_incasat:0,nr_facturi:0,nr_incasari:0,max_zile:0};
+    if(!byP[r.p])byP[r.p]={cui:r.cui,id_partener:r.id_partener,tel:r.tel,adresa:r.adresa,localitate:r.localitate,judet:r.judet,ag:r.ag,m:r.m,sold_net:0,total_facturi:0,total_incasat:0,nr_facturi:0,nr_incasari:0,max_zile:0};
     byP[r.p].sold_net+=r.ab;
     if(r.tip==='Factura'){byP[r.p].total_facturi+=r.w;byP[r.p].nr_facturi++;const z=r.sd?Math.floor((today-r.sd)/86400000):0;byP[r.p].max_zile=Math.max(byP[r.p].max_zile,z);}
     else{byP[r.p].total_incasat+=r.aa;byP[r.p].nr_incasari++;}
@@ -1354,7 +1183,7 @@ function doImport(){
     if(r.tip==='Factura'&&r.ba>0){
       const z=r.sd?Math.floor((today2-r.sd)/86400000):0;
       const incasat=Math.round((r.w-r.ba)*100)/100;
-      DESF[r.p].facturi.push({nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:r.ba,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat',text_doc:r.text_doc||''});
+      DESF[r.p].facturi.push({nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:r.ba,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat'});
     } else if(r.tip!=='Factura'&&r.aa>0){
       const tipInc=r.tip.toLowerCase().includes('banca')?'Banca':'Numerar';
       DESF[r.p].incasari.push({tip:tipInc,data:r.ed?r.ed.toLocaleDateString('ro-RO'):'',val:r.aa,m:r.m});
@@ -1423,10 +1252,10 @@ function renderDB(){
   if(cg) cg.innerHTML=BUCK_LABELS.map((l,i)=>`<div style="background:${BUCK_BG[i]};border-radius:6px;padding:5px 7px"><div style="font-size:9px;font-weight:600;color:${BUCK_BD[i]}">${l} zile</div><div style="font-size:14px;font-weight:700;color:${BUCK_BD[i]}">${cnts[i]}</div></div>`).join('');
   // Donut - valori
   if(aCI)aCI.destroy();
-  aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:BUCK_LABELS,datasets:[{data:vals,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%',onClick:function(e,els){if(els.length)filterFact(els[0].index);}}});
+  aCI=new Chart(document.getElementById('agingChart').getContext('2d'),{type:'doughnut',data:{labels:BUCK_LABELS,datasets:[{data:vals,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},cutout:'62%'}});
   // Bar - facturi
   if(window._agingBarDash)window._agingBarDash.destroy();
-  window._agingBarDash=new Chart(document.getElementById('agingBarDash').getContext('2d'),{type:'bar',data:{labels:BUCK_LABELS,datasets:[{data:cnts,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},onClick:function(e,els){if(els.length)filterFact(els[0].index);},scales:{y:{ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{color:'rgba(0,0,0,0.04)'},beginAtZero:true},x:{ticks:{font:{family:'DM Sans',size:10}},grid:{display:false}}}}});
+  window._agingBarDash=new Chart(document.getElementById('agingBarDash').getContext('2d'),{type:'bar',data:{labels:BUCK_LABELS,datasets:[{data:cnts,backgroundColor:BUCK_BG,borderColor:BUCK_BD,borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'DM Sans',size:10},stepSize:1},grid:{color:'rgba(0,0,0,0.04)'},beginAtZero:true},x:{ticks:{font:{family:'DM Sans',size:10}},grid:{display:false}}}}});
 }
 
 // FACTURI
@@ -1452,16 +1281,15 @@ function renderF(){
   else if(so==='sa')d.sort((a,b)=>(a.dsd||'')>(b.dsd||'')?1:-1);
   else d.sort((a,b)=>a.p.localeCompare(b.p));
   document.getElementById('fcnt').textContent=d.length+' facturi · rest total: '+fv(d.reduce((s,r)=>s+r.rest,0),'LEI');
-  if(window._fSort){d.sort(window._fSort);}
   const tb=document.getElementById('tFact');
-  if(!d.length){tb.innerHTML='<tr><td colspan="15"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
+  if(!d.length){tb.innerHTML='<tr><td colspan="14"><div class="empty"><div class="etl">Nicio factura gasita</div></div></td></tr>';return;}
   tb.innerHTML=d.map(r=>`<tr>
     <td style="font-family:'DM Mono',monospace;font-size:11px;white-space:nowrap">${r.nr}</td>
     <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${r.p}" title="Click pentru jurnal interactiuni">${r.p}</div></td>
     <td><span class="pcui">${r.cui||'-'}</span></td>
     <td style="font-size:12px">${r.judet||'-'}</td>
     <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.adresa||''}">${r.adresa||'-'}</td>
-    <td style="font-size:12px">${r.telefon||r.tel||'-'}</td>
+    <td style="font-size:12px">${r.tel||'-'}</td>
     <td style="font-size:12px;white-space:nowrap">${r.de}</td>
     <td style="font-size:12px;white-space:nowrap">${r.ds}</td>
     <td style="text-align:center;font-weight:600;color:${r.z>=90?'var(--red)':r.z>=30?'var(--amber)':r.z>0?'var(--blue)':'var(--t2)'}">${r.z}</td>
@@ -1469,7 +1297,6 @@ function renderF(){
     <td><span class="amt amtr">${fv(r.rest,'')}</span></td>
     <td style="font-size:12px">${r.m}</td>
     <td style="font-size:12px;color:var(--t2)">${r.ag||'-'}</td>
-    <td style="font-size:11px;color:var(--t3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.text_doc||''}">${r.text_doc||'-'}</td>
     <td>${rb(r.z)}</td>
   </tr>`).join('');
 }
@@ -1479,8 +1306,7 @@ function renderP(){
   const q=(document.getElementById('psrch')||{value:''}).value.toLowerCase();
   const so=(document.getElementById('psrt')||{value:'sold'}).value;
   let src=[...PD].filter(d=>d.sold_net>0 && (!q||d.p.toLowerCase().includes(q)));
-  if(window._pSort){src.sort(window._pSort);}
-  else if(so==='zile')src.sort((a,b)=>b.max_zile-a.max_zile);
+  if(so==='zile')src.sort((a,b)=>b.max_zile-a.max_zile);
   else if(so==='az')src.sort((a,b)=>a.p.localeCompare(b.p));
   else src.sort((a,b)=>b.sold_net-a.sold_net);
   const tb=document.getElementById('tPart');
@@ -1488,10 +1314,10 @@ function renderP(){
   tb.innerHTML=src.map(d=>{
     const nm=d.p;const nc=(J[nm]||[]).length;
     return`<tr>
-      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${nm}" title="${nm}">${nm}</div></td>
+      <td><div class="pn" style="white-space:nowrap;cursor:pointer;color:var(--purple)" onclick="goToJurnal(this.dataset.nm)" data-nm="${nm}" title="Click pentru jurnal interactiuni">${nm}</div></td>
       <td><span class="pcui">${d.cui||'-'}</span></td>
       <td style="font-size:12px">${d.judet||'-'}</td>
-      <td style="font-size:12px">${d.telefon||d.tel||'-'}</td>
+      <td style="font-size:12px">${d.tel||'-'}</td>
       <td style="font-size:12px;color:var(--t2)">${d.ag||'-'}</td>
       <td style="text-align:center">${d.nr_facturi}</td>
       <td style="text-align:center;color:var(--green);font-size:12px">${d.nr_incasari||0}</td>
@@ -1516,7 +1342,7 @@ function renderPL(f){
     const nm=d.p;const nc=(J[nm]||[]).length;
     const rc=d.max_zile>=90?'br':d.max_zile>=60?'ba':d.max_zile>=30?'bb':'bg';
     return`<div class="plitem${selP===nm?' active':''}" onclick="selPart(this.dataset.nm)" data-nm="${nm}"\\'").replace(/\\/g,'\\\\')}')" >
-      <div class="plname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div><span class="pltip">${nm}</span>
+      <div class="plname" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px">${nm}</div>
       <div class="plmeta">
         <span class="badge ${rc}" style="font-size:10px;padding:1px 6px">${d.max_zile} zile</span>
         <span style="font-family:'DM Mono',monospace;font-size:10px">${fv(d.sold_net,'')} ${d.m}</span>
@@ -1524,39 +1350,8 @@ function renderPL(f){
       </div>
     </div>`;
   }).join('');
-  // Tooltip mouse tracking
-  cont.querySelectorAll('.plitem').forEach(function(item){
-    item.addEventListener('mouseenter',function(e){
-      var tip=item.querySelector('.pltip');
-      if(tip){tip.style.display='block';tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY+10)+'px';}
-    });
-    item.addEventListener('mousemove',function(e){
-      var tip=item.querySelector('.pltip');
-      if(tip&&tip.style.display==='block'){tip.style.left=(e.clientX+10)+'px';tip.style.top=(e.clientY+10)+'px';}
-    });
-    item.addEventListener('mouseleave',function(){
-      var tip=item.querySelector('.pltip');
-      if(tip)tip.style.display='none';
-    });
-  });
 }
-function selPart(nm){
-  selP=nm;renderPL();renderJR(nm);
-  // Pe mobil: ascunde lista, arata detalii
-  if(window.innerWidth<=680){
-    var jlay=document.querySelector('.jlay');
-    if(jlay){jlay.classList.add('partner-selected');}
-    var btn=document.getElementById('btnBackToList');
-    if(btn)btn.style.display='flex';
-  }
-}
-function backToList(){
-  var jlay=document.querySelector('.jlay');
-  if(jlay){jlay.classList.remove('partner-selected');}
-  var btn=document.getElementById('btnBackToList');
-  if(btn)btn.style.display='none';
-  selP=null;renderPL();
-}
+function selPart(nm){selP=nm;renderPL();renderJR(nm);}
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
@@ -1582,11 +1377,12 @@ function renderJR(nm){
     <div class="pch">
       <div class="pcht">
         <div class="pchav">${av}</div>
-        <div style="flex:1"><div class="pchn" style="white-space:normal;overflow:visible;word-break:break-word;">${nm}</div><div class="pchcui">${d.cui||dCui||'-'} &middot; ID: ${d.id_partener||dId||'-'}</div></div>
+        <div style="flex:1"><div class="pchn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px">${nm}</div><div class="pchcui">${d.cui||dCui||'-'} &middot; ID: ${d.id_partener||dId||'-'}</div></div>
+        ${(d.cui||dCui||'').replace(/[^0-9]/g,'').length===13 ? '<button class="btn btnsm" style="background:var(--tbg);color:var(--teal);border-color:var(--teal)" onclick="showContract(\\\''+((d.cui||dCui||'').replace(/[^0-9]/g,''))+'\\\')">📄 Contract</button>' : ''}
         <button class="btn btnsm" onclick='openN({"p":"${nm.replace(/"/g,'\\"')}","nr":"multiple","v":${d.total_facturi||0},"rest":${d.sold_net||0},"m":"${d.m||'LEI'}","ds":"-","z":${d.max_zile||0},"email":""})'>${TICO.notificare} Notificare</button>
       </div>
       <div class="pchcs">
-        ${(d.telefon||d.tel||dTel)?`<div class="pchc">${TICO.apel} ${d.telefon||d.tel||dTel}</div>`:''}
+        ${(d.tel||dTel)?`<div class="pchc">${TICO.apel} ${d.tel||dTel}</div>`:''}
         ${(d.adresa||dAdr)?`<div class="pchc" style="font-size:11px">${d.adresa||dAdr}</div>`:''}
         ${(d.judet||dJud)?`<div class="pchc" style="font-size:11px">${d.judet||dJud}</div>`:''}
       </div>
@@ -1626,7 +1422,6 @@ function renderJR(nm){
               <th>Valuta</th>
               <th>Status</th>
               <th>Agent</th>
-              <th>Text document</th>
             </tr>
           </thead>
           <tbody>
@@ -1645,7 +1440,6 @@ function renderJR(nm){
                 : `<span class="badge br">Neincasat</span>`
               }</td>
               <td style="font-size:12px;color:var(--t2)">${f.ag||'-'}</td>
-              <td style="font-size:11px;color:var(--t3);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.text_doc||''}">${f.text_doc||'-'}</td>
             </tr>`).join('')}
           </tbody>
           <tfoot>
@@ -1654,7 +1448,7 @@ function renderJR(nm){
               <td><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.total,0),'')}</span></td>
               <td style="color:var(--green)"><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.incasat,0),'')}</span></td>
               <td><span class="amt amtr" style="font-weight:700">${fv((PD.find(p=>p.p===_fisaNm)||{sold_net:desf.facturi.reduce((s,f)=>s+f.rest,0)}).sold_net,'')}</span></td>
-              <td colspan="4"></td>
+              <td colspan="3"></td>
             </tr>
           </tfoot>
         </table>
@@ -1850,145 +1644,28 @@ function goJ(nm){
 }
 
 // NOTIFICARE
-function toggleEmailRow(radio){
-  var row=document.getElementById('nEmailRow');
-  if(row) row.style.display=radio.value==='email'?'':'none';
-  var btn=document.getElementById('nSendBtn');
-  if(btn){
-    if(radio.value==='email') btn.innerHTML='&#9993; Trimite email';
-    else if(radio.value==='sms') btn.innerHTML='&#128241; Trimite SMS';
-    else if(radio.value==='whatsapp') btn.innerHTML='&#128172; Trimite WhatsApp';
-  }
-}
 function openN(r){
-  if(typeof r==='string')r=JSON.parse(r);
-  cNR=r;
+  if(typeof r==='string')r=JSON.parse(r);cNR=r;
   document.getElementById('nPart').textContent=r.p;
   document.getElementById('nFact').textContent='Nr. '+r.nr+' · Total: '+fv(r.v,r.m)+' · Rest: '+fv(r.rest,r.m)+' · Scadenta: '+r.ds+(r.z>0?' ('+r.z+' zile depasita)':'');
-  document.getElementById('nMsg').value='Stimate partener '+r.p+',\n\nVa contactam in legatura cu situatia facturilor emise catre dumneavoastra, cu termen de plata depasit.\n\n'+(function(){var facts=PD.filter(function(p){return p.p===r.p;})[0];var facturi=facts&&facts._f?facts._f:null;if(r.nr!=='multiple')return 'Factura: '+r.nr+'\nValoare restanta: '+fv(r.rest,r.m)+'\nScadenta: '+r.ds+(r.z>0?' ('+r.z+' zile intarziere)':'');var flist=D.filter(function(f){return f.p===r.p&&f.rest>0;});var lines=flist.map(function(f){return 'Nr. '+f.nr+' | '+fv(f.rest,f.m)+(f.z>0?' | '+f.z+' zile intarziere':'');});return 'Facturi restante ('+lines.length+'):\n'+lines.join('\n')+'\n\nTotal restant: '+fv(r.rest,r.m);})()+'\n\nVa rugam sa ne contactati pentru a clarifica situatia sau a stabili un calendar de plata:\n  Telefon: 0773.975.267\n  Email: info@1stmedica.eu\n\nVa multumim pentru colaborare.\n\nCu stima,\nDepartamentul Financiar\n1St Medica SRL\nTel: 0773.975.267\nEmail: info@1stmedica.eu\n\nElectromagnetica Business Park | 050912 Bucuresti | Romania\nCalea Rahovei 266 - 268 | Corp 2 | Birou 12D';
-  var emailInput=document.getElementById('nEmail');
-  var emailHint=document.getElementById('nEmailHint');
-  var knownEmail=r.email||'';
-  if(!knownEmail){var pd=PD.find(function(p){return p.p===r.p;});if(pd&&pd.email)knownEmail=pd.email;}
-  if(emailInput) emailInput.value=knownEmail;
-  if(emailHint){
-    if(knownEmail){emailHint.innerHTML='<span style="color:var(--green)">&#10003; Email gasit in date (poti adauga mai multe separate prin ;)</span>';}
-    else{emailHint.innerHTML='<span style="color:var(--amber)">&#9888; Introdu adresa email (poti adauga mai multe separate prin ;)</span>';}
-  }
-  var st=document.getElementById('nStatus');if(st){st.style.display='none';st.textContent='';}
-  var sb=document.getElementById('nSendBtn');if(sb){sb.disabled=false;sb.innerHTML='&#9993; Trimite email';}
-  var cb=document.getElementById('nCancelBtn');if(cb)cb.disabled=false;
-  var xb=document.getElementById('nCloseBtn');if(xb)xb.disabled=false;
-  var emailRow=document.getElementById('nEmailRow');if(emailRow)emailRow.style.display='';
-  document.querySelectorAll('input[name="canal"]').forEach(function(x){x.checked=x.value==='email';});
+  document.getElementById('nMsg').value=`Stimate partener ${r.p},\n\nVa notificam ca aveti o restanta in valoare de ${fv(r.rest,r.m)}, aferenta facturii nr. ${r.nr}, cu data scadentei ${r.ds}${r.z>0?' (depasita cu '+r.z+' zile)':''}.\n\nVa rugam sa efectuati plata in cel mai scurt timp posibil sau sa ne contactati pentru a stabili un plan de plata.\n\nCu stima,\nDepartamentul Financiar`;
   document.getElementById('nModal').classList.add('open');
 }
-async function sendN(){
-  var canal=document.querySelector('input[name="canal"]:checked').value;
-  var lbl={email:'Email',sms:'SMS',whatsapp:'WhatsApp'};
-  var nm=cNR&&cNR.p;
-  var statusEl=document.getElementById('nStatus');
-  var sendBtn=document.getElementById('nSendBtn');
-  var cancelBtn=document.getElementById('nCancelBtn');
-  var closeBtn=document.getElementById('nCloseBtn');
-  // SMS / WhatsApp - deschide aplicatia cu mesajul pregatit
-  if(canal!=='email'){
-    var mesajSW=(document.getElementById('nMsg').value||'').trim();
-    var telPartener=(function(){var pd=PD.find(function(p){return p.p===nm;});return pd&&(pd.telefon||pd.tel)?pd.telefon||pd.tel:'';})();
-    if(canal==='sms'){
-      if(!telPartener){toast('Partenerul nu are numar de telefon!','error');return;}
-      var smsUrl='sms:'+telPartener+'?body='+encodeURIComponent(mesajSW);
-      var a=document.createElement('a');a.href=smsUrl;a.click();
-    } else if(canal==='whatsapp'){
-      if(!telPartener){toast('Partenerul nu are numar de telefon!','error');return;}
-      var waNum=telPartener.replace(/[^0-9]/g,'');
-      if(waNum.startsWith('0'))waNum='40'+waNum.substring(1);
-      var waUrl='https://wa.me/'+waNum+'?text='+encodeURIComponent(mesajSW);
-      window.open(waUrl,'_blank');
-    }
-    cm('nModal');
-    if(nm){
-      if(!J[nm])J[nm]=[];
-      J[nm].unshift({id:uid(),type:'notificare',text:'Notificare '+lbl[canal]+' initiata'+(telPartener?' la '+telPartener:'')+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
-      jSave();
-      if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
-      renderPL();
-    }
-    toast('Se deschide '+lbl[canal]+' pentru '+nm,'success');
-    return;
+function sendN(){
+  const canal=document.querySelector('input[name="canal"]:checked').value;
+  cm('nModal');const lbl={email:'Email',sms:'SMS',whatsapp:'WhatsApp'};
+  const nm=cNR?.p;
+  if(nm){
+    if(!J[nm])J[nm]=[];
+    J[nm].unshift({id:uid(),type:'notificare',text:`Notificare ${lbl[canal]} trimisa. Factura: ${cNR.nr} · Rest: ${fv(cNR.rest,cNR.m)}`,date:new Date().toISOString(),agent:'Sistem'});
+    jSave();
+    if(selP===nm){const nid=nm.replace(/[^a-zA-Z0-9]/g,'_');const ti=document.getElementById('tli-'+nid);const tc=document.getElementById('tlcnt-'+nid);const nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
+    renderPL();
   }
-  // EMAIL - trimitere reala prin Firebase
-  var emailRaw=(document.getElementById('nEmail').value||'').trim();
-  if(!emailRaw){toast('Introdu adresa de email a partenerului!','error');document.getElementById('nEmail').focus();return;}
-  var emailList=emailRaw.split(/[;,]+/).map(function(e){return e.trim();}).filter(function(e){return e.length>0;});
-  var emailInvalid=emailList.filter(function(e){return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);});
-  if(emailInvalid.length>0){toast('Email invalid: '+emailInvalid[0],'error');return;}
-  var email=emailList[0];
-  var mesaj=(document.getElementById('nMsg').value||'').trim();
-  if(!mesaj){toast('Mesajul este gol!','error');return;}
-  // Loading state
-  if(sendBtn){sendBtn.disabled=true;sendBtn.innerHTML='&#8987; Se trimite...';}
-  if(cancelBtn)cancelBtn.disabled=true;
-  if(closeBtn)closeBtn.disabled=true;
-  if(statusEl){statusEl.style.display='block';statusEl.style.background='var(--bbg)';statusEl.style.color='var(--blue)';statusEl.innerHTML='&#9679; Se trimite catre '+email+'...';}
-  try{
-    for(var _ei=0;_ei<emailList.length;_ei++){await sendEmailViaFirebase({to:emailList[_ei],toName:nm,subject:'Situatie facturi - '+cNR.p,message:mesaj,partener:nm,factura:cNR.nr,rest:fv(cNR.rest,cNR.m),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Agent'});
-    if(statusEl){statusEl.style.background='var(--gbg)';statusEl.style.color='var(--green)';statusEl.innerHTML='&#10003; Email trimis cu succes catre <strong>'+email+'</strong>!';}
-    if(sendBtn)sendBtn.innerHTML='&#10003; Trimis!';
-    if(nm){
-      if(!J[nm])J[nm]=[];
-      if(_ei===0)J[nm].unshift({id:uid(),type:'notificare',text:'Email notificare trimis la '+emailList.join(', ')+'. Factura: '+cNR.nr+' · Rest: '+fv(cNR.rest,cNR.m),date:new Date().toISOString(),agent:window.currentUser?(window.currentUser.displayName||window.currentUser.email):'Sistem'});
-      jSave();
-      if(selP===nm){var nid=nm.replace(/[^a-zA-Z0-9]/g,'_');var ti=document.getElementById('tli-'+nid);var tc=document.getElementById('tlcnt-'+nid);var nc=document.getElementById('ncnt-'+nid);if(ti)ti.innerHTML=renderTLI(nm);if(tc)tc.textContent=J[nm].length+' inregistrari';if(nc)nc.textContent=J[nm].length;}
-      renderPL();
-    }
-    } // end for emailList
-    toast('Email trimis catre '+emailList.join(', '),'success');
-    setTimeout(function(){cm('nModal');if(cancelBtn)cancelBtn.disabled=false;if(closeBtn)closeBtn.disabled=false;},2000);
-  }catch(err){
-    if(statusEl){statusEl.style.background='var(--rbg)';statusEl.style.color='var(--red)';statusEl.innerHTML='&#10007; Eroare: '+(err.message||'necunoscuta')+'. Verifica Firebase logs.';}
-    if(sendBtn){sendBtn.disabled=false;sendBtn.innerHTML='&#9993; Incearca din nou';}
-    if(cancelBtn)cancelBtn.disabled=false;
-    if(closeBtn)closeBtn.disabled=false;
-    toast('Eroare trimitere: '+(err.message||''),'error');
-  }
+  toast('Notificare '+lbl[canal]+' generata pentru '+nm,'success');
 }
-async function sendEmailViaFirebase(params){
-  // EmailJS - trimitere directa din browser
-  var SERVICE_ID='service_mtgppoa';
-  var TEMPLATE_ID='template_5luq0fu';
-  var PUBLIC_KEY='AeZwH6rd5SleiqMQc';
-  if(typeof emailjs==='undefined') throw new Error('EmailJS SDK nu este incarcat');
-  emailjs.init({publicKey: PUBLIC_KEY});
-  var templateParams={
-    to_email: params.to,
-    name: params.toName||params.to,
-    subject: params.subject,
-    message: params.message,
-    email: 'info@1stmedia.eu'
-  };
-  var result=await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
-  if(result.status!==200) throw new Error('EmailJS status: '+result.status+' '+result.text);
-  return result;
-}
-
 
 // AGING
-function filterFact(bi){
-  // bi: 0=0-30, 1=31-60, 2=61-90, 3=90+
-  const vals=['recent','moderat','ridicat','critic'];
-  const labels=['0-30 zile','31-60 zile','61-90 zile','90+ zile'];
-  const sfil=document.getElementById('sfil');
-  if(sfil){sfil.value=vals[bi];}
-  showPage('facturi',document.querySelector('.ni[onclick*="facturi"]'));
-  setTimeout(()=>{
-    const sfil2=document.getElementById('sfil');
-    if(sfil2){sfil2.value=vals[bi];renderF();}
-    // Scroll to top of facturi table
-    const pg=document.getElementById('page-facturi');
-    if(pg)pg.scrollTop=0;
-  },80);
-}
 function renderA(){
   const bk=[r=>r.z>=0&&r.z<30,r=>r.z>=30&&r.z<60,r=>r.z>=60&&r.z<90,r=>r.z>=90];
   const vs=bk.map(f=>D.filter(f).reduce((s,r)=>s+r.rest,0));
@@ -1996,9 +1673,9 @@ function renderA(){
   ['av0','av30','av60','av90'].forEach((id,i)=>document.getElementById(id).textContent=fv(vs[i],'LEI'));
   ['ac0','ac30','ac60','ac90'].forEach((id,i)=>document.getElementById(id).textContent=cs[i]+' facturi');
   if(aBI)aBI.destroy();
-  aBI=new Chart(document.getElementById('barChart').getContext('2d'),{type:'bar',data:{labels:['0-30 zile','31-60 zile','61-90 zile','90+ zile'],datasets:[{label:'Rest plata (LEI)',data:vs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},onClick:function(e,els){if(els.length)filterFact(els[0].index);},scales:{y:{ticks:{font:{family:'DM Sans',size:11}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}}}}});
+  aBI=new Chart(document.getElementById('barChart').getContext('2d'),{type:'bar',data:{labels:['0-30 zile','31-60 zile','61-90 zile','90+ zile'],datasets:[{label:'Rest plata (LEI)',data:vs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{family:'DM Sans',size:11}},grid:{color:'rgba(0,0,0,0.05)'}},x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}}}}});
   if(aPI)aPI.destroy();
-  aPI=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'pie',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:cs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}},onClick:function(e,els){if(els.length)filterFact(els[0].index);}}});
+  aPI=new Chart(document.getElementById('pieChart').getContext('2d'),{type:'pie',data:{labels:['0-30','31-60','61-90','90+'],datasets:[{data:cs,backgroundColor:['#C0DD97','#FAC775','#F0997B','#F7C1C1'],borderColor:['#3B6D11','#854F0B','#993C1D','#A32D2D'],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{family:'DM Sans',size:11},padding:10}}}}});
   // Aging table per partner using PD
   const tb=document.getElementById('tAging');
   if(!PD.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="etl">Nicio data</div></div></td></tr>';return;}
@@ -2047,8 +1724,7 @@ function renderRemindere(){
     if(stF === 'done'     && r.status !== 'done')     return false;
     if(stF === 'overdue'  && r.status !== 'overdue')  return false;
     return true;
-  });
-  if(window._rSort){filtered.sort(window._rSort);}else{filtered.sort((a,b) => a.data.localeCompare(b.data));}
+  }).sort((a,b) => a.data.localeCompare(b.data));
 
   document.getElementById('reminderCount').textContent =
     filtered.length + ' remindere' +
@@ -2137,7 +1813,7 @@ function openFisa(nm){
 
   // Title
   document.getElementById('fisaTitle').textContent = nm;
-  document.getElementById('fisaSubtitle').textContent = (pd.cui||'-') + ' · ' + (pd.judet||'-') + ((pd.telefon||pd.tel)?' · '+(pd.telefon||pd.tel):'');
+  document.getElementById('fisaSubtitle').textContent = (pd.cui||'-') + ' · ' + (pd.judet||'-') + (pd.tel?' · '+pd.tel:'');
 
   // Notif button
   document.getElementById('fisaNotifBtn').onclick = ()=>{
@@ -2195,7 +1871,7 @@ function _renderFisaFacturi(nm, desf){
         <thead><tr>
           <th>Nr. Factura</th><th>Data emiterii</th><th>Data scadentei</th>
           <th>Zile dep.</th><th>Total factura</th><th>Incasat</th><th>Rest plata</th>
-          <th>Valuta</th><th>Status</th><th>Agent</th><th>Text document</th>
+          <th>Valuta</th><th>Status</th><th>Agent</th>
         </tr></thead>
         <tbody>
           ${desf.facturi.map(f=>`<tr style="${f.status==='partial'?'background:rgba(133,79,11,0.04)':''}">
@@ -2209,7 +1885,6 @@ function _renderFisaFacturi(nm, desf){
             <td style="font-size:12px">${f.m}</td>
             <td>${f.status==='partial'?'<span class="badge ba">Partial platit</span>':'<span class="badge br">Neincasat</span>'}</td>
             <td style="font-size:12px;color:var(--t2)">${f.ag||'-'}</td>
-            <td style="font-size:11px;color:var(--t3);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${f.text_doc||''}">${f.text_doc||'-'}</td>
           </tr>`).join('')}
         </tbody>
         <tfoot><tr style="background:var(--bg);border-top:2px solid var(--bmed)">
@@ -2217,7 +1892,7 @@ function _renderFisaFacturi(nm, desf){
           <td><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.total,0),'')}</span></td>
           <td style="color:var(--green)"><span class="amt" style="font-size:12px">${fv(desf.facturi.reduce((s,f)=>s+f.incasat,0),'')}</span></td>
           <td><span class="amt amtr" style="font-weight:700">${fv(d.sold_net||dRestTotal,'')}</span></td>
-          <td colspan="4"></td>
+          <td colspan="3"></td>
         </tr></tfoot>
       </table>
     </div>`;
@@ -2355,8 +2030,7 @@ function renderAlerts(){
     var dateLabel = isOverdue
       ? '<span style="background:var(--rbg);color:var(--red);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">DEP\u0102\u015eIT ' + dateFmt + '</span>'
       : '<span style="background:var(--pbg);color:var(--ptext);padding:1px 6px;border-radius:10px;font-size:10px;font-weight:500">AZI</span>';
-    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:0.5px solid var(--border);background:' + bgColor + ';transition:background .12s;cursor:pointer" ' +
-      'onclick="goToJurnal(\'' + r.partener.replace(/'/g, "\\\\'" ) + '\')" ' +
+    return '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-bottom:0.5px solid var(--border);background:' + bgColor + ';transition:background .12s" ' +
       'onmouseover="this.style.background=\'var(--bg)\'" onmouseout="this.style.background=\'' + bgColor + '\'">' +
       '<div style="width:7px;height:7px;border-radius:50%;background:' + dotColor + ';margin-top:5px;flex-shrink:0"></div>' +
       '<div style="flex:1;min-width:0">' +
@@ -2424,7 +2098,7 @@ function generateNotifPDF(nm, nota){
     <p style="margin-top:20px">Va rugam sa efectuati plata in termen de <strong>5 zile lucratoare</strong> de la primirea prezentei notificari.</p>
     <p>In caz de neconformare, vom fi nevoiti sa luam masuri suplimentare de recuperare a creantei.</p>
     <div class="footer">
-      Agent: ${nota.agent} &nbsp;&middot;&nbsp; Data: ${today} &nbsp;&middot;&nbsp; CRM Restante v2.2
+      Agent: ${nota.agent} &nbsp;&middot;&nbsp; Data: ${today} &nbsp;&middot;&nbsp; CRM Restante v2.0
     </div>
     </body></html>`;
 
@@ -2442,89 +2116,11 @@ function exportData(){
   if(!D.length){toast('Nicio data de exportat','error');return;}
   const h=['Nr. Factura','Partener','CUI','Judet','Adresa','Telefon','Data emiterii','Data scadentei','Zile depasire','Total factura','Rest plata','Valuta','Agent','Risc'];
   const riskLbl=z=>z>=90?'Critic':z>=60?'Ridicat':z>=30?'Moderat':z>0?'Recent':'La termen';
-  const rows=D.map(r=>[r.nr,r.p,r.cui,r.judet,r.adresa,r.telefon||r.tel,r.de,r.ds,r.z,r.v,r.rest,r.m,r.ag,riskLbl(r.z)]);
+  const rows=D.map(r=>[r.nr,r.p,r.cui,r.judet,r.adresa,r.tel,r.de,r.ds,r.z,r.v,r.rest,r.m,r.ag,riskLbl(r.z)]);
   const csv=[h,...rows].map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
   a.download='crm-restantieri-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
   toast('Export CSV generat','success');
-}
-
-function exportJurnalExcel(){
-  if(!window.XLSX){toast('Se incarca libraria Excel...','');return;}
-  toast('Se pregateste exportul...','');
-
-  const tipLbl = {
-    apel:'Apel',email:'Email',whatsapp:'WhatsApp',
-    intalnire:'Întâlnire',promisiune:'Promisiune plată',
-    nerespectata:'Promisiune nerespectată',interna:'Notă internă',
-    notif_interna:'Notă internă',notif_externa:'Notificare externă',
-    notificare:'Notificare'
-  };
-
-  function buildExcel(jurnalData){
-    const wb = XLSX.utils.book_new();
-
-    // ── Foaia 1: Jurnal interacțiuni ──────────────────────────────────
-    const jRows = [['Partener','Data','Tip','Agent','Nota']];
-    Object.keys(jurnalData).sort().forEach(partener => {
-      const note = jurnalData[partener] || [];
-      note.forEach(n => {
-        const data = n.date ? new Date(n.date).toLocaleString('ro-RO') : '';
-        const tip = tipLbl[n.type] || n.type || '';
-        jRows.push([partener, data, tip, n.agent||'', n.text||'']);
-      });
-    });
-    const wsJ = XLSX.utils.aoa_to_sheet(jRows);
-    wsJ['!cols'] = [{wch:35},{wch:20},{wch:24},{wch:25},{wch:80}];
-    XLSX.utils.book_append_sheet(wb, wsJ, 'Jurnal interactiuni');
-
-    // ── Foaia 2: Remindere ─────────────────────────────────────────────
-    // Structura reala: {data, partener, agent, actiune, context, creat, status}
-    const rRows = [['Partener','Data follow-up','Agent','Actiune','Nota/Context','Status','Creat la']];
-    const remList = (window.REMINDERE || []).slice().sort((a,b)=>{
-      return new Date(a.data||0) - new Date(b.data||0);
-    });
-    remList.forEach(r => {
-      const dataFU = r.data ? new Date(r.data).toLocaleDateString('ro-RO') : '';
-      const creatLa = r.creat ? new Date(r.creat).toLocaleString('ro-RO') : '';
-      const status = r.status==='done' ? 'Rezolvat' : r.status==='overdue' ? 'Depășit' : 'În așteptare';
-      rRows.push([
-        r.partener||'', dataFU, r.agent||'',
-        r.actiune||'', r.context||'', status, creatLa
-      ]);
-    });
-    const wsR = XLSX.utils.aoa_to_sheet(rRows);
-    wsR['!cols'] = [{wch:35},{wch:16},{wch:25},{wch:25},{wch:60},{wch:14},{wch:20}];
-    XLSX.utils.book_append_sheet(wb, wsR, 'Remindere');
-
-    // ── Download ───────────────────────────────────────────────────────
-    const fname = 'crm-jurnal-' + new Date().toISOString().slice(0,10) + '.xlsx';
-    XLSX.writeFile(wb, fname);
-    const nrNote = jRows.length - 1;
-    const nrRem = rRows.length - 1;
-    toast('Export generat: ' + nrNote + ' note jurnal, ' + nrRem + ' remindere','success');
-  }
-
-  // Citim tot jurnalul direct din Firestore pentru date complete
-  if(window._fbLoaded && window.db){
-    window.db.collection('jurnal').get().then(snapshot => {
-      const jurnalComplet = {};
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if(data.partener && Array.isArray(data.note)){
-          jurnalComplet[data.partener] = data.note;
-        }
-      });
-      buildExcel(jurnalComplet);
-    }).catch(e => {
-      console.warn('Firestore jurnal read error:', e);
-      // Fallback pe J din memorie
-      buildExcel(J);
-    });
-  } else {
-    // Fallback pe J din memorie
-    buildExcel(J);
-  }
 }
 
 var DESF = {"FLOREA MARIAN": {"facturi": [{"nr": "RA-7291", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "Badescu Petre": {"facturi": [{"nr": "RA-7144", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "SPITALUL CLINIC DE NEUROPSIHIATRIE": {"facturi": [{"nr": "RA-7249", "de": "19/05/2026", "ds": "18/07/2026", "z": -55, "total": 592.9, "incasat": 0, "rest": 592.9, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "MIHAI ION-CRISTIAN": {"facturi": [{"nr": "RA-1558", "de": "23/10/2024", "ds": "30/10/2024", "z": 571, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-1816", "de": "25/11/2024", "ds": "02/12/2024", "z": 538, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-2080", "de": "19/12/2024", "ds": "26/12/2024", "z": 514, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-2276", "de": "21/01/2025", "ds": "28/01/2025", "z": 481, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "VITA TITEL": {"facturi": [{"nr": "RA-7155", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CRACIUN MARIAN": {"facturi": [{"nr": "RA-7300", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "MISTRAL PLUS MOD SRL": {"facturi": [{"nr": "RA-5164", "de": "13/11/2025", "ds": "23/12/2025", "z": 152, "total": 150.0, "incasat": 0, "rest": 150.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITALUL JUDETEAN DE URGENTA RESITA": {"facturi": [{"nr": "RA-6967", "de": "28/04/2026", "ds": "27/06/2026", "z": -34, "total": 726.0, "incasat": 0, "rest": 726.0, "m": "LEI", "ag": "Alexandru Gunea", "status": "neincasat"}, {"nr": "RA-6968", "de": "28/04/2026", "ds": "27/06/2026", "z": -34, "total": 556.6, "incasat": 0, "rest": 556.6, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "SPIRIDON MARIAN-CRISTINEL": {"facturi": [{"nr": "RA-5846", "de": "26/01/2026", "ds": "02/02/2026", "z": 111, "total": 120.0, "incasat": 0, "rest": 120.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "VASILE LAURENTIU - CIPRIAN": {"facturi": [{"nr": "RA-6611", "de": "25/03/2026", "ds": "01/04/2026", "z": 53, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6612", "de": "25/03/2026", "ds": "01/04/2026", "z": 53, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-7009", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "ASOCIATIA 'DAVID SUNSHINE'": {"facturi": [{"nr": "RA-7243", "de": "19/05/2026", "ds": "18/06/2026", "z": -25, "total": 96.0, "incasat": 0, "rest": 96.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "RADELU MARIAN-ALEXANDRU": {"facturi": [{"nr": "RA-7259", "de": "20/05/2026", "ds": "09/06/2026", "z": -16, "total": 4200.0, "incasat": 0, "rest": 4200.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "DRAGHICI MIHAI NICUSOR": {"facturi": [{"nr": "RA-6373", "de": "10/03/2026", "ds": "17/03/2026", "z": 68, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6785", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7153", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE A JUDETULUI PRAHOVA": {"facturi": [{"nr": "RA-6310", "de": "05/03/2026", "ds": "04/04/2026", "z": 50, "total": 1923.0, "incasat": 1316.57, "rest": 606.43, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}, {"nr": "RA-6693", "de": "03/04/2026", "ds": "03/05/2026", "z": 21, "total": 479.0, "incasat": 0, "rest": 479.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7083", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 479.0, "incasat": 0, "rest": 479.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE A JUDETULUI GIURGIU": {"facturi": [{"nr": "1ST 5C-1132", "de": "04/05/2026", "ds": "04/05/2026", "z": 20, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7086", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 4913.0, "incasat": 0, "rest": 4913.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SPITALUL DE PNEUMOFTIZIOLOGIE LEORDENI": {"facturi": [{"nr": "RA-6545", "de": "23/03/2026", "ds": "22/05/2026", "z": 2, "total": 625.0, "incasat": 0, "rest": 625.0, "m": "LEI", "ag": "Alexandru Gunea", "status": "neincasat"}], "incasari": []}, "IMASOFT STUDIO SRL": {"facturi": [{"nr": "RA-7260", "de": "20/05/2026", "ds": "19/07/2026", "z": -56, "total": 150.0, "incasat": 0, "rest": 150.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE ARGES": {"facturi": [{"nr": "RA-6428", "de": "12/03/2026", "ds": "11/04/2026", "z": 43, "total": 53193.3, "incasat": 38194.57, "rest": 14998.73, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "partial"}, {"nr": "RA-6712", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 59354.76, "incasat": 0, "rest": 59354.76, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6713", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}, {"nr": "RA-6714", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}, {"nr": "RA-7108", "de": "08/05/2026", "ds": "07/06/2026", "z": -14, "total": 64363.09, "incasat": 0, "rest": 64363.09, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "TAFTA CORNELIU": {"facturi": [{"nr": "RA-7285", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "DINU IOANA": {"facturi": [{"nr": "RA-7289", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE A MUNICIPIULUI BUCURESTI": {"facturi": [{"nr": "RA-7090", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 554.0, "incasat": 0, "rest": 554.0, "m": "LEI", "ag": "ADMINISTRATOR SISTEM", "status": "neincasat"}, {"nr": "RA-7091", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 42419.62, "incasat": 0, "rest": 42419.62, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE A JUDETULUI ILFOV": {"facturi": [{"nr": "RA-7085", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 21336.67, "incasat": 0, "rest": 21336.67, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "Pál Marcell": {"facturi": [{"nr": "RA-4964", "de": "27/10/2025", "ds": "05/01/2026", "z": 139, "total": 129.84, "incasat": 0, "rest": 129.84, "m": "HUF", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "ZAFIU VASILE": {"facturi": [{"nr": "RA-7130", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "INCRUS SRL": {"facturi": [{"nr": "RA-6532", "de": "20/03/2026", "ds": "25/03/2026", "z": 60, "total": 4932.42, "incasat": 4859.44, "rest": 72.98, "m": "EUR", "ag": "Georgiana Nedelcu", "status": "partial"}], "incasari": [{"tip": "Banca", "data": "24/03/2026", "val": 4859.44, "m": "LEI"}]}, "CASA DE ASIGURARI DE SANATATE TELEORMAN": {"facturi": [{"nr": "RA-6694", "de": "03/04/2026", "ds": "03/05/2026", "z": 21, "total": 4576.6, "incasat": 4102.27, "rest": 474.33, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}, {"nr": "RA-7184", "de": "13/05/2026", "ds": "12/06/2026", "z": -19, "total": 5058.97, "incasat": 0, "rest": 5058.97, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "ILIE STEFAN MUGUREL": {"facturi": [{"nr": "RA-7113", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "Amarasteanu Florian": {"facturi": [{"nr": "RA-7179", "de": "12/05/2026", "ds": "11/06/2026", "z": -18, "total": 510.0, "incasat": 0, "rest": 510.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SERBAN VASILE": {"facturi": [{"nr": "RA-6447", "de": "12/03/2026", "ds": "13/03/2026", "z": 72, "total": 520.0, "incasat": 0, "rest": 520.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE NEAMT": {"facturi": [{"nr": "RA-7084", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 507.0, "incasat": 0, "rest": 507.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITALUL DE PNEUMOFTIZIOLOGIE CAMPULUNG": {"facturi": [{"nr": "RA-6819", "de": "14/04/2026", "ds": "13/06/2026", "z": -20, "total": 2018.28, "incasat": 0, "rest": 2018.28, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}, {"nr": "RA-7063", "de": "06/05/2026", "ds": "05/07/2026", "z": -42, "total": 2486.55, "incasat": 0, "rest": 2486.55, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "ANASTASESCU ANAIS-ANTONIA": {"facturi": [{"nr": "RA-5794", "de": "20/01/2026", "ds": "27/01/2026", "z": 117, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6608", "de": "25/03/2026", "ds": "01/04/2026", "z": 53, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "LEULESCU DRAGOS CORNELIU": {"facturi": [{"nr": "RA-6774", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 277.0, "incasat": 9.5, "rest": 267.5, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}, {"nr": "RA-7136", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 9.5, "rest": 267.5, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}], "incasari": [{"tip": "Banca", "data": "31/10/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "24/12/2024", "val": 13.0, "m": "LEI"}, {"tip": "Banca", "data": "18/01/2025", "val": 3.0, "m": "LEI"}]}, "LASZLO ZOLTAN": {"facturi": [{"nr": "RA-5269", "de": "24/11/2025", "ds": "24/11/2025", "z": 181, "total": 343.38, "incasat": 0, "rest": 343.38, "m": "HUF", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "AI CLINICAL RESEARCH S.R.L.": {"facturi": [{"nr": "RA-7151", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 1000.67, "incasat": 0, "rest": 1000.67, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "SMART BUSINESS COMPANY SRL": {"facturi": [{"nr": "RA-5808", "de": "20/01/2026", "ds": "20/04/2026", "z": 34, "total": 643.74, "incasat": 0, "rest": 643.74, "m": "EUR", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "INSTITUTUL REGIONAL DE GASTROENTEROLOGIE - HEPATOLOGIE PROF. DR. OCTAVIAN FODOR": {"facturi": [{"nr": "RA-6821", "de": "14/04/2026", "ds": "14/05/2026", "z": 10, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "Ungureanu-Mironov Paul": {"facturi": [{"nr": "RA-7304", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 353.0, "incasat": 0, "rest": 353.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "SPITAL DE PNEUMOFTIZIOLOGIE BACAU": {"facturi": [{"nr": "RA-6236", "de": "26/02/2026", "ds": "27/04/2026", "z": 27, "total": 2525.0, "incasat": 0, "rest": 2525.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-6551", "de": "23/03/2026", "ds": "22/05/2026", "z": 2, "total": 1009.14, "incasat": 0, "rest": 1009.14, "m": "LEI", "ag": "Alexandru Gunea", "status": "neincasat"}, {"nr": "RA-6549", "de": "23/03/2026", "ds": "22/05/2026", "z": 2, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-6550", "de": "23/03/2026", "ds": "22/05/2026", "z": 2, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-6854", "de": "17/04/2026", "ds": "16/06/2026", "z": -23, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-6855", "de": "17/04/2026", "ds": "16/06/2026", "z": -23, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7229", "de": "18/05/2026", "ds": "17/07/2026", "z": -54, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7230", "de": "18/05/2026", "ds": "17/07/2026", "z": -54, "total": 2522.85, "incasat": 0, "rest": 2522.85, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "FIFIITA BOGDAN GABRIEL": {"facturi": [{"nr": "RA-6746", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 230.0, "incasat": 80.0, "rest": 150.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}, {"nr": "RA-7111", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "MOLEA ADRIAN": {"facturi": [{"nr": "RA-6205", "de": "23/02/2026", "ds": "02/03/2026", "z": 83, "total": 277.0, "incasat": 27.0, "rest": 250.0, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6482", "de": "17/03/2026", "ds": "24/03/2026", "z": 61, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6991", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "GHEORGHE DUMITRU": {"facturi": [{"nr": "RA-7033", "de": "04/05/2026", "ds": "11/05/2026", "z": 13, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-7286", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "BORANGIC I. ROBERT": {"facturi": [{"nr": "RA-7303", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "GARDIAN EFORIA": {"facturi": [{"nr": "RA-7094", "de": "08/05/2026", "ds": "07/06/2026", "z": -14, "total": 200.0, "incasat": 0, "rest": 200.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "PANAIT  DIMITRIE-CEZAR": {"facturi": [{"nr": "RA-7307", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "GHEORGHE FLORIAN-IOAN": {"facturi": [{"nr": "RA-7297", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SPITALUL CLINIC DE PNEUMOFTIZIOLOGIE": {"facturi": [{"nr": "RA-6873", "de": "21/04/2026", "ds": "21/05/2026", "z": 3, "total": 121.0, "incasat": 0, "rest": 121.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CAZACU MIHAICA": {"facturi": [{"nr": "RA-7277", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "URSE GHEORGHE": {"facturi": [{"nr": "RA-7159", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 200.0, "incasat": 0, "rest": 200.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "GHEORGHE FLORIAN-MELTI": {"facturi": [{"nr": "RA-7295", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "COMAN VIOREL": {"facturi": [{"nr": "RA-7306", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 200.0, "incasat": 0, "rest": 200.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "HUCI CATINCA": {"facturi": [{"nr": "RA-7298", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "FATU ILIE-MITUS": {"facturi": [{"nr": "RA-5712", "de": "15/01/2026", "ds": "22/01/2026", "z": 122, "total": 277.0, "incasat": 0.2, "rest": 276.8, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6041", "de": "10/02/2026", "ds": "17/02/2026", "z": 96, "total": 277.0, "incasat": 0.2, "rest": 276.8, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6350", "de": "10/03/2026", "ds": "17/03/2026", "z": 68, "total": 277.0, "incasat": 0.2, "rest": 276.8, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6752", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 277.0, "incasat": 0.2, "rest": 276.8, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-7160", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0.2, "rest": 276.8, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}], "incasari": [{"tip": "Banca", "data": "25/07/2025", "val": 1.0, "m": "LEI"}]}, "SAVU ADRIAN-GABRIEL": {"facturi": [{"nr": "RA-7290", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 63.0, "rest": 214.0, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}], "incasari": [{"tip": "Banca", "data": "28/08/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/09/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "24/10/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/11/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "24/12/2024", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "23/01/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/02/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/03/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "05/05/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/05/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/06/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "25/07/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/08/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/09/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/10/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "23/12/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/11/2025", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "29/01/2026", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "26/02/2026", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "25/03/2026", "val": 3.0, "m": "LEI"}, {"tip": "Banca", "data": "27/04/2026", "val": 3.0, "m": "LEI"}]}, "SATEA ELENA": {"facturi": [{"nr": "RA-7293", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CARAMATESCU MIHAIL ALEXANDRU": {"facturi": [{"nr": "RA-7282", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "GHIZARI CRISTIAN": {"facturi": [{"nr": "RA-7284", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SPITALUL JUDETEAN DE URGENTA PITESTI": {"facturi": [{"nr": "RA-6286", "de": "04/03/2026", "ds": "03/05/2026", "z": 21, "total": 1513.71, "incasat": 0, "rest": 1513.71, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}, {"nr": "RA-6822", "de": "14/04/2026", "ds": "13/06/2026", "z": -20, "total": 1513.71, "incasat": 0, "rest": 1513.71, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}, {"nr": "RA-6839", "de": "15/04/2026", "ds": "14/06/2026", "z": -21, "total": 508.2, "incasat": 0, "rest": 508.2, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}, {"nr": "RA-7064", "de": "06/05/2026", "ds": "05/07/2026", "z": -42, "total": 745.97, "incasat": 0, "rest": 745.97, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "TATARUS DANIEL-STEFAN": {"facturi": [{"nr": "RA-7279", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "Csenkey Tamás": {"facturi": [{"nr": "RA-5363", "de": "04/12/2025", "ds": "02/02/2026", "z": 111, "total": 105.36, "incasat": 0, "rest": 105.36, "m": "HUF", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "MED LIFE SA": {"facturi": [{"nr": "RA-1686", "de": "08/11/2024", "ds": "28/11/2024", "z": 542, "total": 650.93, "incasat": 650.0, "rest": 0.93, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}, {"nr": "RA-7172", "de": "12/05/2026", "ds": "11/06/2026", "z": -18, "total": 12474.0, "incasat": 0, "rest": 12474.0, "m": "LEI", "ag": "Alexandru Gunea", "status": "neincasat"}], "incasari": []}, "CARDIO-REC SRL": {"facturi": [{"nr": "RA-7082", "de": "07/05/2026", "ds": "27/05/2026", "z": -3, "total": 505.0, "incasat": 0, "rest": 505.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "PRIMERA MED TECHNOLOGY SRL": {"facturi": [{"nr": "RA-7092", "de": "08/05/2026", "ds": "13/05/2026", "z": 11, "total": 2655.3, "incasat": 0, "rest": 2655.3, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "PATRU RADITA": {"facturi": [{"nr": "RA-7317", "de": "22/05/2026", "ds": "21/07/2026", "z": -58, "total": 3600.0, "incasat": 0, "rest": 3600.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "Melintescu Ioana": {"facturi": [{"nr": "RA-7219", "de": "18/05/2026", "ds": "17/06/2026", "z": -24, "total": 82.0, "incasat": 0, "rest": 82.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "VACAROIU CORNELIA": {"facturi": [{"nr": "RA-7264", "de": "21/05/2026", "ds": "28/05/2026", "z": -4, "total": 580.0, "incasat": 0, "rest": 580.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SUCIU DANIEL-LEONARD": {"facturi": [{"nr": "RA-7281", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SMARANDA GHEORGHE-MARCEL": {"facturi": [{"nr": "RA-5782", "de": "20/01/2026", "ds": "27/01/2026", "z": 117, "total": 277.0, "incasat": 31.0, "rest": 246.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "partial"}, {"nr": "RA-6197", "de": "23/02/2026", "ds": "02/03/2026", "z": 83, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6474", "de": "17/03/2026", "ds": "24/03/2026", "z": 61, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-7006", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "SPITALUL ' PROF. DR. EDUARD APETREI ' BUHUSI": {"facturi": [{"nr": "RA-6228", "de": "25/02/2026", "ds": "26/04/2026", "z": 28, "total": 504.57, "incasat": 0, "rest": 504.57, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-6626", "de": "30/03/2026", "ds": "29/05/2026", "z": -5, "total": 504.57, "incasat": 0, "rest": 504.57, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7246", "de": "19/05/2026", "ds": "18/07/2026", "z": -55, "total": 497.31, "incasat": 0, "rest": 497.31, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "MATEI VALENTIN- ROMULUS": {"facturi": [{"nr": "RA-6322", "de": "06/03/2026", "ds": "08/03/2026", "z": 77, "total": 520.0, "incasat": 0, "rest": 520.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE BRASOV": {"facturi": [{"nr": "RA-7089", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 212.37, "incasat": 0, "rest": 212.37, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "Panoiu Valeriu": {"facturi": [{"nr": "RA-5349", "de": "03/12/2025", "ds": "01/02/2026", "z": 112, "total": 150.0, "incasat": 0, "rest": 150.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE A JUDETULUI BUZAU": {"facturi": [{"nr": "RA-6708", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 2383.0, "incasat": 0, "rest": 2383.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7199", "de": "13/05/2026", "ds": "12/06/2026", "z": -19, "total": 460.0, "incasat": 0, "rest": 460.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "Iatagan Marius - Ionu": {"facturi": [{"nr": "RA-7141", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "VAIDA MARIO-ADRIAN": {"facturi": [{"nr": "RA-7117", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CASA JUDETEANA DE ASIGURARI DE SANATATE": {"facturi": [{"nr": "RA-6707", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 2433.13, "incasat": 1848.47, "rest": 584.66, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-7088", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 3374.93, "incasat": 0, "rest": 3374.93, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "PIRVU LUMINITA": {"facturi": [{"nr": "RA-6203", "de": "23/02/2026", "ds": "02/03/2026", "z": 83, "total": 230.0, "incasat": 7.67, "rest": 222.33, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}, {"nr": "RA-6480", "de": "17/03/2026", "ds": "24/03/2026", "z": 61, "total": 230.0, "incasat": 7.67, "rest": 222.33, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}, {"nr": "RA-7004", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 230.0, "incasat": 7.67, "rest": 222.33, "m": "LEI", "ag": "Dorin Dumitru", "status": "partial"}], "incasari": [{"tip": "Banca", "data": "21/02/2025", "val": 23.0, "m": "LEI"}]}, "Bojidar Karakashev": {"facturi": [{"nr": "RA-5463", "de": "10/12/2025", "ds": "08/02/2026", "z": 105, "total": 346.24, "incasat": 0, "rest": 346.24, "m": "BGN", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITATUL UNIVERSITAR DE URGENTA ELIAS": {"facturi": [{"nr": "RA-6142", "de": "12/02/2026", "ds": "13/04/2026", "z": 41, "total": 2420.0, "incasat": 0, "rest": 2420.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}, {"nr": "RA-6334", "de": "09/03/2026", "ds": "08/05/2026", "z": 16, "total": 3531.99, "incasat": 0, "rest": 3531.99, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA ASIGURARILOR DE SANATATE A APARARII,ORDINII PUBLICE,SIGURANTEI NATIONALE SI": {"facturi": [{"nr": "RA-6675", "de": "02/04/2026", "ds": "02/05/2026", "z": 22, "total": 8608.9, "incasat": 0, "rest": 8608.9, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7068", "de": "06/05/2026", "ds": "05/06/2026", "z": -12, "total": 9833.56, "incasat": 0, "rest": 9833.56, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7168", "de": "12/05/2026", "ds": "11/06/2026", "z": -18, "total": 554.0, "incasat": 0, "rest": 554.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "FAMILY CARE CLINIC S.R.L.": {"facturi": [{"nr": "RA-7256", "de": "20/05/2026", "ds": "21/05/2026", "z": 3, "total": 1130.0, "incasat": 505.0, "rest": 625.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}], "incasari": []}, "STANESCU IONUT": {"facturi": [{"nr": "RA-7215", "de": "18/05/2026", "ds": "18/05/2026", "z": 6, "total": 690.0, "incasat": 170.0, "rest": 520.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}], "incasari": []}, "TUCA CONSTANTIN": {"facturi": [{"nr": "RA-6058", "de": "10/02/2026", "ds": "17/02/2026", "z": 96, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "AXENTE MIHAI- CRISTIAN": {"facturi": [{"nr": "RA-7119", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 327.0, "incasat": 0, "rest": 327.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SPITALUL DR. KARL DIEL JIMBOLIA": {"facturi": [{"nr": "RA-7060", "de": "06/05/2026", "ds": "05/07/2026", "z": -42, "total": 497.31, "incasat": 0, "rest": 497.31, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "ENACHE PAULINA": {"facturi": [{"nr": "RA-7292", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "SPITALUL UNIVERSITAR DE URGENTA BUCURESTI": {"facturi": [{"nr": "RA-6952", "de": "27/04/2026", "ds": "26/06/2026", "z": -33, "total": 5045.7, "incasat": 0, "rest": 5045.7, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "SPITALUL DE PNEUMOFTIZIOLOGIE": {"facturi": [{"nr": "RA-6881", "de": "21/04/2026", "ds": "20/06/2026", "z": -27, "total": 4973.1, "incasat": 0, "rest": 4973.1, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}, {"nr": "RA-7308", "de": "22/05/2026", "ds": "21/07/2026", "z": -58, "total": 1989.24, "incasat": 0, "rest": 1989.24, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "DUCMAN MIHAITA": {"facturi": [{"nr": "RA-5790", "de": "20/01/2026", "ds": "27/01/2026", "z": 117, "total": 230.0, "incasat": 130.0, "rest": 100.0, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6481", "de": "17/03/2026", "ds": "24/03/2026", "z": 61, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6985", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "POPESCU IULIAN-ANDREI": {"facturi": [{"nr": "RA-6586", "de": "24/03/2026", "ds": "31/03/2026", "z": 54, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6935", "de": "27/04/2026", "ds": "04/05/2026", "z": 20, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7299", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "TRENCHEA P. MIHAELA - CABINET MEDICAL INDIVIDUAL PNEUMOLOGIE": {"facturi": [{"nr": "RA-7069", "de": "06/05/2026", "ds": "21/05/2026", "z": 3, "total": 2020.0, "incasat": 0, "rest": 2020.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "ION ALEXANDRU-CATALIN": {"facturi": [{"nr": "RA-7278", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "DUMITRESCU ANCA": {"facturi": [{"nr": "RA-7266", "de": "21/05/2026", "ds": "20/06/2026", "z": -27, "total": 55.0, "incasat": 0, "rest": 55.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "Hencz László": {"facturi": [{"nr": "RA-4995", "de": "30/10/2025", "ds": "08/01/2026", "z": 136, "total": 365.04, "incasat": 0, "rest": 365.04, "m": "HUF", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITALUL MUNICIPAL 'DR. EUGEN NICOARA' REGHIN": {"facturi": [{"nr": "RA-7268", "de": "21/05/2026", "ds": "20/07/2026", "z": -57, "total": 994.62, "incasat": 0, "rest": 994.62, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "MARIN ALEXANDRU CRISTIAN": {"facturi": [{"nr": "RA-5865", "de": "26/01/2026", "ds": "02/02/2026", "z": 111, "total": 277.0, "incasat": 158.0, "rest": 119.0, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-6077", "de": "10/02/2026", "ds": "17/02/2026", "z": 96, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "MUSTAPHA ABDULAHI ABIODUN": {"facturi": [{"nr": "RA-6993", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "ADAR UNIC SOLUTIONS SRL": {"facturi": [{"nr": "RA-6863", "de": "20/04/2026", "ds": "21/04/2026", "z": 33, "total": 1359.0, "incasat": 1358.83, "rest": 0.17, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}], "incasari": []}, "NOSESCU ANDREI MIRCEA": {"facturi": [{"nr": "RA-7099", "de": "08/05/2026", "ds": "07/07/2026", "z": -44, "total": 4200.0, "incasat": 1400.0, "rest": 2800.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "partial"}], "incasari": []}, "POPA ADRIANA": {"facturi": [{"nr": "RA-7161", "de": "11/05/2026", "ds": "10/06/2026", "z": -17, "total": 200.0, "incasat": 0, "rest": 200.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "GHINEA GHEORGHE": {"facturi": [{"nr": "RA-6986", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6987", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "PAIUS FRANCESCA": {"facturi": [{"nr": "RA-7218", "de": "18/05/2026", "ds": "17/07/2026", "z": -54, "total": 510.0, "incasat": 0, "rest": 510.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CABINET MEDICAL INDIVIDUAL DR. SURDU CRISTINA": {"facturi": [{"nr": "RA-7248", "de": "19/05/2026", "ds": "18/06/2026", "z": -25, "total": 12999.14, "incasat": 0, "rest": 12999.14, "m": "LEI", "ag": "Alexandru Gunea", "status": "neincasat"}], "incasari": []}, "HERESCU MIHAI-EUGEN": {"facturi": [{"nr": "RA-6792", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7109", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE OLT": {"facturi": [{"nr": "RA-6704", "de": "06/04/2026", "ds": "06/05/2026", "z": 18, "total": 19756.36, "incasat": 16218.39, "rest": 3537.97, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "partial"}, {"nr": "RA-7182", "de": "13/05/2026", "ds": "12/06/2026", "z": -19, "total": 19858.86, "incasat": 0, "rest": 19858.86, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "SPITALUL JUDETEAN DE URGENTA BACAU": {"facturi": [{"nr": "RA-7262", "de": "20/05/2026", "ds": "19/07/2026", "z": -56, "total": 1001.88, "incasat": 0, "rest": 1001.88, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "PETRESCU MARIAN-ROBERT": {"facturi": [{"nr": "RA-7283", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SCHRAMKO CORNELIA": {"facturi": [{"nr": "RA-6593", "de": "24/03/2026", "ds": "24/03/2026", "z": 61, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6594", "de": "24/03/2026", "ds": "24/03/2026", "z": 61, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7008", "de": "29/04/2026", "ds": "06/05/2026", "z": 18, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "NECULA MARIAN": {"facturi": [{"nr": "RA-7043", "de": "05/05/2026", "ds": "07/05/2026", "z": 17, "total": 450.0, "incasat": 0, "rest": 450.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "UNGUREANU IONUT-ROMEO": {"facturi": [{"nr": "RA-5739", "de": "15/01/2026", "ds": "22/01/2026", "z": 122, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6095", "de": "10/02/2026", "ds": "17/02/2026", "z": 96, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6380", "de": "10/03/2026", "ds": "17/03/2026", "z": 68, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-6747", "de": "08/04/2026", "ds": "15/04/2026", "z": 39, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}, {"nr": "RA-7110", "de": "11/05/2026", "ds": "18/05/2026", "z": 6, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Gabriel Paduroiu", "status": "neincasat"}], "incasari": []}, "EVOREVO SRL": {"facturi": [{"nr": "RA-7178", "de": "12/05/2026", "ds": "22/05/2026", "z": 2, "total": 514.25, "incasat": 0, "rest": 514.25, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "TEODORESCU ROMICA": {"facturi": [{"nr": "RA-7296", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 2500.0, "incasat": 0, "rest": 2500.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "POPESCU GHEORGHE": {"facturi": [{"nr": "RA-5851", "de": "26/01/2026", "ds": "02/02/2026", "z": 111, "total": 120.0, "incasat": 0, "rest": 120.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "GIUSCA DANIEL": {"facturi": [{"nr": "RA-4739", "de": "08/10/2025", "ds": "15/10/2025", "z": 221, "total": 277.0, "incasat": 225.0, "rest": 52.0, "m": "LEI", "ag": "Dorin Lazar", "status": "partial"}, {"nr": "RA-5102", "de": "11/11/2025", "ds": "18/11/2025", "z": 187, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-5407", "de": "09/12/2025", "ds": "16/12/2025", "z": 159, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-5715", "de": "15/01/2026", "ds": "22/01/2026", "z": 122, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CABINET MEDICAL INDIVIDUAL DR  MARMANDIU V. RAZVAN-MIHAI": {"facturi": [{"nr": "RA-7316", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 102.0, "incasat": 0, "rest": 102.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "PETRESCU ALEXANDRU-CRISTIAN": {"facturi": [{"nr": "RA-7294", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "Fanica Aida - Andreea": {"facturi": [{"nr": "RA-5345", "de": "03/12/2025", "ds": "01/02/2026", "z": 112, "total": 175.45, "incasat": 0, "rest": 175.45, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "MUNTEANU ALEXANDRU": {"facturi": [{"nr": "RA-7301", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "GRIGORE MARIAN": {"facturi": [{"nr": "RA-7280", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 230.0, "incasat": 0, "rest": 230.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "PRO CARDIA SRL": {"facturi": [{"nr": "RA-7206", "de": "14/05/2026", "ds": "14/05/2026", "z": 10, "total": 115.0, "incasat": 0, "rest": 115.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "NASTASOIU FLORICA": {"facturi": [{"nr": "RA-7287", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 202.0, "incasat": 0, "rest": 202.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "PARASCHIV ADRIAN-CONSTANTIN": {"facturi": [{"nr": "RA-4963", "de": "27/10/2025", "ds": "03/11/2025", "z": 202, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "CASA DE ASIGURARI DE SANATATE DAMBOVITA": {"facturi": [{"nr": "RA-6695", "de": "03/04/2026", "ds": "03/05/2026", "z": 21, "total": 4604.0, "incasat": 1012.25, "rest": 3591.75, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "partial"}, {"nr": "RA-7087", "de": "07/05/2026", "ds": "06/06/2026", "z": -13, "total": 5197.17, "incasat": 0, "rest": 5197.17, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "HANGAN ANDREEA-SIMONA": {"facturi": [{"nr": "RA-7302", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "PAUNESCU BOGDAN": {"facturi": [{"nr": "RA-7276", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "CRASMARU FRANCISC": {"facturi": [{"nr": "RA-7305", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 277.0, "incasat": 0, "rest": 277.0, "m": "LEI", "ag": "Dorin Dumitru", "status": "neincasat"}], "incasari": []}, "Szucs Laszlo": {"facturi": [{"nr": "RA-5377", "de": "05/12/2025", "ds": "05/03/2026", "z": 80, "total": 436.1, "incasat": 0, "rest": 436.1, "m": "HUF", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITAL CLINIC JUDETEAN DE URGENTA BIHOR": {"facturi": [{"nr": "RA-7059", "de": "06/05/2026", "ds": "05/07/2026", "z": -42, "total": 1412.07, "incasat": 0, "rest": 1412.07, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "SANATORIUL DE PNEUMOFTIZIOLOGIE BRAD": {"facturi": [{"nr": "RA-7050", "de": "05/05/2026", "ds": "04/07/2026", "z": -41, "total": 1210.0, "incasat": 0, "rest": 1210.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "ION IULIANA-CORINA": {"facturi": [{"nr": "RA-6093", "de": "10/02/2026", "ds": "17/02/2026", "z": 96, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6589", "de": "24/03/2026", "ds": "31/03/2026", "z": 54, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-6938", "de": "27/04/2026", "ds": "04/05/2026", "z": 20, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7275", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "SPITALUL DE PNEUMOFTIZIOLOGIE CONSTANTIN ANASTASATU": {"facturi": [{"nr": "RA-6333", "de": "09/03/2026", "ds": "08/05/2026", "z": 16, "total": 11410.3, "incasat": 0, "rest": 11410.3, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}, "ALEXANDRU CONSTANTIN": {"facturi": [{"nr": "RA-6927", "de": "27/04/2026", "ds": "04/05/2026", "z": 20, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}, {"nr": "RA-7288", "de": "22/05/2026", "ds": "29/05/2026", "z": -5, "total": 400.0, "incasat": 0, "rest": 400.0, "m": "LEI", "ag": "Dorin Lazar", "status": "neincasat"}], "incasari": []}, "VOICA ANDREI": {"facturi": [{"nr": "RA-5303", "de": "26/11/2025", "ds": "25/01/2026", "z": 119, "total": 629.2, "incasat": 0, "rest": 629.2, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SB - CLINIQUE DIAGNOSTIC S.R.L.": {"facturi": [{"nr": "RA-7245", "de": "19/05/2026", "ds": "03/06/2026", "z": -10, "total": 589.0, "incasat": 0, "rest": 589.0, "m": "LEI", "ag": "Daniela Pagotto", "status": "neincasat"}], "incasari": []}, "SPITALUL MUNICIPAL SIGHETU MARMATIEI": {"facturi": [{"nr": "RA-7079", "de": "07/05/2026", "ds": "06/07/2026", "z": -43, "total": 726.0, "incasat": 0, "rest": 726.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7080", "de": "07/05/2026", "ds": "06/07/2026", "z": -43, "total": 169.4, "incasat": 0, "rest": 169.4, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}, {"nr": "RA-7081", "de": "07/05/2026", "ds": "06/07/2026", "z": -43, "total": 1936.0, "incasat": 0, "rest": 1936.0, "m": "LEI", "ag": "Georgiana Nedelcu", "status": "neincasat"}], "incasari": []}};
@@ -2535,7 +2131,83 @@ var DESF = {"FLOREA MARIAN": {"facturi": [{"nr": "RA-7291", "de": "22/05/2026", 
 
 })();
 </script>
+<!-- ═══ NOU: MODAL CONTRACT (citeste din colectia contracte dupa CNP) ═══ -->
+<div class="mbg" id="modalContract">
+  <div class="modal" style="width:620px">
+    <div class="mh"><span class="mtl" id="contractTitlu">📄 Detalii contract</span><button class="bcl" onclick="cm('modalContract')">&times;</button></div>
+    <div class="mb" id="contractBody" style="padding:20px">
+      <div style="text-align:center;color:var(--t3)">Se incarca...</div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="cm('modalContract')">Inchide</button>
+    </div>
+  </div>
+</div>
+<!-- ═══ SFARSIT MODAL CONTRACT ═══ -->
+
 <script>
+// ═══ NOU: VEZI CONTRACT — citeste din colectia 'contracte' dupa CNP ═══
+function showContract(cnp) {
+  var body = document.getElementById('contractBody');
+  var titlu = document.getElementById('contractTitlu');
+  body.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px">Se incarca contractul...</div>';
+  titlu.textContent = '📄 Detalii contract';
+  document.getElementById('modalContract').classList.add('open');
+
+  window.db.collection('contracte').doc(cnp).get().then(function(doc) {
+    if (!doc.exists) {
+      body.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="color:var(--t3);font-size:14px">Nu exista contract in sistem pentru CNP-ul <strong>' + cnp + '</strong></div><div style="color:var(--t3);font-size:12px;margin-top:8px">Contractul va aparea aici automat dupa ce este generat din aplicatia Contract Inchiriere.</div></div>';
+      return;
+    }
+    var c = doc.data();
+    titlu.textContent = '📄 Contract ' + (c.nr_contract || '-');
+    var rows = [
+      ['Nr. contract', c.nr_contract || '-'],
+      ['Data contract', c.data_contract || '-'],
+      ['Titular', (c.nume_titular || '') + ' ' + (c.prenume_titular || '')],
+      ['CNP', c.cnp_titular || '-'],
+      ['Telefon', c.telefon || '-'],
+      ['Email', c.email || '-'],
+      ['Adresa', [c.adresa, c.localitate, c.judet].filter(Boolean).join(', ') || '-'],
+      ['Serie CI', c.serie_ci || '-'],
+      ['Marca aparat', c.marca_aparat || '-'],
+      ['Serie aparat', c.serie_aparat || '-'],
+      ['Chirie lunara', c.chirie_lunara ? c.chirie_lunara + ' LEI' : '-'],
+      ['Valoare aparat', c.valoare_aparat ? c.valoare_aparat + ' LEI' : '-'],
+      ['Agent', c.agent || '-'],
+      ['Garantie', c.garantie ? 'Da' : 'Nu']
+    ];
+    if (c.f_nume || c.f_prenume || c.f_cnp) {
+      rows.push(['', '']);
+      rows.push(['FIDEIUSOR', '']);
+      rows.push(['Nume fideiusor', (c.f_nume || '') + ' ' + (c.f_prenume || '')]);
+      rows.push(['CNP fideiusor', c.f_cnp || '-']);
+      rows.push(['Telefon fideiusor', c.f_telefon || '-']);
+    }
+    var html = '<table style="width:100%;border-collapse:collapse;font-size:13px">';
+    rows.forEach(function(r) {
+      if (r[0] === '' && r[1] === '') {
+        html += '<tr><td colspan="2" style="padding:6px 0;border-bottom:1px solid var(--border)"></td></tr>';
+      } else if (r[1] === '') {
+        html += '<tr><td colspan="2" style="padding:10px 0 4px;font-weight:600;font-size:12px;color:var(--teal);letter-spacing:1px">' + r[0] + '</td></tr>';
+      } else {
+        html += '<tr><td style="padding:7px 12px 7px 0;color:var(--t3);font-size:12px;white-space:nowrap;width:140px">' + r[0] + '</td><td style="padding:7px 0;font-weight:500">' + r[1] + '</td></tr>';
+      }
+    });
+    html += '</table>';
+    if (c.observatii) {
+      html += '<div style="margin-top:16px;padding:10px 14px;background:var(--bg);border-radius:var(--rs);font-size:12px;color:var(--t2)"><strong>Observatii:</strong> ' + c.observatii + '</div>';
+    }
+    if (c.updatedAt) {
+      html += '<div style="margin-top:12px;font-size:11px;color:var(--t3);text-align:right">Ultima actualizare: ' + (c.updatedAt.toDate ? c.updatedAt.toDate().toLocaleString('ro-RO') : c.updatedAt) + '</div>';
+    }
+    body.innerHTML = html;
+  }).catch(function(e) {
+    body.innerHTML = '<div style="text-align:center;padding:40px;color:var(--red)">Eroare la citirea contractului: ' + e.message + '</div>';
+  });
+}
+// ═══ SFARSIT SHOWCONTRACT ═══
+
 // Nr somatie autoincrement din Firestore
 function getSomatieNr() {
   return new Promise(function(resolve) {
@@ -2572,64 +2244,33 @@ function openSomatie() {
     document.getElementById('somatieNr').value = nr + '/' + anCurent;
     document.getElementById('somatieData').value = new Date().toISOString().split('T')[0];
     document.getElementById('somatieSubtitle').textContent = nm + ' - Rest: ' + totalRest.toFixed(2) + ' LEI';
-
     var dataAzi = new Date().toLocaleDateString('ro-RO', {day:'2-digit',month:'2-digit',year:'numeric'});
     var adresaPartener = [p.tel, p.judet].filter(function(x){ return x && x.trim() && x.trim() !== '.'; }).join(', ');
-
     var listaFacturi = '';
     facturi.forEach(function(f) {
       var dsParts = f.ds ? f.ds.split('/') : null;
       var ds = dsParts ? dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2] : '-';
       listaFacturi += '  ' + (f.nr||'-') + ' | ' + parseFloat(f.v||0).toFixed(0) + ' Lei | ' + ds + ' | ' + parseFloat(f.rest||0).toFixed(0) + ' Lei\n';
     });
-
     var text = [
-      'Electromagnetica Business Park,',
-      'Bucuresti, Sector 5,',
-      'Calea Rahovei 266-268, Corp 2, Birou 12D',
-      'Tel: 031 436 91 12 | contact@1stmedica.ro | www.1stmedica.ro',
-      '',
-      'Somatie nr. ' + nr + '/' + anCurent + '   Data: ' + dataAzi,
-      '',
-      'CATRE: ' + nm,
-      adresaPartener || '',
-      p.cui ? 'CUI: ' + p.cui : '',
-      '',
-      'Subscrisa 1St Medica S.R.L. cu sediul in Bucuresti, str. Calea Rahovei nr. 266-268, Corp 2, etaj 2, Birou 12D, sector 5, reprezentata legal de dl. Dorin Dumitru-Didita in calitate de creditoare,',
-      '',
-      'In temeiul art. 1015 alin. (1) Cod Procedura Civila, va inaintam prezenta',
-      '',
-      'S O M A T I E',
-      '',
-      'prin care va solicitam ca, in termen de 15 (cincisprezece) zile de la primirea prezentei, sa procedati la plata catre subscrisa a urmatoarei sume:',
-      '',
-      '    ' + totalRest.toFixed(2) + ' Lei reprezentand debit restant aferent facturilor neachitate, astfel cum sunt descrise mai jos:',
-      '',
-      '  Factura | Suma facturata | Scadenta | Rest de plata',
-      listaFacturi,
-      'Ca urmare a serviciilor prestate de subscrisa, v-ati obligat la plata facturilor emise si necontestate conform contractului incheiat intre parti.',
-      '',
-      'Totodata, potrivit dispozitiilor Contractuale, in cazul in care Beneficiarul nu efectueaza plata la termenul convenit, acesta va datora subscrisei penalitati in cuantum de 0,2% pe zi de intarziere din valoarea sumei debitului restant, acestea calculandu-se din ziua imediat urmatoare datei scadente si pana la indeplinirea integrala a obligatiei.',
-      '',
-      'In consecinta, va punem in vedere ca, in termen de cel mult 15 (cincisprezece) zile, de la primirea prezentei, sa procedati la plata debitului restant in cuantum de ' + totalRest.toFixed(2) + ' Lei in Cont RON IBAN: RO08BTRLRONCRT00E1440702, deschis la Transilvania Bank, avand ca beneficiar pe 1ST MEDICA S.R.L.',
-      '',
-      'In situatia in care nu va veti conforma solicitarilor noastre, vom fi nevoiti sa consideram atitudinea dumneavoastra drept rea-credinta si sa continuam demersurile in instanta, ocazie cu care vom solicita daune interese (penalitatile de intarziere) pentru acoperirea prejudiciilor cauzate pentru neindeplinirea acestor obligatii.',
-      '',
-      'Totodata, pe langa aceste sume veti fi nevoiti sa suportati si cheltuielile de judecata ce includ taxele judiciare, onorariile de avocat, onorariul de executare si orice alte cheltuieli ocazionate de acest proces sau de executarea silita a obligatiilor ce va incumba.',
-      '',
-      'Subscrisa, nutrim speranta ca veti da curs prezentei solicitari, preintampinand astfel o situatie litigioasa nedorita de vreuna din parti.',
-      '',
-      'Pentru orice alte detalii referitoare la prezenta somatie, nu ezitati sa ne contactati.',
-      '',
-      '',
-      '1ST MEDICA S.R.L.',
-      'prin',
-      'Dorin Dumitru-Didita',
-      'Administrator',
-      'contact@1stmedica.ro',
-      '031.436.91.12'
+      'Electromagnetica Business Park,','Bucuresti, Sector 5,','Calea Rahovei 266-268, Corp 2, Birou 12D',
+      'Tel: 031 436 91 12 | contact@1stmedica.ro | www.1stmedica.ro','',
+      'Somatie nr. ' + nr + '/' + anCurent + '   Data: ' + dataAzi,'','CATRE: ' + nm,
+      adresaPartener || '', p.cui ? 'CUI: ' + p.cui : '','',
+      'Subscrisa 1St Medica S.R.L. cu sediul in Bucuresti, str. Calea Rahovei nr. 266-268, Corp 2, etaj 2, Birou 12D, sector 5, reprezentata legal de dl. Dorin Dumitru-Didita in calitate de creditoare,','',
+      'In temeiul art. 1015 alin. (1) Cod Procedura Civila, va inaintam prezenta','','S O M A T I E','',
+      'prin care va solicitam ca, in termen de 15 (cincisprezece) zile de la primirea prezentei, sa procedati la plata catre subscrisa a urmatoarei sume:','',
+      '    ' + totalRest.toFixed(2) + ' Lei reprezentand debit restant aferent facturilor neachitate, astfel cum sunt descrise mai jos:','',
+      '  Factura | Suma facturata | Scadenta | Rest de plata', listaFacturi,
+      'Ca urmare a serviciilor prestate de subscrisa, v-ati obligat la plata facturilor emise si necontestate conform contractului incheiat intre parti.','',
+      'Totodata, potrivit dispozitiilor Contractuale, in cazul in care Beneficiarul nu efectueaza plata la termenul convenit, acesta va datora subscrisei penalitati in cuantum de 0,2% pe zi de intarziere din valoarea sumei debitului restant, acestea calculandu-se din ziua imediat urmatoare datei scadente si pana la indeplinirea integrala a obligatiei.','',
+      'In consecinta, va punem in vedere ca, in termen de cel mult 15 (cincisprezece) zile, de la primirea prezentei, sa procedati la plata debitului restant in cuantum de ' + totalRest.toFixed(2) + ' Lei in Cont RON IBAN: RO08BTRLRONCRT00E1440702, deschis la Transilvania Bank, avand ca beneficiar pe 1ST MEDICA S.R.L.','',
+      'In situatia in care nu va veti conforma solicitarilor noastre, vom fi nevoiti sa consideram atitudinea dumneavoastra drept rea-credinta si sa continuam demersurile in instanta, ocazie cu care vom solicita daune interese (penalitatile de intarziere) pentru acoperirea prejudiciilor cauzate pentru neindeplinirea acestor obligatii.','',
+      'Totodata, pe langa aceste sume veti fi nevoiti sa suportati si cheltuielile de judecata ce includ taxele judiciare, onorariile de avocat, onorariul de executare si orice alte cheltuieli ocazionate de acest proces sau de executarea silita a obligatiilor ce va incumba.','',
+      'Subscrisa, nutrim speranta ca veti da curs prezentei solicitari, preintampinand astfel o situatie litigioasa nedorita de vreuna din parti.','',
+      'Pentru orice alte detalii referitoare la prezenta somatie, nu ezitati sa ne contactati.','','',
+      '1ST MEDICA S.R.L.','prin','Dorin Dumitru-Didita','Administrator','contact@1stmedica.ro','031.436.91.12'
     ].join('\n');
-
     document.getElementById('somatieText').value = text;
     document.getElementById('somatieModal').style.display = 'flex';
   });
@@ -2647,134 +2288,29 @@ function genereazaSomatieWord() {
   if (!textSom) { toast('Textul somatiei este gol', 'error'); return; }
   var btn = event.target;
   btn.disabled = true; btn.textContent = 'Se genereaza...';
-
   var p = PD.find(function(x){ return x.p === nm; }) || {};
   var facturi = (D || []).filter(function(f){ return f.p === nm && parseFloat(f.rest || 0) > 0; });
 
   function doDownload() {
-    var Document = docx.Document, Packer = docx.Packer, Paragraph = docx.Paragraph,
-        TextRun = docx.TextRun, AlignmentType = docx.AlignmentType,
-        Table = docx.Table, TableRow = docx.TableRow, TableCell = docx.TableCell,
-        WidthType = docx.WidthType, BorderStyle = docx.BorderStyle, ShadingType = docx.ShadingType,
-        VerticalAlign = docx.VerticalAlign;
-
-    var border = { style: BorderStyle.SINGLE, size: 1, color: 'AAAAAA' };
-    var borders = { top: border, bottom: border, left: border, right: border };
-
-    function cell(text, bold, bg) {
-      return new TableCell({
-        borders: borders,
-        shading: bg ? { fill: bg, type: ShadingType.CLEAR } : undefined,
-        margins: { top: 80, bottom: 80, left: 120, right: 120 },
-        children: [new Paragraph({
-          children: [new TextRun({ text: text, font: 'Arial', size: 20, bold: bold || false })]
-        })]
-      });
+    var Document=docx.Document,Packer=docx.Packer,Paragraph=docx.Paragraph,TextRun=docx.TextRun,AlignmentType=docx.AlignmentType,Table=docx.Table,TableRow=docx.TableRow,TableCell=docx.TableCell,WidthType=docx.WidthType,BorderStyle=docx.BorderStyle,ShadingType=docx.ShadingType;
+    var border={style:BorderStyle.SINGLE,size:1,color:'AAAAAA'};var borders={top:border,bottom:border,left:border,right:border};
+    function cell(text,bold,bg){return new TableCell({borders:borders,shading:bg?{fill:bg,type:ShadingType.CLEAR}:undefined,margins:{top:80,bottom:80,left:120,right:120},children:[new Paragraph({children:[new TextRun({text:text,font:'Arial',size:20,bold:bold||false})]})]});}
+    var headerRow=new TableRow({children:[cell('Nr. Factura',true,'E8F0FE'),cell('Suma facturata',true,'E8F0FE'),cell('Scadenta',true,'E8F0FE'),cell('Rest de plata',true,'E8F0FE')]});
+    var dataRows=facturi.map(function(f){var dsParts=f.ds?f.ds.split('/'):null;var ds=dsParts?dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2]:'-';return new TableRow({children:[cell(f.nr||'-',false),cell(parseFloat(f.v||0).toFixed(2)+' Lei',false),cell(ds,false),cell(parseFloat(f.rest||0).toFixed(2)+' Lei',false)]});});
+    var tabelFacturi=new Table({width:{size:9026,type:WidthType.DXA},columnWidths:[2256,2256,2257,2257],rows:[headerRow].concat(dataRows)});
+    var linii=textSom.split('\n');var children=[];
+    for(var i=0;i<linii.length;i++){var linie=linii[i];var trimmed=linie.trim();
+      if(trimmed.indexOf('Factura | Suma')===0){children.push(tabelFacturi);children.push(new Paragraph({spacing:{after:160},children:[]}));while(i+1<linii.length&&linii[i+1].indexOf('|')!==-1)i++;continue;}
+      var isTitlu=trimmed==='S O M A T I E';var isAntet=i<4;var isSomNr=trimmed.indexOf('Somatie nr.')===0;var isCatre=trimmed.indexOf('CATRE:')===0;var isSemnatura=['1ST MEDICA S.R.L.','prin','Dorin Dumitru-Didita','Administrator'].indexOf(trimmed)!==-1;var isSubtotal=trimmed.indexOf('Lei reprezentand debit')!==-1;
+      children.push(new Paragraph({alignment:isTitlu?AlignmentType.CENTER:(isAntet?AlignmentType.RIGHT:AlignmentType.LEFT),spacing:{after:trimmed===''?120:160},children:[new TextRun({text:linie,font:'Arial',size:isTitlu?28:(isAntet?18:22),bold:isTitlu||isSomNr||isCatre||isSemnatura||isSubtotal})]}));
     }
-
-    // Header tabel
-    var headerRow = new TableRow({
-      children: [
-        cell('Nr. Factura', true, 'E8F0FE'),
-        cell('Suma facturata', true, 'E8F0FE'),
-        cell('Scadenta', true, 'E8F0FE'),
-        cell('Rest de plata', true, 'E8F0FE')
-      ]
-    });
-
-    var dataRows = facturi.map(function(f) {
-      var dsParts = f.ds ? f.ds.split('/') : null;
-      var ds = dsParts ? dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2] : '-';
-      return new TableRow({
-        children: [
-          cell(f.nr || '-', false),
-          cell(parseFloat(f.v||0).toFixed(2) + ' Lei', false),
-          cell(ds, false),
-          cell(parseFloat(f.rest||0).toFixed(2) + ' Lei', false)
-        ]
-      });
-    });
-
-    var tabelFacturi = new Table({
-      width: { size: 9026, type: WidthType.DXA },
-      columnWidths: [2256, 2256, 2257, 2257],
-      rows: [headerRow].concat(dataRows)
-    });
-
-    // Construieste paragrafele din text, inlocuind sectiunea cu tabelul
-    var linii = textSom.split('\n');
-    var children = [];
-    var skipTabel = false;
-
-    for (var i = 0; i < linii.length; i++) {
-      var linie = linii[i];
-      var trimmed = linie.trim();
-
-      // Detecteaza sectiunea tabel (header + randuri cu |)
-      if (trimmed.indexOf('Factura | Suma') === 0) {
-        children.push(tabelFacturi);
-        children.push(new Paragraph({ spacing: { after: 160 }, children: [] }));
-        // Sari peste randurile cu | din text
-        while (i + 1 < linii.length && linii[i+1].indexOf('|') !== -1) i++;
-        continue;
-      }
-
-      var isTitlu = trimmed === 'S O M A T I E';
-      var isAntet = i < 4;
-      var isSomNr = trimmed.indexOf('Somatie nr.') === 0;
-      var isCatre = trimmed.indexOf('CATRE:') === 0;
-      var isSemnatura = ['1ST MEDICA S.R.L.', 'prin', 'Dorin Dumitru-Didita', 'Administrator'].indexOf(trimmed) !== -1;
-      var isSubtotal = trimmed.indexOf('Lei reprezentand debit') !== -1;
-
-      children.push(new Paragraph({
-        alignment: isTitlu ? AlignmentType.CENTER : (isAntet ? AlignmentType.RIGHT : AlignmentType.LEFT),
-        spacing: { after: trimmed === '' ? 120 : 160 },
-        children: [new TextRun({
-          text: linie,
-          font: 'Arial',
-          size: isTitlu ? 28 : (isAntet ? 18 : 22),
-          bold: isTitlu || isSomNr || isCatre || isSemnatura || isSubtotal
-        })]
-      }));
-    }
-
-    var doc = new Document({
-      sections: [{
-        properties: {
-          page: {
-            size: { width: 11906, height: 16838 },
-            margin: { top: 720, right: 1134, bottom: 720, left: 1134 }
-          }
-        },
-        children: children
-      }]
-    });
-
-    Packer.toBlob(doc).then(function(blob) {
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a'); a.href = url;
-      a.download = 'Somatie_' + nrSom.replace(/\//g,'_') + '_' + nm.replace(/[^a-zA-Z0-9]/g,'_') + '.docx';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-      if (!J[nm]) J[nm] = [];
-      var ag = (window.currentUser && window.currentUser.email) || 'Sistem';
-      J[nm].push({ id: uid(), type: 'notif_interna', text: 'Somatie nr. ' + nrSom + ' generata.', date: new Date().toISOString(), agent: ag });
-      jSave();
-      incrementSomatieNr();
-      toast('Somatie generata!', 'success');
-      closeSomatie();
-      btn.disabled = false; btn.textContent = 'Genereaza Word';
-    }).catch(function(e){ toast('Eroare: '+e.message,'error'); btn.disabled=false; btn.textContent='Genereaza Word'; });
+    var doc=new Document({sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:720,right:1134,bottom:720,left:1134}}},children:children}]});
+    Packer.toBlob(doc).then(function(blob){var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='Somatie_'+nrSom.replace(/\//g,'_')+'_'+nm.replace(/[^a-zA-Z0-9]/g,'_')+'.docx';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+      if(!J[nm])J[nm]=[];var ag=(window.currentUser&&window.currentUser.email)||'Sistem';J[nm].push({id:uid(),type:'notif_interna',text:'Somatie nr. '+nrSom+' generata.',date:new Date().toISOString(),agent:ag});jSave();incrementSomatieNr();
+      toast('Somatie generata!','success');closeSomatie();btn.disabled=false;btn.textContent='Genereaza Word';
+    }).catch(function(e){toast('Eroare: '+e.message,'error');btn.disabled=false;btn.textContent='Genereaza Word';});
   }
-
-  if (typeof docx !== 'undefined') {
-    doDownload();
-  } else {
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
-    s.onload = doDownload;
-    s.onerror = function(){ toast('Eroare incarcare biblioteca','error'); btn.disabled=false; btn.textContent='Genereaza Word'; };
-    document.head.appendChild(s);
-  }
+  if(typeof docx!=='undefined'){doDownload();}else{var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';s.onload=doDownload;s.onerror=function(){toast('Eroare incarcare biblioteca','error');btn.disabled=false;btn.textContent='Genereaza Word';};document.head.appendChild(s);}
 }
 </script>
 <div id="somatieModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)closeSomatie()">
