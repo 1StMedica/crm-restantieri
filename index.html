@@ -1378,7 +1378,7 @@ function renderJR(nm){
       <div class="pcht">
         <div class="pchav">${av}</div>
         <div style="flex:1"><div class="pchn" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px">${nm}</div><div class="pchcui">${d.cui||dCui||'-'} &middot; ID: ${d.id_partener||dId||'-'}</div></div>
-        ${(d.cui||dCui||'').replace(/[^0-9]/g,'').length===13 ? '<button class="btn btnsm" style="background:var(--tbg);color:var(--teal);border-color:var(--teal)" onclick="showContract(\\\''+((d.cui||dCui||'').replace(/[^0-9]/g,''))+'\\\')">📄 Contract</button>' : ''}
+        ${(d.cui||dCui||'').replace(/[^0-9]/g,'').length>=2 ? '<button class="btn btnsm" style="background:var(--tbg);color:var(--teal);border-color:var(--teal)" onclick="showContract(\\\''+((d.cui||dCui||'').replace(/[^0-9]/g,''))+'\\\')">📄 Contract</button>' : ''}
         <button class="btn btnsm" onclick='openN({"p":"${nm.replace(/"/g,'\\"')}","nr":"multiple","v":${d.total_facturi||0},"rest":${d.sold_net||0},"m":"${d.m||'LEI'}","ds":"-","z":${d.max_zile||0},"email":""})'>${TICO.notificare} Notificare</button>
       </div>
       <div class="pchcs">
@@ -2150,13 +2150,15 @@ var DESF = {"FLOREA MARIAN": {"facturi": [{"nr": "RA-7291", "de": "22/05/2026", 
 function showContract(cnp) {
   var body = document.getElementById('contractBody');
   var titlu = document.getElementById('contractTitlu');
+  var isPF = cnp.length === 13;
+  var tipLabel = isPF ? 'CNP' : 'CUI';
   body.innerHTML = '<div style="text-align:center;color:var(--t3);padding:40px">Se incarca contractul...</div>';
   titlu.textContent = '📄 Detalii contract';
   document.getElementById('modalContract').classList.add('open');
 
   window.db.collection('contracte').doc(cnp).get().then(function(doc) {
     if (!doc.exists) {
-      body.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="color:var(--t3);font-size:14px">Nu exista contract in sistem pentru CNP-ul <strong>' + cnp + '</strong></div><div style="color:var(--t3);font-size:12px;margin-top:8px">Contractul va aparea aici automat dupa ce este generat din aplicatia Contract Inchiriere.</div></div>';
+      body.innerHTML = '<div style="text-align:center;padding:40px"><div style="font-size:32px;margin-bottom:12px">📋</div><div style="color:var(--t3);font-size:14px">Nu exista contract in sistem pentru ' + tipLabel + ' <strong>' + cnp + '</strong></div><div style="color:var(--t3);font-size:12px;margin-top:8px">Contractul va aparea aici automat dupa ce este generat din aplicatia Contract Inchiriere.</div></div>';
       return;
     }
     var c = doc.data();
@@ -2165,7 +2167,7 @@ function showContract(cnp) {
       ['Nr. contract', c.nr_contract || '-'],
       ['Data contract', c.data_contract || '-'],
       ['Titular', (c.nume_titular || '') + ' ' + (c.prenume_titular || '')],
-      ['CNP', c.cnp_titular || '-'],
+      [tipLabel, isPF ? (c.cnp_titular || '-') : (c.cui || cnp)],
       ['Telefon', c.telefon || '-'],
       ['Email', c.email || '-'],
       ['Adresa', [c.adresa, c.localitate, c.judet].filter(Boolean).join(', ') || '-'],
