@@ -1095,22 +1095,40 @@ function loadImportHistory(){
 }
 function _evoDelta(cur,prev){
   var d=cur-prev;
-  var pct=prev!==0?(d/prev*100):0;
+  var pct=(prev&&prev!==0)?(d/prev*100):null;
   var good=(d<=0);
   var arrow=d<0?'\u25BC':(d>0?'\u25B2':'\u2192');
   var col=d===0?'var(--t3)':(good?'#3B6D11':'#A32D2D');
   return {d:d,pct:pct,arrow:arrow,col:col};
 }
+function _evoReal(hist){ return (hist||[]).filter(function(r){return (r.sold>0)||(r.facturi>0);}); }
+function _evoDistinct(real){
+  var out=[];
+  real.forEach(function(r){
+    var last=out[out.length-1];
+    if(last&&last.sold===r.sold&&last.facturi===r.facturi&&last.parteneri===r.parteneri){out[out.length-1]=r;}
+    else{out.push(r);}
+  });
+  return out;
+}
 function renderImportHistTable(hist){
   var h=document.getElementById('impHist');
   if(!h)return;
   if(!hist||!hist.length){h.innerHTML='<tr><td colspan="7" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr>';return;}
-  var rows=hist.map(function(r,i){
-    var v='<span style="color:var(--t3)">\u2014</span>';
-    if(i>0){
-      var dd=_evoDelta(r.sold,hist[i-1].sold);
+  var prevReal=null;
+  var rows=hist.map(function(r){
+    var v;
+    var failed=!((r.sold>0)||(r.facturi>0));
+    if(failed){
+      v='<span style="color:var(--t3)">import esuat</span>';
+    }else if(prevReal===null){
+      v='<span style="color:var(--t3)">\u2014</span>'; prevReal=r.sold;
+    }else{
+      var dd=_evoDelta(r.sold,prevReal);
       var sign=dd.d>0?'+':'';
-      v='<span style="color:'+dd.col+'">'+dd.arrow+' '+sign+fv(dd.d,'LEI')+' ('+sign+dd.pct.toFixed(1)+'%)</span>';
+      var pctTxt=(dd.pct===null)?'':' ('+sign+dd.pct.toFixed(1)+'%)';
+      v='<span style="color:'+dd.col+'">'+dd.arrow+' '+sign+fv(dd.d,'LEI')+pctTxt+'</span>';
+      prevReal=r.sold;
     }
     return {r:r,v:v};
   });
@@ -1123,27 +1141,28 @@ function renderImportHistTable(hist){
 function renderEvoSummary(elId,hist){
   var el=document.getElementById(elId);
   if(!el)return;
-  var real=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
-  if(real.length<2){el.innerHTML='<div style="color:var(--t3);font-size:13px">Variatie disponibila dupa minim 2 importuri cu date.</div>';return;}
-  var cur=real[real.length-1], prev=real[real.length-2];
+  var dist=_evoDistinct(_evoReal(hist));
+  if(dist.length<2){el.innerHTML='<div style="color:var(--t3);font-size:13px">Variatie disponibila dupa minim 2 importuri distincte.</div>';return;}
+  var cur=dist[dist.length-1], prev=dist[dist.length-2];
   function box(label,cv,pv,isLei){
     var dd=_evoDelta(cv,pv);
     var sign=dd.d>0?'+':'';
     var val=isLei?(sign+fv(dd.d,'LEI')):(sign+dd.d);
+    var pctTxt=(dd.pct===null)?'\u2014':(sign+dd.pct.toFixed(1)+'%');
     return '<div style="min-width:120px"><div style="font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em">'+label+'</div>'
       +'<div style="font-size:15px;font-weight:600;color:'+dd.col+'">'+dd.arrow+' '+val+'</div>'
-      +'<div style="font-size:11px;color:'+dd.col+'">'+sign+dd.pct.toFixed(1)+'% vs anterior</div></div>';
+      +'<div style="font-size:11px;color:'+dd.col+'">'+pctTxt+' vs anterior</div></div>';
   }
   el.innerHTML=box('\u0394 Sold',cur.sold,prev.sold,true)+box('\u0394 Facturi',cur.facturi,prev.facturi,false)+box('\u0394 Parteneri',cur.parteneri,prev.parteneri,false);
 }
 function renderEvoChart(canvasId,hist){
   var cv=document.getElementById(canvasId);
   if(!cv||typeof Chart==='undefined'||!hist)return;
-  hist=hist.filter(function(r){return (r.sold>0)||(r.facturi>0);});
-  var labels=hist.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
-  var sold=hist.map(function(r){return r.sold;});
-  var fact=hist.map(function(r){return r.facturi;});
-  var part=hist.map(function(r){return r.parteneri;});
+  var data=_evoDistinct(_evoReal(hist));
+  var labels=data.map(function(r){return r.la?new Date(r.la).toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'2-digit'}):'-';});
+  var sold=data.map(function(r){return r.sold;});
+  var fact=data.map(function(r){return r.facturi;});
+  var part=data.map(function(r){return r.parteneri;});
   var key='_evo_'+canvasId;
   if(window[key]){try{window[key].destroy();}catch(e){}}
   window[key]=new Chart(cv.getContext('2d'),{type:'bar',
