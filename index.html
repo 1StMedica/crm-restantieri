@@ -116,7 +116,7 @@ tbody tr:hover{background:var(--bg)}
 .mapk{font-size:12px;font-weight:500;min-width:130px}.mapk span{font-size:10px;color:var(--red)}
 .maps{flex:1;font-family:inherit;font-size:13px;border:1px solid var(--bmed);border-radius:var(--rs);padding:5px 8px;background:var(--surface);color:var(--text)}
 .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
-.fi{padding:7px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)}
+.fi{padding:7px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)}.ffrow th{padding:4px 6px;background:var(--bg)}.colf{width:100%;min-width:55px;padding:4px 6px;border:1px solid var(--bmed);border-radius:6px;font-family:inherit;font-size:11px;background:var(--surface);color:var(--text)}
 .fi.wide{min-width:200px}.flbl{font-size:12px;color:var(--t3);font-weight:500}
 .agrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .ac{border-radius:var(--rs);padding:14px;text-align:center;border:1px solid transparent}
@@ -168,7 +168,7 @@ tbody tr:hover{background:var(--bg)}
 .fisa-stat-lbl{font-size:11px;color:var(--t3)}
 
 /* JURNAL */
-.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;min-height:600px}
+.jlay{display:grid;grid-template-columns:270px 1fr;gap:16px;height:calc(100vh - 120px);overflow:hidden}#jRight{height:100%;overflow-y:auto}
 .plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
 .plh{padding:12px 14px;border-bottom:1px solid var(--border)}
 .plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
@@ -226,7 +226,7 @@ tbody tr:hover{background:var(--bg)}
   .g2,.g3{grid-template-columns:1fr}
   .agrid{grid-template-columns:repeat(2,1fr)}
   .mapg{grid-template-columns:1fr}
-  .jlay{grid-template-columns:1fr}
+  .jlay{grid-template-columns:1fr;height:auto;overflow:visible}
 }
 @media(max-width:680px){
   .sidebar{
@@ -256,7 +256,7 @@ tbody tr:hover{background:var(--bg)}
   table{font-size:12px}
   thead th{padding:8px 10px;font-size:10px}
   tbody td{padding:9px 10px}
-  .jlay{grid-template-columns:1fr}
+  .jlay{grid-template-columns:1fr;height:auto;overflow:visible}
   .modal{width:97vw!important;max-height:88vh}
   .mbg{align-items:flex-end;padding-bottom:0}
   .modal{border-radius:var(--r) var(--r) 0 0}
@@ -371,6 +371,7 @@ tbody tr:hover{background:var(--bg)}
     <button class="hamb" id="hambBtn" onclick="toggleSidebar()" aria-label="Meniu">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
+    <button class="btn" id="btnBack" onclick="goBack()" style="display:none;align-items:center;gap:4px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>Inapoi</button>
     <div class="ptitle" id="ptitle">Dashboard</div>
     <div class="tactions">
       <button class="btn btn-top-hide" onclick="exportData()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
@@ -443,7 +444,7 @@ tbody tr:hover{background:var(--bg)}
         </select>
         <span class="flbl" id="fcnt"></span>
       </div>
-      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
+      <div class="card"><div class="tw" id="tFactWrap"><table><thead><tr><th>Nr. Factura</th><th>Partener</th><th>CUI</th><th>Judet</th><th>Adresa</th><th>Telefon</th><th>Data emiterii</th><th>Data scadentei</th><th>Zile dep.</th><th>Total factura</th><th>Rest plata</th><th>Valuta</th><th>Agent</th><th>Risc</th></tr><tr class="ffrow"><th><input class="colf" data-col="nr" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="p" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="cui" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="judet" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="adresa" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="tel" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="de" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="ds" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="z" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="v" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="rest" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="m" oninput="renderF()" placeholder="filtru"></th><th><input class="colf" data-col="ag" oninput="renderF()" placeholder="filtru"></th><th></th></tr></thead><tbody id="tFact"><tr><td colspan="14"><div class="empty"><div class="etl">Se incarca...</div></div></td></tr></tbody></table></div></div>
     </div>
 
     <!-- PARTENERI -->
@@ -953,12 +954,20 @@ function closeSidebar(){
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
-function showPage(id,el){
+window._pageHist=window._pageHist||[];
+function goBack(){
+  if(window._pageHist.length>1){window._pageHist.pop();var prev=window._pageHist[window._pageHist.length-1];showPage(prev,null,true);}
+  else{showPage('dashboard',null,true);}
+}
+function showPage(id,el,isBack){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(el)el.classList.add('active');
+  if(el){el.classList.add('active');}
+  else{document.querySelectorAll('.ni').forEach(function(n){var oc=n.getAttribute('onclick')||'';if(oc.indexOf("showPage('"+id+"'")>=0)n.classList.add('active');});}
   document.getElementById('ptitle').textContent=PAGES[id]||id;
+  if(!isBack){if(window._pageHist[window._pageHist.length-1]!==id)window._pageHist.push(id);}
+  var _bb=document.getElementById('btnBack');if(_bb)_bb.style.display=(id==='dashboard')?'none':'inline-flex';
   if(id==='facturi')renderF();
   if(id==='parteneri')renderP();
   if(id==='aging')renderA();
@@ -1395,6 +1404,8 @@ function renderF(){
     if(sag&&r.ag!==sag)return false;
     return true;
   });
+  var _cf=document.querySelectorAll('#tFactWrap .colf');
+  if(_cf&&_cf.length){_cf.forEach(function(inp){var val=(inp.value||'').toLowerCase().trim();if(!val)return;var col=inp.dataset.col;d=d.filter(function(r){return String(r[col]==null?'':r[col]).toLowerCase().indexOf(val)>=0;});});}
   if(so==='zd')d.sort((a,b)=>b.z-a.z);
   else if(so==='rd')d.sort((a,b)=>b.rest-a.rest);
   else if(so==='sa')d.sort((a,b)=>(a.dsd||'')>(b.dsd||'')?1:-1);
@@ -1470,7 +1481,7 @@ function renderPL(f){
     </div>`;
   }).join('');
 }
-function selPart(nm){selP=nm;renderPL();renderJR(nm);}
+function selPart(nm){selP=nm;renderPL();renderJR(nm);var jr=document.getElementById('jRight');if(jr)jr.scrollTop=0;}
 function renderJR(nm){
   const d=PD.find(p=>p.p===nm)||{};
   const notes=J[nm]||[];
