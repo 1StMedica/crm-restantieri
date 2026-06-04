@@ -669,6 +669,7 @@ function showApp(user){
   jLoad(); rLoad();
   setTimeout(loadImportFromFirestore, 800);
   setTimeout(loadImportHistory, 1300);
+  setTimeout(initSortable, 600);
   // Real-time listeners
   function startJurnalListener(){
     if(!window.db) return;
@@ -954,6 +955,59 @@ function closeSidebar(){
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
+function _cellSortVal(td){
+  var t=((td&&td.textContent)||'').trim();
+  var dm=t.match(/^(\d{1,2})\.(\d{1,2})\.(\d{2,4})$/);
+  if(dm){var y=dm[3];if(y.length===2)y='20'+y;return {n:parseInt(y+('0'+dm[2]).slice(-2)+('0'+dm[1]).slice(-2),10),s:t};}
+  var cleaned=t.replace(/[^\d.,\-]/g,'');
+  if(cleaned&&/\d/.test(cleaned)){
+    var norm=cleaned;
+    if(norm.indexOf(',')>=0){norm=norm.replace(/\./g,'').replace(',','.');}
+    var num=parseFloat(norm);
+    if(!isNaN(num))return {n:num,s:t};
+  }
+  return {n:null,s:t.toLowerCase()};
+}
+function sortTable(th){
+  var table=th.closest('table'); if(!table)return;
+  var tbody=table.querySelector('tbody'); if(!tbody)return;
+  var headRow=th.parentNode;
+  var idx=Array.prototype.indexOf.call(headRow.children,th); if(idx<0)return;
+  var dir=(th.getAttribute('data-sort')==='asc')?'desc':'asc';
+  table.querySelectorAll('th[data-sort]').forEach(function(o){o.removeAttribute('data-sort');});
+  table.querySelectorAll('.sortarr').forEach(function(a){a.remove();});
+  th.setAttribute('data-sort',dir);
+  var rows=Array.prototype.slice.call(tbody.querySelectorAll(':scope > tr')).filter(function(r){return !r.querySelector('td[colspan]');});
+  rows.sort(function(a,b){
+    var av=_cellSortVal(a.children[idx]),bv=_cellSortVal(b.children[idx]);
+    var r;
+    if(av.n!==null&&bv.n!==null)r=av.n-bv.n;
+    else if(av.n!==null)r=-1;
+    else if(bv.n!==null)r=1;
+    else r=av.s<bv.s?-1:(av.s>bv.s?1:0);
+    return dir==='asc'?r:-r;
+  });
+  rows.forEach(function(r){tbody.appendChild(r);});
+  var arr=document.createElement('span');arr.className='sortarr';arr.style.marginLeft='4px';arr.style.fontSize='9px';arr.style.opacity='.7';arr.textContent=(dir==='asc'?'\u25B2':'\u25BC');
+  th.appendChild(arr);
+}
+function initSortable(){
+  ['tFact','tPart','tTop','tPri','tRemindere','tAging','impHist'].forEach(function(id){
+    var tb=document.getElementById(id); if(!tb)return;
+    var table=tb.closest('table'); if(!table)return;
+    var headRow=table.querySelector('thead tr'); if(!headRow)return;
+    Array.prototype.forEach.call(headRow.children,function(th){
+      if(th.querySelector('input'))return;
+      if(!((th.textContent||'').trim()))return;
+      if(th.getAttribute('data-sortinit'))return;
+      th.setAttribute('data-sortinit','1');
+      th.style.cursor='pointer';
+      th.title='Click pentru sortare';
+      th.addEventListener('click',function(){sortTable(th);});
+    });
+  });
+}
+
 window._pageHist=window._pageHist||[];
 function goBack(){
   if(window._pageHist.length>1){window._pageHist.pop();var prev=window._pageHist[window._pageHist.length-1];showPage(prev,null,true);}
@@ -968,6 +1022,7 @@ function showPage(id,el,isBack){
   document.getElementById('ptitle').textContent=PAGES[id]||id;
   if(!isBack){if(window._pageHist[window._pageHist.length-1]!==id)window._pageHist.push(id);}
   var _bb=document.getElementById('btnBack');if(_bb)_bb.style.display=(id==='dashboard')?'none':'inline-flex';
+  setTimeout(initSortable,50);
   if(id==='facturi')renderF();
   if(id==='parteneri')renderP();
   if(id==='aging')renderA();
