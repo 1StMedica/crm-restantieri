@@ -2483,7 +2483,7 @@ function genereazaSomatieWord() {
     var border={style:BorderStyle.SINGLE,size:1,color:'AAAAAA'};var borders={top:border,bottom:border,left:border,right:border};
     function cell(text,bold,bg){return new TableCell({borders:borders,shading:bg?{fill:bg,type:ShadingType.CLEAR}:undefined,margins:{top:80,bottom:80,left:120,right:120},children:[new Paragraph({children:[new TextRun({text:text,font:'Arial',size:20,bold:bold||false})]})]});}
     var headerRow=new TableRow({children:[cell('Nr. Factura',true,'E8F0FE'),cell('Suma facturata',true,'E8F0FE'),cell('Scadenta',true,'E8F0FE'),cell('Rest de plata',true,'E8F0FE')]});
-    var dataRows=facturi.map(function(f){var dsParts=f.ds?f.ds.split('/'):null;var ds=dsParts?dsParts[0]+'.'+dsParts[1]+'.'+dsParts[2]:'-';return new TableRow({children:[cell(f.nr||'-',false),cell(parseFloat(f.v||0).toFixed(2)+' Lei',false),cell(ds,false),cell(parseFloat(f.rest||0).toFixed(2)+' Lei',false)]});});
+    var dataRows=facturi.map(function(f){var ds=f.ds||'-';return new TableRow({children:[cell(f.nr||'-',false),cell(parseFloat(f.v||0).toFixed(2)+' Lei',false),cell(ds,false),cell(parseFloat(f.rest||0).toFixed(2)+' Lei',false)]});});
     var tabelFacturi=new Table({width:{size:9026,type:WidthType.DXA},columnWidths:[2256,2256,2257,2257],rows:[headerRow].concat(dataRows)});
     var linii=textSom.split('\n');var children=[];
     for(var i=0;i<linii.length;i++){var linie=linii[i];var trimmed=linie.trim();
