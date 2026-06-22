@@ -1344,10 +1344,31 @@ function doImport(){
     else{byP[r.p].total_incasat+=r.aa;byP[r.p].nr_incasari++;}
   });
   const newPD=Object.entries(byP).filter(([,d])=>d.sold_net>0).map(([p,d])=>({p,...d,sold_net:Math.round(d.sold_net*100)/100})).sort((a,b)=>b.sold_net-a.sold_net);
+  // === Alocare FIFO: creditele nealocate (avansuri/storno cu sold net negativ) se aplica pe factura cea mai veche ===
+  (function(){
+    var fByP={};
+    newFacturi.forEach(function(f){ (fByP[f.p]=fByP[f.p]||[]).push(f); });
+    window._restAjustat={};
+    Object.keys(fByP).forEach(function(p){
+      var facs=fByP[p];
+      var sumRest=facs.reduce(function(s,f){return s+(parseFloat(f.rest)||0);},0);
+      var soldReal=(byP[p]?byP[p].sold_net:sumRest);
+      var credit=Math.round((sumRest-soldReal)*100)/100;
+      if(credit>0.005){
+        facs.sort(function(a,b){return String(a.dsd||'').localeCompare(String(b.dsd||''));});
+        for(var i=0;i<facs.length && credit>0.005;i++){
+          var apply=Math.min(credit, parseFloat(facs[i].rest)||0);
+          facs[i].rest=Math.round((facs[i].rest-apply)*100)/100;
+          credit=Math.round((credit-apply)*100)/100;
+        }
+      }
+      facs.forEach(function(f){ window._restAjustat[p+'|||'+f.nr]=f.rest; });
+    });
+  })();
 
   // Filtram facturile pentru a exclude parteneri cu sold_net <= 0
   const validPartners=new Set(newPD.map(p=>p.p));
-  D=newFacturi.filter(r=>validPartners.has(r.p));
+  D=newFacturi.filter(r=>validPartners.has(r.p)&&(parseFloat(r.rest)||0)>0.005);
   PD=newPD;
   const soldTotal=PD.reduce((s,p)=>s+p.sold_net,0);
   const h=document.getElementById('impHist');
@@ -1365,8 +1386,12 @@ function doImport(){
     if(!DESF[r.p])DESF[r.p]={facturi:[],incasari:[]};
     if(r.tip==='Factura'&&r.ba>0){
       const z=r.sd?Math.floor((today2-r.sd)/86400000):0;
-      const incasat=Math.round((r.w-r.ba)*100)/100;
-      DESF[r.p].facturi.push({nr:(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie),de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:r.ba,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat'});
+      const _nr=(r.serie&&r.numar)?r.serie+'-'+r.numar:(r.numar||r.serie);
+      const _ra=(window._restAjustat&&window._restAjustat[r.p+'|||'+_nr]!==undefined)?window._restAjustat[r.p+'|||'+_nr]:r.ba;
+      if(_ra>0.005){
+        const incasat=Math.round((r.w-_ra)*100)/100;
+        DESF[r.p].facturi.push({nr:_nr,de:r.ed?r.ed.toLocaleDateString('ro-RO'):'',ds:r.sd?r.sd.toLocaleDateString('ro-RO'):'',z,total:r.w,incasat:incasat>0?incasat:0,rest:_ra,m:r.m,ag:r.ag,status:incasat>0.01?'partial':'neincasat'});
+      }
     } else if(r.tip!=='Factura'&&r.aa>0){
       const tipInc=r.tip.toLowerCase().includes('banca')?'Banca':'Numerar';
       DESF[r.p].incasari.push({tip:tipInc,data:r.ed?r.ed.toLocaleDateString('ro-RO'):'',val:r.aa,m:r.m});
