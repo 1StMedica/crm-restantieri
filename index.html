@@ -2322,7 +2322,41 @@ function generateNotifPDF(nm, nota){
 }
 
 // EXPORT
+function exportJurnalCSV(){
+  var J0=window.J||{};
+  var rows=[];
+  Object.keys(J0).forEach(function(p){
+    (J0[p]||[]).forEach(function(n){
+      var tip=(typeof TLBL!=='undefined'&&TLBL[n.type])?TLBL[n.type]:(n.type||'');
+      var fu=n.followup||{};
+      var sumaProm=(n.ps!==undefined&&n.ps!=='')?n.ps:'';
+      var dataProm=(n.pd!==undefined&&n.pd!=='')?n.pd:'';
+      var ext=n.externalizat?'DA':'';
+      rows.push([
+        n.date?fd(n.date):'',
+        p,
+        tip,
+        n.text||'',
+        n.agent||'',
+        sumaProm,
+        dataProm,
+        fu.data||'',
+        fu.actiune||'',
+        ext
+      ]);
+    });
+  });
+  if(!rows.length){toast('Niciun jurnal de exportat','error');return;}
+  rows.sort(function(a,b){return String(b[0]).localeCompare(String(a[0]));});
+  var h=['Data si ora','Partener','Tip interactiune','Discutie / Descriere','Agent','Suma promisa','Data promisa','Follow-up: data','Follow-up: actiune','Externalizat'];
+  var csv=[h].concat(rows).map(function(r){return r.map(function(cc){return '"'+String(cc==null?'':cc).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download='jurnal-interactiuni-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  toast('Jurnal interactiuni exportat CSV','success');
+}
 function exportData(){
+  var _ap=(document.querySelector('.page.active')||{}).id||'';
+  if(_ap==='page-jurnal'){return exportJurnalCSV();}
   if(!D.length){toast('Nicio data de exportat','error');return;}
   const h=['Nr. Factura','Partener','CUI','Judet','Adresa','Telefon','Data emiterii','Data scadentei','Zile depasire','Total factura','Rest plata','Valuta','Agent','Risc'];
   const riskLbl=z=>z>=90?'Critic':z>=60?'Ridicat':z>=30?'Moderat':z>0?'Recent':'La termen';
