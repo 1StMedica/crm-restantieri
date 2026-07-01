@@ -557,7 +557,6 @@ tbody tr:hover{background:var(--bg)}
         <div style="background:var(--bg);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--t3)"><strong style="color:var(--t2)">Previzualizare:</strong> <span id="prevInfo"></span></div>
         <div style="display:flex;gap:8px"><button class="btn btnp" onclick="doImport()">Importa datele</button><button class="btn" onclick="cancelImp()">Anuleaza</button></div></div></div>
       </div>
-      <div class="card" style="margin-top:16px"><div class="ch"><div><div class="ct">Evolutie sold restant</div><div class="cs">dupa fiecare import + variatie</div></div></div><div style="padding:14px 16px"><div id="evoSummaryImp" style="display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px"></div><div style="height:260px"><canvas id="evoChartImp"></canvas></div></div></div>
       <div class="card" style="margin-top:16px"><div class="ch"><div class="ct">Istoric importuri</div></div><div class="tw"><table><thead><tr><th>Data import</th><th>Fisier</th><th>Facturi</th><th>Parteneri</th><th>Sold net</th><th>Variatie</th><th>Status</th></tr></thead><tbody id="impHist"><tr><td colspan="7" style="padding:20px;text-align:center;color:var(--t3)">Niciun import anterior</td></tr></tbody></table></div></div>
     </div>
 
@@ -1151,9 +1150,7 @@ function loadImportHistory(){
       window._importHist=hist;
       renderImportHistTable(hist);
       renderEvoChart('evoChartDash',hist);
-      renderEvoChart('evoChartImp',hist);
       renderEvoSummary('evoSummaryDash',hist);
-      renderEvoSummary('evoSummaryImp',hist);
     }).catch(function(e){console.warn('loadImportHistory error:',e);});
   }catch(e){console.warn('loadImportHistory exception:',e);}
 }
